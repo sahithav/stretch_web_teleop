@@ -718,12 +718,7 @@ export const Operator = (props: {
                         {props.studyMode && (
                             <button
                                 onClick={() => {
-                                    if (props.studyMode.currentTask < 4) {
-                                        setShowStudyConfirmation(true);
-                                    } else {
-                                        // For the last task, proceed directly to conclusion
-                                        props.studyMode.onProceedToNextTask();
-                                    }
+                                    setShowStudyConfirmation(true);
                                 }}
                                 className="btn-turquoise font-white"
                                 style={{
@@ -973,10 +968,12 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowStudyConfirmation(false);
                                     props.studyMode?.onProceedToNextTask();
-                                    // Show task description for next task
-                                    setTimeout(() => {
-                                        setShowTaskDescription(true);
-                                    }, 100);
+                                    // Show task description for next task (except for Task 4 which goes to conclusion)
+                                    if (props.studyMode?.currentTask < 4) {
+                                        setTimeout(() => {
+                                            setShowTaskDescription(true);
+                                        }, 100);
+                                    }
                                 }}
                             >
                                 <CheckIcon style={{ fontSize: "1em" }} />
