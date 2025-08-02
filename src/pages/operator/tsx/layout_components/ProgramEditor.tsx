@@ -486,6 +486,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
                 // Check if there was an execution error to determine success
                 const hasError = props.sharedState.executionError !== null;
+                console.log('ProgramEditor: Execution completed, hasError:', hasError);
                 (props.sharedState as any).trackExecutionAttemptEnd(!hasError);
             }
         }
@@ -792,6 +793,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             
             // Track execution attempt start for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
+                console.log('ProgramEditor: Starting execution attempt tracking');
                 (props.sharedState as any).trackExecutionAttemptStart();
             }
             

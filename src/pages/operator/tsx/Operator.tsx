@@ -135,33 +135,38 @@ export const Operator = (props: {
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
+        console.log('Tracking execution attempt end, success:', success, 'currentExecutionAttempt:', currentExecutionAttempt);
         if (props.studyMode && currentExecutionAttempt.pause_and_confirm_resets >= 0) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             
-            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
-                const executionData = {
-                    execution_end: new Date().toISOString(),
-                    success: success,
-                    pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
-                };
-                
-                setStudyData(prev => ({
-                    ...prev,
-                    tasks: {
-                        ...prev.tasks,
-                        [currentTask]: {
-                            ...prev.tasks[currentTask],
-                            execution_attempts: [
-                                ...prev.tasks[currentTask].execution_attempts,
-                                executionData
-                            ]
-                        }
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
                     }
-                }));
-                
-                // Save to session storage
-                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    
+                    const executionData = {
+                        execution_end: new Date().toISOString(),
+                        success: success,
+                        pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
+                    };
+                    
+                    studyData.tasks[currentTask].execution_attempts.push(executionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    console.log('Execution attempt tracked:', executionData);
+                }
             }
         }
     };
@@ -293,12 +298,18 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
+        console.log('Reset button clicked, studyMode:', props.studyMode, 'isExecutingProgram:', isExecutingProgram);
         // Track pause and confirm reset for study data
         if (props.studyMode && isExecutingProgram) {
-            setCurrentExecutionAttempt(prev => ({
-                ...prev,
-                pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
-            }));
+            console.log('Tracking pause and confirm reset');
+            setCurrentExecutionAttempt(prev => {
+                const newAttempt = {
+                    ...prev,
+                    pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
+                };
+                console.log('Updated execution attempt:', newAttempt);
+                return newAttempt;
+            });
         }
         
         // Home the robot

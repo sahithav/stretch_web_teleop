@@ -44,8 +44,12 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                     setIsRecording(true);
                     
                     // Track demonstration recording start for study data
+                    console.log('RosbagRecorder: Attempting to track recording start...');
                     if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingStart) {
+                        console.log('RosbagRecorder: Calling trackDemonstrationRecordingStart');
                         (props.sharedState as any).trackDemonstrationRecordingStart();
+                    } else {
+                        console.log('RosbagRecorder: trackDemonstrationRecordingStart not available');
                     }
                 } else {
                     const data = await res.json();
@@ -75,8 +79,12 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                     setTimeout(() => setSuccessMessage(null), 5000);
                     
                     // Track demonstration recording end for study data
+                    console.log('RosbagRecorder: Attempting to track recording end...');
                     if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingEnd) {
+                        console.log('RosbagRecorder: Calling trackDemonstrationRecordingEnd');
                         (props.sharedState as any).trackDemonstrationRecordingEnd(`${userId}_${rosbagCounter}`);
+                    } else {
+                        console.log('RosbagRecorder: trackDemonstrationRecordingEnd not available');
                     }
                 } else {
                     const data = await res.json();
