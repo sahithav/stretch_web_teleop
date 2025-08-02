@@ -736,33 +736,38 @@ export const Operator = (props: {
         
         // Track program editor session end when switching away
         if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start) {
+            console.log('Tracking program editor session end, previousMode:', previousMode, 'newMode:', newMode);
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode?.currentTask;
             
-            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
-                const sessionData = {
-                    session_start: currentProgramSession.session_start,
-                    session_end: new Date().toISOString(),
-                    program_content: sessionStorage.getItem('programEditorCode') || "",
-                    saved_positions_added: currentProgramSession.saved_positions_added
-                };
-                
-                setStudyData(prev => ({
-                    ...prev,
-                    tasks: {
-                        ...prev.tasks,
-                        [currentTask]: {
-                            ...prev.tasks[currentTask],
-                            program_editor_sessions: [
-                                ...prev.tasks[currentTask].program_editor_sessions,
-                                sessionData
-                            ]
-                        }
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
                     }
-                }));
-                
-                // Save to session storage
-                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    
+                    const sessionData = {
+                        session_start: currentProgramSession.session_start,
+                        session_end: new Date().toISOString(),
+                        program_content: sessionStorage.getItem('programEditorCode') || "",
+                        saved_positions_added: currentProgramSession.saved_positions_added
+                    };
+                    
+                    studyData.tasks[currentTask].program_editor_sessions.push(sessionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    console.log('Program editor session tracked:', sessionData);
+                }
             }
         }
         

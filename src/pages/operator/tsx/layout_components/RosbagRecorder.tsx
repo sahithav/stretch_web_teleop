@@ -15,6 +15,11 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [rosbagCounter, setRosbagCounter] = useState(1);
     
+    // Debug shared state
+    console.log('RosbagRecorder: sharedState available:', !!props.sharedState);
+    console.log('RosbagRecorder: trackDemonstrationRecordingStart available:', !!(props.sharedState as any)?.trackDemonstrationRecordingStart);
+    console.log('RosbagRecorder: trackDemonstrationRecordingEnd available:', !!(props.sharedState as any)?.trackDemonstrationRecordingEnd);
+    
     // Get user ID from session storage
     const getUserId = () => {
         const userId = sessionStorage.getItem('studyUserId');
