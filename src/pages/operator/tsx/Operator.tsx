@@ -25,6 +25,7 @@ import {
     ButtonStateMap,
 } from "./function_providers/ButtonFunctionProvider";
 import { Dropdown } from "./basic_components/Dropdown";
+import { PopupModal } from "./basic_components/PopupModal";
 import {
     DEFAULT_LAYOUTS,
     DefaultLayoutName,
@@ -78,6 +79,9 @@ export const Operator = (props: {
     // Program mode state
     const [showPopup, setShowPopup] = React.useState<boolean>(false);
     const [programMode, setProgramMode] = React.useState<string>("Demonstrate");
+    
+    // Study confirmation popup state
+    const [showStudyConfirmation, setShowStudyConfirmation] = React.useState<boolean>(false);
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -605,38 +609,7 @@ export const Operator = (props: {
                     minHeight: "40px"
                 }}>
                     {/* Left side controls */}
-                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto", gap: "8px" }}>
-                        {/* Study Proceed Button */}
-                        {props.studyMode && (
-                            <button
-                                onClick={() => {
-                                    // Show confirmation popup
-                                    const confirmed = window.confirm(
-                                        `Please confirm that you have completed Task ${props.studyMode.currentTask}:\n\n` +
-                                        `• Demonstrated the task (recorded demo)\n` +
-                                        `• Wrote a program in Program Editor mode\n` +
-                                        `• Successfully executed the program\n\n` +
-                                        `Are you ready to proceed to the next task?`
-                                    );
-                                    if (confirmed) {
-                                        props.studyMode.onProceedToNextTask();
-                                    }
-                                }}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    backgroundColor: "#28a745",
-                                    borderColor: "#28a745",
-                                    height: "40px",
-                                    padding: "8px 16px"
-                                }}
-                                title="Proceed to next task"
-                            >
-                                <span>{props.studyMode.proceedButtonText}</span>
-                            </button>
-                        )}
+                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
                         {/* Program mode dropdown */}
                         <div style={{ 
                             display: "flex", 
@@ -712,6 +685,27 @@ export const Operator = (props: {
                         gap: "8px"
                     }}>
                         {/* CustomizeButton hidden for all modes */}
+                        {/* Study Proceed Button */}
+                        {props.studyMode && (
+                            <button
+                                onClick={() => {
+                                    setShowStudyConfirmation(true);
+                                }}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    backgroundColor: "#28a745",
+                                    borderColor: "#28a745",
+                                    height: "40px",
+                                    padding: "8px 16px"
+                                }}
+                                title="Proceed to next task"
+                            >
+                                <span>{props.studyMode.proceedButtonText}</span>
+                            </button>
+                        )}
                         {/* Home Robot Button */}
                         <button
                             onClick={() => {
@@ -883,6 +877,45 @@ export const Operator = (props: {
                     </div>
                 </div>
             )}
+            
+            {/* Study Confirmation Modal */}
+            <PopupModal
+                show={showStudyConfirmation}
+                setShow={setShowStudyConfirmation}
+                onAccept={() => {
+                    props.studyMode?.onProceedToNextTask();
+                }}
+                acceptButtonText="Proceed"
+                size="medium"
+            >
+                <div style={{ padding: "20px" }}>
+                    <h3 style={{ marginBottom: "16px", textAlign: "center" }}>
+                        Task {props.studyMode?.currentTask} Completion Confirmation
+                    </h3>
+                    <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                        Please confirm that you have completed Task {props.studyMode?.currentTask}:
+                    </p>
+                    <ul style={{ 
+                        marginBottom: "20px", 
+                        paddingLeft: "20px",
+                        lineHeight: "1.6",
+                        textAlign: "left"
+                    }}>
+                        <li>Demonstrated the task (recorded demo)</li>
+                        <li>Wrote a program in Program Editor mode</li>
+                        <li>Successfully executed the program</li>
+                    </ul>
+                    <p style={{ 
+                        marginBottom: "0",
+                        fontSize: "14px",
+                        color: "#666",
+                        fontStyle: "italic"
+                    }}>
+                        Are you ready to proceed to the next task?
+                    </p>
+                </div>
+            </PopupModal>
+            
             <div id="operator-body">
                 <LayoutArea layout={layout.current} sharedState={sharedState} />
             </div>
