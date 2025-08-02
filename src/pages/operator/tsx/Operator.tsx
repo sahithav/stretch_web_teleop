@@ -591,21 +591,52 @@ export const Operator = (props: {
                 </div>
             </div>
             <div id="operator-header" onClick={handleClickHeader} style={{ display: "flex", flexDirection: "column", padding: "12px 20px" }}>
-                {/* Centered Title */}
+                {/* Title and User ID Row */}
                 <div style={{ 
                     display: "flex", 
-                    justifyContent: "center", 
+                    justifyContent: "space-between", 
+                    alignItems: "center",
                     marginBottom: "5px",
                     width: "100%"
                 }}>
-                    <span style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                        color: "var(--text-color)",
-                        textTransform: "capitalize"
+                    {/* User ID Display */}
+                    {props.studyMode && (
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "6px 12px",
+                            backgroundColor: "#f8f9fa",
+                            border: "1px solid #dee2e6",
+                            borderRadius: "6px",
+                            fontSize: "14px",
+                            fontWeight: "500",
+                            color: "#495057"
+                        }}>
+                            <span style={{ marginRight: "6px" }}>ID:</span>
+                            <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
+                                {sessionStorage.getItem('studyUserId') || 'Unknown'}
+                            </span>
+                        </div>
+                    )}
+                    
+                    {/* Centered Title */}
+                    <div style={{ 
+                        display: "flex", 
+                        justifyContent: "center", 
+                        flex: "1 1 auto"
                     }}>
-                        {programMode}
-                    </span>
+                        <span style={{
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                            color: "var(--text-color)",
+                            textTransform: "capitalize"
+                        }}>
+                            {programMode}
+                        </span>
+                    </div>
+                    
+                    {/* Spacer to balance the layout */}
+                    <div style={{ width: props.studyMode ? "120px" : "0px" }}></div>
                 </div>
                 
                 {/* Header Controls */}
