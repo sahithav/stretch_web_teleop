@@ -414,13 +414,12 @@ export const Library = (props: CustomizableComponentProps) => {
                         <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
                             <button
                                 style={{
-                                    background: "var(--btn-gray)",
-                                    color: "var(--text-color)",
+                                    backgroundColor: "#6c757d",
+                                    color: "white",
                                     border: "none",
-                                    borderRadius: 4,
-                                    padding: "8px 20px",
-                                    fontWeight: "normal",
-                                    fontSize: "1em",
+                                    padding: "10px 20px",
+                                    fontWeight: "bold",
+                                    borderRadius: "5px",
                                     cursor: "pointer"
                                 }}
                                 onClick={handleCancel}

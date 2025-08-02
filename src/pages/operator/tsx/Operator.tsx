@@ -57,6 +57,7 @@ export const Operator = (props: {
         currentTask: number;
         onProceedToNextTask: () => void;
         proceedButtonText: string;
+        setShowTaskDescription: (show: boolean) => void;
     };
 }) => {
     // Layout and customization state
@@ -82,6 +83,7 @@ export const Operator = (props: {
     
     // Study confirmation popup state
     const [showStudyConfirmation, setShowStudyConfirmation] = React.useState<boolean>(false);
+    const [showTaskDescription, setShowTaskDescription] = React.useState<boolean>(false);
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -710,7 +712,12 @@ export const Operator = (props: {
                         {props.studyMode && (
                             <button
                                 onClick={() => {
-                                    setShowStudyConfirmation(true);
+                                    if (props.studyMode.currentTask < 4) {
+                                        setShowStudyConfirmation(true);
+                                    } else {
+                                        // For the last task, proceed directly to conclusion
+                                        props.studyMode.onProceedToNextTask();
+                                    }
                                 }}
                                 className="btn-turquoise font-white"
                                 style={{
@@ -960,10 +967,98 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowStudyConfirmation(false);
                                     props.studyMode?.onProceedToNextTask();
+                                    // Show task description for next task
+                                    setTimeout(() => {
+                                        props.studyMode?.setShowTaskDescription(true);
+                                    }, 100);
                                 }}
                             >
                                 <CheckIcon style={{ fontSize: "1em" }} />
                                 Proceed
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Task Description Modal */}
+            {showTaskDescription && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    background: "rgba(0,0,0,0.4)",
+                    zIndex: 1000,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                    <div style={{
+                        background: "white",
+                        borderRadius: 8,
+                        padding: 32,
+                        minWidth: 320,
+                        maxWidth: 600,
+                        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+                        textAlign: "center"
+                    }}>
+                        <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
+                            Task {props.studyMode?.currentTask} Description
+                        </h3>
+                        <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
+                            <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                <strong>Task {props.studyMode?.currentTask}:</strong> [Task description will go here]
+                            </p>
+                            <div style={{ 
+                                marginBottom: "20px", 
+                                padding: "16px",
+                                backgroundColor: "#f8f9fa",
+                                borderRadius: "6px",
+                                border: "1px solid #e9ecef"
+                            }}>
+                                <h4 style={{ marginBottom: "12px", color: "#495057" }}>Instructions:</h4>
+                                <ol style={{ 
+                                    marginBottom: "0",
+                                    paddingLeft: "20px",
+                                    lineHeight: "1.6"
+                                }}>
+                                    <li>Teleoperate the robot to execute the task</li>
+                                    <li>Create your program in Program Editor mode</li>
+                                    <li>Execute the program successfully</li>
+                                </ol>
+                            </div>
+                            <p style={{ 
+                                marginBottom: "0",
+                                fontSize: "14px",
+                                color: "#666",
+                                fontStyle: "italic"
+                            }}>
+                                Click "Ready to Start" when you're ready to begin Task {props.studyMode?.currentTask}.
+                            </p>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
+                            <button
+                                style={{
+                                    background: "#28a745",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "8px 20px",
+                                    fontWeight: "bold",
+                                    fontSize: "1em",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px"
+                                }}
+                                onClick={() => {
+                                    setShowTaskDescription(false);
+                                }}
+                            >
+                                <CheckIcon style={{ fontSize: "1em" }} />
+                                Ready to Start
                             </button>
                         </div>
                     </div>
