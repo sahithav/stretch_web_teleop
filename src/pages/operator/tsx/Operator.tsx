@@ -605,7 +605,38 @@ export const Operator = (props: {
                     minHeight: "40px"
                 }}>
                     {/* Left side controls */}
-                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
+                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto", gap: "8px" }}>
+                        {/* Study Proceed Button */}
+                        {props.studyMode && (
+                            <button
+                                onClick={() => {
+                                    // Show confirmation popup
+                                    const confirmed = window.confirm(
+                                        `Please confirm that you have completed Task ${props.studyMode.currentTask}:\n\n` +
+                                        `• Demonstrated the task (recorded demo)\n` +
+                                        `• Wrote a program in Program Editor mode\n` +
+                                        `• Successfully executed the program\n\n` +
+                                        `Are you ready to proceed to the next task?`
+                                    );
+                                    if (confirmed) {
+                                        props.studyMode.onProceedToNextTask();
+                                    }
+                                }}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    backgroundColor: "#28a745",
+                                    borderColor: "#28a745",
+                                    height: "40px",
+                                    padding: "8px 16px"
+                                }}
+                                title="Proceed to next task"
+                            >
+                                <span>{props.studyMode.proceedButtonText}</span>
+                            </button>
+                        )}
                         {/* Program mode dropdown */}
                         <div style={{ 
                             display: "flex", 
@@ -681,23 +712,6 @@ export const Operator = (props: {
                         gap: "8px"
                     }}>
                         {/* CustomizeButton hidden for all modes */}
-                        {/* Study Proceed Button */}
-                        {props.studyMode && (
-                            <button
-                                onClick={props.studyMode.onProceedToNextTask}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    backgroundColor: "#28a745",
-                                    borderColor: "#28a745"
-                                }}
-                                title="Proceed to next task"
-                            >
-                                <span>{props.studyMode.proceedButtonText}</span>
-                            </button>
-                        )}
                         {/* Home Robot Button */}
                         <button
                             onClick={() => {

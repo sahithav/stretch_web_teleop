@@ -9,7 +9,7 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
     return (
         <div className="study-landing">
             <div className="study-landing-content">
-                <h1>Robot Teleoperation Study</h1>
+                <h1>Shared Autonomy Study</h1>
                 
                 <div className="study-intro">
                     <p>
