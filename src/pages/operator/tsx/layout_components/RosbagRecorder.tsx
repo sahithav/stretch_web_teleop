@@ -17,7 +17,9 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
     
     // Get user ID from session storage
     const getUserId = () => {
-        return sessionStorage.getItem('studyUserId') || 'unknown';
+        const userId = sessionStorage.getItem('studyUserId');
+        console.log('Retrieved userId from session storage:', userId);
+        return userId || 'unknown';
     };
 
     const handleClick = async () => {

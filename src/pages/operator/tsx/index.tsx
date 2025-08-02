@@ -341,13 +341,17 @@ function renderOperator(storageHandler: StorageHandler) {
 
         // Clear session storage when starting a new task
         const clearSessionStorage = () => {
-            // Clear all session storage except study-related data
+            // Preserve user ID and study data
+            const userId = sessionStorage.getItem('studyUserId');
             const studyData = {
                 currentTask: currentTask,
                 studyPhase: studyPhase
             };
             sessionStorage.clear();
-            // Restore study data
+            // Restore preserved data
+            if (userId) {
+                sessionStorage.setItem('studyUserId', userId);
+            }
             sessionStorage.setItem('studyData', JSON.stringify(studyData));
         };
 
