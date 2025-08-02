@@ -685,27 +685,6 @@ export const Operator = (props: {
                         gap: "8px"
                     }}>
                         {/* CustomizeButton hidden for all modes */}
-                        {/* Study Proceed Button */}
-                        {props.studyMode && (
-                            <button
-                                onClick={() => {
-                                    setShowStudyConfirmation(true);
-                                }}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    backgroundColor: "#28a745",
-                                    borderColor: "#28a745",
-                                    height: "40px",
-                                    padding: "8px 16px"
-                                }}
-                                title="Proceed to next task"
-                            >
-                                <span>{props.studyMode.proceedButtonText}</span>
-                            </button>
-                        )}
                         {/* Home Robot Button */}
                         <button
                             onClick={() => {
@@ -727,6 +706,27 @@ export const Operator = (props: {
                             <HomeIcon />
                             <span>Home Robot</span>
                         </button>
+                        {/* Study Proceed Button */}
+                        {props.studyMode && (
+                            <button
+                                onClick={() => {
+                                    setShowStudyConfirmation(true);
+                                }}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    backgroundColor: "#28a745",
+                                    borderColor: "#28a745",
+                                    height: "40px",
+                                    padding: "8px 16px"
+                                }}
+                                title="Proceed to next task"
+                            >
+                                <span>{props.studyMode.proceedButtonText}</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -879,42 +879,96 @@ export const Operator = (props: {
             )}
             
             {/* Study Confirmation Modal */}
-            <PopupModal
-                show={showStudyConfirmation}
-                setShow={setShowStudyConfirmation}
-                onAccept={() => {
-                    props.studyMode?.onProceedToNextTask();
-                }}
-                acceptButtonText="Proceed"
-                size="medium"
-            >
-                <div style={{ padding: "20px" }}>
-                    <h3 style={{ marginBottom: "16px", textAlign: "center" }}>
-                        Task {props.studyMode?.currentTask} Completion Confirmation
-                    </h3>
-                    <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                        Please confirm that you have completed Task {props.studyMode?.currentTask}:
-                    </p>
-                    <ul style={{ 
-                        marginBottom: "20px", 
-                        paddingLeft: "20px",
-                        lineHeight: "1.6",
-                        textAlign: "left"
+            {showStudyConfirmation && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    background: "rgba(0,0,0,0.4)",
+                    zIndex: 1000,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                    <div style={{
+                        background: "white",
+                        borderRadius: 8,
+                        padding: 32,
+                        minWidth: 320,
+                        maxWidth: 480,
+                        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+                        textAlign: "center"
                     }}>
-                        <li>Demonstrated the task (recorded demo)</li>
-                        <li>Wrote a program in Program Editor mode</li>
-                        <li>Successfully executed the program</li>
-                    </ul>
-                    <p style={{ 
-                        marginBottom: "0",
-                        fontSize: "14px",
-                        color: "#666",
-                        fontStyle: "italic"
-                    }}>
-                        Are you ready to proceed to the next task?
-                    </p>
+                        <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
+                            Task {props.studyMode?.currentTask} Completion Confirmation
+                        </h3>
+                        <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
+                            <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                Please confirm that you have completed Task {props.studyMode?.currentTask}:
+                            </p>
+                            <ul style={{ 
+                                marginBottom: "20px", 
+                                paddingLeft: "20px",
+                                lineHeight: "1.6"
+                            }}>
+                                <li>Demonstrated the task (recorded demo)</li>
+                                <li>Wrote a program in Program Editor mode</li>
+                                <li>Successfully executed the program</li>
+                            </ul>
+                            <p style={{ 
+                                marginBottom: "0",
+                                fontSize: "14px",
+                                color: "#666",
+                                fontStyle: "italic"
+                            }}>
+                                Are you ready to proceed to the next task?
+                            </p>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
+                            <button
+                                style={{
+                                    backgroundColor: "#6c757d",
+                                    color: "white",
+                                    border: "none",
+                                    padding: "10px 20px",
+                                    fontWeight: "bold",
+                                    borderRadius: "5px",
+                                    cursor: "pointer"
+                                }}
+                                onClick={() => {
+                                    setShowStudyConfirmation(false);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                style={{
+                                    background: "#28a745",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "8px 20px",
+                                    fontWeight: "bold",
+                                    fontSize: "1em",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px"
+                                }}
+                                onClick={() => {
+                                    setShowStudyConfirmation(false);
+                                    props.studyMode?.onProceedToNextTask();
+                                }}
+                            >
+                                <CheckIcon style={{ fontSize: "1em" }} />
+                                Proceed
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </PopupModal>
+            )}
             
             <div id="operator-body">
                 <LayoutArea layout={layout.current} sharedState={sharedState} />
