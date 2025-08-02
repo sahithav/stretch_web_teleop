@@ -343,6 +343,8 @@ function renderOperator(storageHandler: StorageHandler) {
         const clearSessionStorage = () => {
             // Preserve user ID and study data
             const userId = sessionStorage.getItem('studyUserId');
+            const studyDataKey = userId ? `studyData_${userId}` : 'studyData';
+            const existingStudyData = sessionStorage.getItem(studyDataKey);
             const studyData = {
                 currentTask: currentTask,
                 studyPhase: studyPhase
@@ -351,6 +353,9 @@ function renderOperator(storageHandler: StorageHandler) {
             // Restore preserved data
             if (userId) {
                 sessionStorage.setItem('studyUserId', userId);
+                if (existingStudyData) {
+                    sessionStorage.setItem(studyDataKey, existingStudyData);
+                }
             }
             sessionStorage.setItem('studyData', JSON.stringify(studyData));
         };
