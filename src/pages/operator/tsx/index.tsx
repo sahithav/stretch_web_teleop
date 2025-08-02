@@ -419,6 +419,36 @@ function renderOperator(storageHandler: StorageHandler) {
                 default: return 'Proceed';
             }
         };
+        
+        // Save study data when study concludes
+        React.useEffect(() => {
+            if (studyPhase === 'conclusion') {
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const studyData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (studyData) {
+                        fetch('/save_study_data', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: userId,
+                                studyData: JSON.parse(studyData)
+                            })
+                        }).then(response => {
+                            if (response.ok) {
+                                console.log('Study data saved successfully');
+                            } else {
+                                console.error('Failed to save study data');
+                            }
+                        }).catch(error => {
+                            console.error('Error saving study data:', error);
+                        });
+                    }
+                }
+            }
+        }, [studyPhase]);
 
         // Render based on study phase
         switch (studyPhase) {
@@ -441,34 +471,6 @@ function renderOperator(storageHandler: StorageHandler) {
                 );
             
             case 'conclusion':
-                // Save study data to file when study concludes
-                React.useEffect(() => {
-                    const userId = sessionStorage.getItem('studyUserId');
-                    if (userId) {
-                        const studyData = sessionStorage.getItem(`studyData_${userId}`);
-                        if (studyData) {
-                            fetch('/save_study_data', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    userId: userId,
-                                    studyData: JSON.parse(studyData)
-                                })
-                            }).then(response => {
-                                if (response.ok) {
-                                    console.log('Study data saved successfully');
-                                } else {
-                                    console.error('Failed to save study data');
-                                }
-                            }).catch(error => {
-                                console.error('Error saving study data:', error);
-                            });
-                        }
-                    }
-                }, []);
-                
                 return <StudyConclusion />;
             
             default:
