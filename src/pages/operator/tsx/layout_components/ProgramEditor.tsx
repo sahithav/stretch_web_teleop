@@ -481,6 +481,13 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
             }
+            
+            // Track execution attempt end for study data
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                // Check if there was an execution error to determine success
+                const hasError = props.sharedState.executionError !== null;
+                (props.sharedState as any).trackExecutionAttemptEnd(!hasError);
+            }
         }
     };
 

@@ -399,6 +399,25 @@ function renderOperator(storageHandler: StorageHandler) {
             const nextTask = currentTask + 1;
             setCurrentTask(nextTask);
             
+            // Initialize next task data
+            if (nextTask <= 4) {
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (existingData) {
+                        const studyData = JSON.parse(existingData);
+                        studyData.tasks[nextTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    }
+                }
+            }
+            
             if (nextTask > 4) {
                 // Track study end time
                 const userId = sessionStorage.getItem('studyUserId');

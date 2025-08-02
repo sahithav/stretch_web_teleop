@@ -168,63 +168,65 @@ export const Operator = (props: {
     
     // Function to track demonstration recording start
     const trackDemonstrationRecordingStart = () => {
+        console.log('Tracking demonstration recording start...');
         if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             
-            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
-                const recordingData = {
-                    recording_start: new Date().toISOString(),
-                    recording_end: null,
-                    rosbag_name: null
-                };
-                
-                setStudyData(prev => ({
-                    ...prev,
-                    tasks: {
-                        ...prev.tasks,
-                        [currentTask]: {
-                            ...prev.tasks[currentTask],
-                            demonstration_recordings: [
-                                ...prev.tasks[currentTask].demonstration_recordings,
-                                recordingData
-                            ]
-                        }
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
                     }
-                }));
-                
-                // Save to session storage
-                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    
+                    const recordingData = {
+                        recording_start: new Date().toISOString(),
+                        recording_end: null,
+                        rosbag_name: null
+                    };
+                    
+                    studyData.tasks[currentTask].demonstration_recordings.push(recordingData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    console.log('Demonstration recording start tracked');
+                }
             }
         }
     };
     
     // Function to track demonstration recording end
     const trackDemonstrationRecordingEnd = (rosbagName: string) => {
+        console.log('Tracking demonstration recording end with rosbag name:', rosbagName);
         if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             
-            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
-                const recordings = studyData.tasks[currentTask].demonstration_recordings;
-                if (recordings.length > 0) {
-                    const lastRecording = recordings[recordings.length - 1];
-                    lastRecording.recording_end = new Date().toISOString();
-                    lastRecording.rosbag_name = rosbagName;
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
                     
-                    setStudyData(prev => ({
-                        ...prev,
-                        tasks: {
-                            ...prev.tasks,
-                            [currentTask]: {
-                                ...prev.tasks[currentTask],
-                                demonstration_recordings: [...recordings]
-                            }
-                        }
-                    }));
-                    
-                    // Save to session storage
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    if (studyData.tasks && studyData.tasks[currentTask] && studyData.tasks[currentTask].demonstration_recordings.length > 0) {
+                        const recordings = studyData.tasks[currentTask].demonstration_recordings;
+                        const lastRecording = recordings[recordings.length - 1];
+                        lastRecording.recording_end = new Date().toISOString();
+                        lastRecording.rosbag_name = rosbagName;
+                        
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                        console.log('Demonstration recording end tracked');
+                    }
                 }
             }
         }
