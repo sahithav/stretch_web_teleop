@@ -90,11 +90,22 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     useEffect(() => {
         if (prevIsExecutingRef.current && !isExecutingProgram && !executionError) {
             setShowDoneMessage(true);
+            
+            // Track successful execution completion for study data
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(true);
+            }
+            
             const timer = setTimeout(() => {
                 setShowDoneMessage(false);
             }, 5000); 
             
             return () => clearTimeout(timer);
+        } else if (prevIsExecutingRef.current && !isExecutingProgram && executionError) {
+            // Track failed execution completion for study data
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(false);
+            }
         } else if (isExecutingProgram) {
             // Program is executing, hide done message
             setShowDoneMessage(false);

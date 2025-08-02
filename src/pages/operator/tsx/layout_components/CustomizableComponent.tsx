@@ -65,6 +65,16 @@ export type SharedState = {
     insertTextAtCursor?: (text: string) => void;
     /** Function to add new saved position to autocomplete and syntax highlighting */
     addSavedPosition?: (positionName: string) => void;
+    /** Function to track saved position addition for study data */
+    trackSavedPositionAdded?: () => void;
+    /** Function to track execution attempt start for study data */
+    trackExecutionAttemptStart?: () => void;
+    /** Function to track execution attempt end for study data */
+    trackExecutionAttemptEnd?: (success: boolean) => void;
+    /** Function to track demonstration recording start for study data */
+    trackDemonstrationRecordingStart?: () => void;
+    /** Function to track demonstration recording end for study data */
+    trackDemonstrationRecordingEnd?: (rosbagName: string) => void;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

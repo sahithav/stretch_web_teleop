@@ -574,6 +574,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                 sessionStorage.setItem('programEditorSavedPositions', JSON.stringify(updatedPositions));
                 return updatedPositions;
             });
+            
+            // Track saved position addition for study data
+            if (props.sharedState && (props.sharedState as any).trackSavedPositionAdded) {
+                (props.sharedState as any).trackSavedPositionAdded();
+            }
         }
     };
     
@@ -778,6 +783,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             console.log("Setting isExecuting to true");
             setIsExecuting(true);
             
+            // Track execution attempt start for study data
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
+                (props.sharedState as any).trackExecutionAttemptStart();
+            }
+            
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
@@ -785,50 +795,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             
             const programText = readProgramCode();
             console.log("Program text:", programText);
-            
-            // Write program to file
-            const userId = 0; // For testing, using temporary constant 
-            const fileName = `user_${userId}_program.json`;
-            const filePath = `/media/hello-robot/HCRLAB/data/${fileName}`;
-            
-            // Create JSON object with program data 
-            const programData = {
-                timestamp: new Date().toISOString(),
-                userId: userId,
-                programText: programText,
-                programLines: parseProgram(programText).lines
-            };
-            
-            const fileContent = JSON.stringify(programData, null, 2);
-            
-            // Save File 
-            try {
-                const requestBody = {
-                    filePath: filePath,
-                    fileName: fileName,
-                    content: fileContent
-                };
-                
-                console.log('Sending save_program request:', requestBody);
-                
-                const response = await fetch('/save_program', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log(`Program saved successfully:`, result);
-                } else {
-                    const errorData = await response.json();
-                    console.error('Failed to save program file:', errorData);
-                }
-            } catch (error) {
-                console.error('Error saving program file:', error);
-            }
             
             // Parse the program 
             const program = parseProgram(programText);

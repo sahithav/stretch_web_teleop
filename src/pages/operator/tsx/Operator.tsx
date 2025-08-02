@@ -84,6 +84,152 @@ export const Operator = (props: {
     const [showStudyConfirmation, setShowStudyConfirmation] = React.useState<boolean>(false);
     const [showTaskDescription, setShowTaskDescription] = React.useState<boolean>(false);
     
+    // Study data tracking
+    const [studyData, setStudyData] = React.useState(() => {
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return null;
+        
+        const existingData = sessionStorage.getItem(`studyData_${userId}`);
+        if (existingData) {
+            return JSON.parse(existingData);
+        }
+        
+        return {
+            metadata: {
+                study_start_time: null,
+                study_end_time: null
+            },
+            tasks: {}
+        };
+    });
+    
+    // Track current program editor session
+    const [currentProgramSession, setCurrentProgramSession] = React.useState({
+        session_start: null,
+        saved_positions_added: 0
+    });
+    
+    // Track current execution attempt
+    const [currentExecutionAttempt, setCurrentExecutionAttempt] = React.useState({
+        pause_and_confirm_resets: 0
+    });
+    
+    // Function to track saved position addition
+    const trackSavedPositionAdded = () => {
+        if (programMode === "Program Editor" && currentProgramSession.session_start) {
+            setCurrentProgramSession(prev => ({
+                ...prev,
+                saved_positions_added: prev.saved_positions_added + 1
+            }));
+        }
+    };
+    
+    // Function to track execution attempt start
+    const trackExecutionAttemptStart = () => {
+        if (props.studyMode) {
+            setCurrentExecutionAttempt({
+                pause_and_confirm_resets: 0
+            });
+        }
+    };
+    
+    // Function to track execution attempt end
+    const trackExecutionAttemptEnd = (success: boolean) => {
+        if (props.studyMode && currentExecutionAttempt.pause_and_confirm_resets >= 0) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
+                const executionData = {
+                    execution_end: new Date().toISOString(),
+                    success: success,
+                    pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
+                };
+                
+                setStudyData(prev => ({
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [currentTask]: {
+                            ...prev.tasks[currentTask],
+                            execution_attempts: [
+                                ...prev.tasks[currentTask].execution_attempts,
+                                executionData
+                            ]
+                        }
+                    }
+                }));
+                
+                // Save to session storage
+                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+            }
+        }
+    };
+    
+    // Function to track demonstration recording start
+    const trackDemonstrationRecordingStart = () => {
+        if (props.studyMode) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
+                const recordingData = {
+                    recording_start: new Date().toISOString(),
+                    recording_end: null,
+                    rosbag_name: null
+                };
+                
+                setStudyData(prev => ({
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [currentTask]: {
+                            ...prev.tasks[currentTask],
+                            demonstration_recordings: [
+                                ...prev.tasks[currentTask].demonstration_recordings,
+                                recordingData
+                            ]
+                        }
+                    }
+                }));
+                
+                // Save to session storage
+                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+            }
+        }
+    };
+    
+    // Function to track demonstration recording end
+    const trackDemonstrationRecordingEnd = (rosbagName: string) => {
+        if (props.studyMode) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
+                const recordings = studyData.tasks[currentTask].demonstration_recordings;
+                if (recordings.length > 0) {
+                    const lastRecording = recordings[recordings.length - 1];
+                    lastRecording.recording_end = new Date().toISOString();
+                    lastRecording.rosbag_name = rosbagName;
+                    
+                    setStudyData(prev => ({
+                        ...prev,
+                        tasks: {
+                            ...prev.tasks,
+                            [currentTask]: {
+                                ...prev.tasks[currentTask],
+                                demonstration_recordings: [...recordings]
+                            }
+                        }
+                    }));
+                    
+                    // Save to session storage
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
+        }
+    };
+    
     // Show task description modal when study starts (Task 1)
     React.useEffect(() => {
         if (props.studyMode && props.studyMode.currentTask === 1) {
@@ -145,6 +291,14 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
+        // Track pause and confirm reset for study data
+        if (props.studyMode && isExecutingProgram) {
+            setCurrentExecutionAttempt(prev => ({
+                ...prev,
+                pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
+            }));
+        }
+        
         // Home the robot
         if ((window as any).remoteRobot) {
             (window as any).remoteRobot.homeTheRobot();
@@ -469,6 +623,12 @@ export const Operator = (props: {
         setErrorLineNumber: setErrorLineNumber,
         executionError: executionError,
         errorLineNumber: errorLineNumber,
+        // Study data tracking functions
+        trackSavedPositionAdded: trackSavedPositionAdded,
+        trackExecutionAttemptStart: trackExecutionAttemptStart,
+        trackExecutionAttemptEnd: trackExecutionAttemptEnd,
+        trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
+        trackDemonstrationRecordingEnd: trackDemonstrationRecordingEnd,
     };
     
 
@@ -503,6 +663,8 @@ export const Operator = (props: {
 
     // Function to switch layouts when program mode changes
     const switchToModeLayout = (newMode: string) => {
+        const previousMode = programMode;
+        
         // Save current layout for current mode
         if (modeLayouts[programMode]) {
             const updatedLayouts = { ...modeLayouts };
@@ -527,6 +689,67 @@ export const Operator = (props: {
                 } else if (newMode === "Execution Monitor") {
                     layout.current = props.storageHandler.loadDefaultLayout("Execution Monitor Layout" as any);
                 }
+            }
+        }
+        
+        // Track program editor session start
+        if (newMode === "Program Editor" && props.studyMode) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            // Start new program editor session
+            setCurrentProgramSession({
+                session_start: new Date().toISOString(),
+                saved_positions_added: 0
+            });
+            
+            // Initialize task data if not exists
+            if (studyData && !studyData.tasks[currentTask]) {
+                setStudyData(prev => ({
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [currentTask]: {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        }
+                    }
+                }));
+            }
+        }
+        
+        // Track program editor session end when switching away
+        if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode?.currentTask;
+            
+            if (userId && currentTask && studyData?.tasks?.[currentTask]) {
+                const sessionData = {
+                    session_start: currentProgramSession.session_start,
+                    session_end: new Date().toISOString(),
+                    program_content: sessionStorage.getItem('programEditorCode') || "",
+                    saved_positions_added: currentProgramSession.saved_positions_added
+                };
+                
+                setStudyData(prev => ({
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [currentTask]: {
+                            ...prev.tasks[currentTask],
+                            program_editor_sessions: [
+                                ...prev.tasks[currentTask].program_editor_sessions,
+                                sessionData
+                            ]
+                        }
+                    }
+                }));
+                
+                // Save to session storage
+                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
             }
         }
         
@@ -594,14 +817,17 @@ export const Operator = (props: {
                 {/* Title and User ID Row */}
                 <div style={{ 
                     display: "flex", 
-                    justifyContent: "space-between", 
+                    justifyContent: "center", 
                     alignItems: "center",
                     marginBottom: "5px",
-                    width: "100%"
+                    width: "100%",
+                    position: "relative"
                 }}>
                     {/* User ID Display */}
                     {props.studyMode && (
                         <div style={{
+                            position: "absolute",
+                            left: "0",
                             display: "flex",
                             alignItems: "center",
                             fontSize: "14px",
@@ -615,23 +841,14 @@ export const Operator = (props: {
                     )}
                     
                     {/* Centered Title */}
-                    <div style={{ 
-                        display: "flex", 
-                        justifyContent: "center", 
-                        flex: "1 1 auto"
+                    <span style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        color: "var(--text-color)",
+                        textTransform: "capitalize"
                     }}>
-                        <span style={{
-                            fontSize: "18px",
-                            fontWeight: "bold",
-                            color: "var(--text-color)",
-                            textTransform: "capitalize"
-                        }}>
-                            {programMode}
-                        </span>
-                    </div>
-                    
-                    {/* Spacer to balance the layout */}
-                    <div style={{ width: props.studyMode ? "120px" : "0px" }}></div>
+                        {programMode}
+                    </span>
                 </div>
                 
                 {/* Header Controls */}

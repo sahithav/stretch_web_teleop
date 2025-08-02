@@ -208,20 +208,23 @@ app.post('/stop_rosbag', (req, res) => {
     }
 });
 
-app.post('/save_program', (req, res) => {
+app.post('/save_study_data', (req, res) => {
     try {
-        const { filePath, fileName, content } = req.body;
+        const { userId, studyData } = req.body;
         
-        if (!filePath || !fileName || !content) {
-            return res.status(400).json({ error: 'Missing required fields: filePath, fileName, or content' });
+        if (!userId || !studyData) {
+            return res.status(400).json({ error: 'Missing required fields: userId or studyData' });
         }
-        const dir = path.dirname(filePath);
-        fs.writeFileSync(filePath, content, 'utf8');
-        console.log(`Program saved to: ${filePath}`);
         
-        res.json({ success: true, message: 'Program saved successfully' });
+        const filePath = `/media/hello-robot/HCRLAB/data/user_${userId}_study_data.json`;
+        const content = JSON.stringify(studyData, null, 2);
+        
+        fs.writeFileSync(filePath, content, 'utf8');
+        console.log(`Study data saved to: ${filePath}`);
+        
+        res.json({ success: true, message: 'Study data saved successfully' });
     } catch (error) {
-        console.error('Error saving program:', error);
-        res.status(500).json({ error: 'Failed to save program file' });
+        console.error('Error saving study data:', error);
+        res.status(500).json({ error: 'Failed to save study data file' });
     }
 });

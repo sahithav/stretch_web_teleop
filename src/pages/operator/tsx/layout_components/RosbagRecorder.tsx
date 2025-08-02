@@ -42,6 +42,11 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                 });
                 if (res.ok) {
                     setIsRecording(true);
+                    
+                    // Track demonstration recording start for study data
+                    if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingStart) {
+                        (props.sharedState as any).trackDemonstrationRecordingStart();
+                    }
                 } else {
                     const data = await res.json();
                     setError(data.error || "Failed to start recording");
@@ -68,6 +73,11 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                     setRosbagCounter(prev => prev + 1);
                     setSuccessMessage(`Recording saved as ${userId}_${rosbagCounter}. Open demo in Foxglove and create your program!`);
                     setTimeout(() => setSuccessMessage(null), 5000);
+                    
+                    // Track demonstration recording end for study data
+                    if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingEnd) {
+                        (props.sharedState as any).trackDemonstrationRecordingEnd(`${userId}_${rosbagCounter}`);
+                    }
                 } else {
                     const data = await res.json();
                     setError(data.error || "Failed to stop recording");

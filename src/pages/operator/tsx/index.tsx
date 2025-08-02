@@ -360,15 +360,51 @@ function renderOperator(storageHandler: StorageHandler) {
             clearSessionStorage();
             setStudyPhase('operator');
             setCurrentTask(1);
+            
+            // Track study start time
+            const userId = sessionStorage.getItem('studyUserId');
+            if (userId) {
+                const studyData = {
+                    metadata: {
+                        study_start_time: new Date().toISOString(),
+                        study_end_time: null
+                    },
+                    tasks: {}
+                };
+                sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+            }
         };
 
         // Handle proceeding to next task
         const handleProceedToNextTask = () => {
+            // Track task end time for current task
+            const userId = sessionStorage.getItem('studyUserId');
+            if (userId && currentTask <= 4) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    if (studyData.tasks && studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask].task_end_time = new Date().toISOString();
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    }
+                }
+            }
+            
             clearSessionStorage();
             const nextTask = currentTask + 1;
             setCurrentTask(nextTask);
             
             if (nextTask > 4) {
+                // Track study end time
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (existingData) {
+                        const studyData = JSON.parse(existingData);
+                        studyData.metadata.study_end_time = new Date().toISOString();
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    }
+                }
                 setStudyPhase('conclusion');
             }
         };
@@ -405,6 +441,34 @@ function renderOperator(storageHandler: StorageHandler) {
                 );
             
             case 'conclusion':
+                // Save study data to file when study concludes
+                React.useEffect(() => {
+                    const userId = sessionStorage.getItem('studyUserId');
+                    if (userId) {
+                        const studyData = sessionStorage.getItem(`studyData_${userId}`);
+                        if (studyData) {
+                            fetch('/save_study_data', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    userId: userId,
+                                    studyData: JSON.parse(studyData)
+                                })
+                            }).then(response => {
+                                if (response.ok) {
+                                    console.log('Study data saved successfully');
+                                } else {
+                                    console.error('Failed to save study data');
+                                }
+                            }).catch(error => {
+                                console.error('Error saving study data:', error);
+                            });
+                        }
+                    }
+                }, []);
+                
                 return <StudyConclusion />;
             
             default:
