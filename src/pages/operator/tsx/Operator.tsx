@@ -632,22 +632,6 @@ export const Operator = (props: {
                                 />
                             </div>
                         </div>
-                        {/* Action mode dropdown - hidden for Program Editor mode */}
-                        {programMode !== "Program Editor" && (
-                            <div style={{ marginLeft: 16, height: "40px" }}>
-                                <div className="header-dropdown">
-                                    <Dropdown
-                                        onChange={(idx) => setActionMode(actionModes[idx])}
-                                        selectedIndex={actionModes.indexOf(
-                                            layout.current.actionMode
-                                        )}
-                                        possibleOptions={actionModes}
-                                        showActive
-                                        placement="bottom"
-                                    />
-                                </div>
-                            </div>
-                        )}
                     </div>
                     
                     {/* Center controls */}
@@ -659,15 +643,28 @@ export const Operator = (props: {
                         gap: "16px"
                     }}>
                         {/* AudioControl hidden for all modes */}
-                        {/* SpeedControl hidden only for Program Editor mode */}
+                        {/* Action mode dropdown and SpeedControl centered for Demonstrate and Execution Monitor modes */}
                         {programMode !== "Program Editor" && (
-                            <SpeedControl
-                                scale={velocityScale}
-                                onChange={(newScale: number) => {
-                                    setVelocityScale(newScale);
-                                    FunctionProvider.velocityScale = newScale;
-                                }}
-                            />
+                            <>
+                                <div className="header-dropdown">
+                                    <Dropdown
+                                        onChange={(idx) => setActionMode(actionModes[idx])}
+                                        selectedIndex={actionModes.indexOf(
+                                            layout.current.actionMode
+                                        )}
+                                        possibleOptions={actionModes}
+                                        showActive
+                                        placement="bottom"
+                                    />
+                                </div>
+                                <SpeedControl
+                                    scale={velocityScale}
+                                    onChange={(newScale: number) => {
+                                        setVelocityScale(newScale);
+                                        FunctionProvider.velocityScale = newScale;
+                                    }}
+                                />
+                            </>
                         )}
                     </div>
                     
