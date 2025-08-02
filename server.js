@@ -157,8 +157,12 @@ app.post('/start_rosbag', (req, res) => {
         return res.status(400).json({ error: 'Rosbag recording already in progress.' });
     }
 
-     
-    const outputDir = '/media/hello-robot/HCRLAB/rosbags/latest_' + Date.now();
+    const { userId, rosbagNumber } = req.body;
+    if (!userId || !rosbagNumber) {
+        return res.status(400).json({ error: 'Missing userId or rosbagNumber in request body.' });
+    }
+
+    const outputDir = `/media/hello-robot/HCRLAB/rosbags/${userId}_${rosbagNumber}`;
     rosbagProcess = spawn('ros2', [
         'bag', 'record',
         '-a',
@@ -186,9 +190,15 @@ app.post('/stop_rosbag', (req, res) => {
     if (!rosbagProcess) {
         return res.status(400).json({ error: 'No rosbag recording in progress.' });
     }
+    
+    const { userId, rosbagNumber } = req.body;
+    if (!userId || !rosbagNumber) {
+        return res.status(400).json({ error: 'Missing userId or rosbagNumber in request body.' });
+    }
+    
     try {
         process.kill(-rosbagProcess.pid, 'SIGINT');
-        res.json({ status: 'stopped' });
+        res.json({ status: 'stopped', rosbagName: `${userId}_${rosbagNumber}` });
     } catch (e) {
         console.error('Error stopping rosbag process:', e);
         return res.status(500).json({ error: 'Failed to stop rosbag process.' });

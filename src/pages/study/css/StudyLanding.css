@@ -87,4 +87,17 @@
 
 .begin-study-btn:active {
     transform: translateY(0);
+}
+
+.user-id-display {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    text-align: center;
+}
+
+.user-id-display p {
+    margin: 8px 0;
 } 

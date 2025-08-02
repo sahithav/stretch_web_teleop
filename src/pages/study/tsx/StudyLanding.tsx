@@ -6,6 +6,14 @@ interface StudyLandingProps {
 }
 
 export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
+    // Generate random user ID between 1 and 999
+    const [userId] = React.useState(() => Math.floor(Math.random() * 999) + 1);
+    
+    // Store user ID in session storage for use throughout the study
+    React.useEffect(() => {
+        sessionStorage.setItem('studyUserId', userId.toString());
+    }, [userId]);
+    
     return (
         <div className="study-landing">
             <div className="study-landing-content">
@@ -32,6 +40,13 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                         Each task will take approximately 10-15 minutes to complete. 
                         Please read the consent form carefully before beginning.
                     </p>
+                    
+                    <div className="user-id-display">
+                        <p><strong>Your User ID: {userId}</strong></p>
+                        <p style={{ fontSize: "14px", color: "#666", fontStyle: "italic" }}>
+                            Please note this ID for reference during the study.
+                        </p>
+                    </div>
                 </div>
                 
                 <div className="study-actions">

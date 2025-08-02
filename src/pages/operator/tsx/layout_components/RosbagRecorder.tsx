@@ -13,6 +13,12 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
     const [isRecording, setIsRecording] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [rosbagCounter, setRosbagCounter] = useState(1);
+    
+    // Get user ID from session storage
+    const getUserId = () => {
+        return sessionStorage.getItem('studyUserId') || 'unknown';
+    };
 
     const handleClick = async () => {
         setError(null);
@@ -21,7 +27,17 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
         if (!isRecording) {
             // Start recording
             try {
-                const res = await fetch("/start_rosbag", { method: "POST" });
+                const userId = getUserId();
+                const res = await fetch("/start_rosbag", { 
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        rosbagNumber: rosbagCounter
+                    })
+                });
                 if (res.ok) {
                     setIsRecording(true);
                 } else {
@@ -34,10 +50,21 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
         } else {
             // Stop recording
             try {
-                const res = await fetch("/stop_rosbag", { method: "POST" });
+                const userId = getUserId();
+                const res = await fetch("/stop_rosbag", { 
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        rosbagNumber: rosbagCounter
+                    })
+                });
                 if (res.ok) {
                     setIsRecording(false);
-                    setSuccessMessage("Recording saved. Open demo in Foxglove and create your program!");
+                    setRosbagCounter(prev => prev + 1);
+                    setSuccessMessage(`Recording saved as ${userId}_${rosbagCounter}. Open demo in Foxglove and create your program!`);
                     setTimeout(() => setSuccessMessage(null), 5000);
                 } else {
                     const data = await res.json();
