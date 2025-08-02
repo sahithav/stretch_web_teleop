@@ -1,5 +1,5 @@
 import React from "react";
-import "study/css/StudyConclusion.css";
+import "../css/StudyConclusion.css";
 
 export const StudyConclusion: React.FC = () => {
     return (

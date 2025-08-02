@@ -1,5 +1,5 @@
 import React from "react";
-import "study/css/StudyLanding.css";
+import "../css/StudyLanding.css";
 
 interface StudyLandingProps {
     onBeginStudy: () => void;
