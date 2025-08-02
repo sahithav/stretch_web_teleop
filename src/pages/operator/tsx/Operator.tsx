@@ -632,20 +632,22 @@ export const Operator = (props: {
                                 />
                             </div>
                         </div>
-                        {/* Action mode dropdown */}
-                        <div style={{ marginLeft: 16, height: "40px" }}>
-                            <div className="header-dropdown">
-                                <Dropdown
-                                    onChange={(idx) => setActionMode(actionModes[idx])}
-                                    selectedIndex={actionModes.indexOf(
-                                        layout.current.actionMode
-                                    )}
-                                    possibleOptions={actionModes}
-                                    showActive
-                                    placement="bottom"
-                                />
+                        {/* Action mode dropdown - hidden for Program Editor mode */}
+                        {programMode !== "Program Editor" && (
+                            <div style={{ marginLeft: 16, height: "40px" }}>
+                                <div className="header-dropdown">
+                                    <Dropdown
+                                        onChange={(idx) => setActionMode(actionModes[idx])}
+                                        selectedIndex={actionModes.indexOf(
+                                            layout.current.actionMode
+                                        )}
+                                        possibleOptions={actionModes}
+                                        showActive
+                                        placement="bottom"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                     
                     {/* Center controls */}
@@ -656,14 +658,17 @@ export const Operator = (props: {
                         flex: "1 1 auto",
                         gap: "16px"
                     }}>
-                        <AudioControl remoteStreams={remoteStreams} />
-                        <SpeedControl
-                            scale={velocityScale}
-                            onChange={(newScale: number) => {
-                                setVelocityScale(newScale);
-                                FunctionProvider.velocityScale = newScale;
-                            }}
-                        />
+                        {/* AudioControl hidden for all modes */}
+                        {/* SpeedControl hidden only for Program Editor mode */}
+                        {programMode !== "Program Editor" && (
+                            <SpeedControl
+                                scale={velocityScale}
+                                onChange={(newScale: number) => {
+                                    setVelocityScale(newScale);
+                                    FunctionProvider.velocityScale = newScale;
+                                }}
+                            />
+                        )}
                     </div>
                     
                     {/* Right side controls */}
@@ -673,10 +678,7 @@ export const Operator = (props: {
                         flex: "0 0 auto",
                         gap: "8px"
                     }}>
-                        <CustomizeButton
-                            customizing={customizing}
-                            onClick={handleToggleCustomize}
-                        />
+                        {/* CustomizeButton hidden for all modes */}
                         {/* Home Robot Button */}
                         <button
                             onClick={() => {
