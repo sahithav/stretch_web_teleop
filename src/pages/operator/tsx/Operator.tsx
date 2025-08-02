@@ -57,7 +57,6 @@ export const Operator = (props: {
         currentTask: number;
         onProceedToNextTask: () => void;
         proceedButtonText: string;
-        setShowTaskDescription: (show: boolean) => void;
     };
 }) => {
     // Layout and customization state
@@ -84,6 +83,13 @@ export const Operator = (props: {
     // Study confirmation popup state
     const [showStudyConfirmation, setShowStudyConfirmation] = React.useState<boolean>(false);
     const [showTaskDescription, setShowTaskDescription] = React.useState<boolean>(false);
+    
+    // Show task description modal when study starts (Task 1)
+    React.useEffect(() => {
+        if (props.studyMode && props.studyMode.currentTask === 1) {
+            setShowTaskDescription(true);
+        }
+    }, [props.studyMode?.currentTask]);
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -969,7 +975,7 @@ export const Operator = (props: {
                                     props.studyMode?.onProceedToNextTask();
                                     // Show task description for next task
                                     setTimeout(() => {
-                                        props.studyMode?.setShowTaskDescription(true);
+                                        setShowTaskDescription(true);
                                     }, 100);
                                 }}
                             >

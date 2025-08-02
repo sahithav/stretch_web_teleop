@@ -356,8 +356,6 @@ function renderOperator(storageHandler: StorageHandler) {
             clearSessionStorage();
             setStudyPhase('operator');
             setCurrentTask(1);
-            // Show task description modal
-            setShowTaskDescription(true);
         };
 
         // Handle proceeding to next task
@@ -397,8 +395,7 @@ function renderOperator(storageHandler: StorageHandler) {
                         studyMode={{
                             currentTask,
                             onProceedToNextTask: handleProceedToNextTask,
-                            proceedButtonText: getProceedButtonText(),
-                            setShowTaskDescription
+                            proceedButtonText: getProceedButtonText()
                         }}
                     />
                 );
