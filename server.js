@@ -11,6 +11,9 @@ var express = require('express');
 var app = express();
 app.all('*', ensureSecure); // at top of routing calls
 
+
+app.use(express.json());
+
 function ensureSecure(req, res, next) {
     if (!req.secure) {
         // handle port numbers if you need non defaults
@@ -205,8 +208,6 @@ app.post('/stop_rosbag', (req, res) => {
     }
 });
 
-
-app.use(express.json());
 app.post('/save_program', (req, res) => {
     try {
         const { filePath, fileName, content } = req.body;
