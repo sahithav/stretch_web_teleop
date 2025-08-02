@@ -604,12 +604,7 @@ export const Operator = (props: {
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            padding: "6px 12px",
-                            backgroundColor: "#f8f9fa",
-                            border: "1px solid #dee2e6",
-                            borderRadius: "6px",
                             fontSize: "14px",
-                            fontWeight: "500",
                             color: "#495057"
                         }}>
                             <span style={{ marginRight: "6px" }}>ID:</span>
