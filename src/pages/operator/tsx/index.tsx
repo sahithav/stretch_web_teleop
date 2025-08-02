@@ -14,6 +14,8 @@ import {
 import { RemoteRobot } from "shared/remoterobot";
 import { cmd } from "shared/commands";
 import { Operator } from "./Operator";
+import { StudyLanding } from "../../study/tsx/StudyLanding";
+import { StudyConclusion } from "../../study/tsx/StudyConclusion";
 import { DEFAULT_VELOCITY_SCALE } from "./static_components/SpeedControl";
 import { StorageHandler } from "./storage_handler/StorageHandler";
 import { FirebaseStorageHandler } from "./storage_handler/FirebaseStorageHandler";
@@ -311,7 +313,7 @@ function createStorageHandler(storageHandlerReadyCallback: () => void) {
 }
 
 /**
- * Renders the operator browser.
+ * Renders the operator browser with study workflow.
  *
  * @param storageHandler the storage handler
  */
@@ -319,9 +321,12 @@ function renderOperator(storageHandler: StorageHandler) {
     const layout = storageHandler.loadCurrentLayoutOrDefault();
     FunctionProvider.initialize(DEFAULT_VELOCITY_SCALE, layout.actionMode);
 
-    // Add a React state for isReconnecting
-    function OperatorWithReconnect() {
+    // Add a React state for isReconnecting and study state
+    function OperatorWithStudy() {
         const [reconnecting, setReconnecting] = useState(false);
+        const [studyPhase, setStudyPhase] = useState<'landing' | 'operator' | 'conclusion'>('landing');
+        const [currentTask, setCurrentTask] = useState(1);
+
         useEffect(() => {
             // Observe the DOM for the loader
             const observer = new MutationObserver(() => {
@@ -333,18 +338,78 @@ function renderOperator(storageHandler: StorageHandler) {
             setReconnecting(!!document.querySelector('.loader'));
             return () => observer.disconnect();
         }, []);
-        return (
-            <Operator
-                remoteStreams={allRemoteStreams}
-                layout={layout}
-                storageHandler={storageHandler}
-                isReconnecting={reconnecting}
-            />
-        );
+
+        // Clear session storage when starting a new task
+        const clearSessionStorage = () => {
+            // Clear all session storage except study-related data
+            const studyData = {
+                currentTask: currentTask,
+                studyPhase: studyPhase
+            };
+            sessionStorage.clear();
+            // Restore study data
+            sessionStorage.setItem('studyData', JSON.stringify(studyData));
+        };
+
+        // Handle beginning the study
+        const handleBeginStudy = () => {
+            clearSessionStorage();
+            setStudyPhase('operator');
+            setCurrentTask(1);
+        };
+
+        // Handle proceeding to next task
+        const handleProceedToNextTask = () => {
+            clearSessionStorage();
+            const nextTask = currentTask + 1;
+            setCurrentTask(nextTask);
+            
+            if (nextTask > 4) {
+                setStudyPhase('conclusion');
+            }
+        };
+
+        // Get the button text based on current task
+        const getProceedButtonText = () => {
+            switch (currentTask) {
+                case 1: return 'Proceed to Task 2';
+                case 2: return 'Proceed to Task 3';
+                case 3: return 'Proceed to Task 4';
+                case 4: return 'End Study';
+                default: return 'Proceed';
+            }
+        };
+
+        // Render based on study phase
+        switch (studyPhase) {
+            case 'landing':
+                return <StudyLanding onBeginStudy={handleBeginStudy} />;
+            
+            case 'operator':
+                return (
+                    <Operator
+                        remoteStreams={allRemoteStreams}
+                        layout={layout}
+                        storageHandler={storageHandler}
+                        isReconnecting={reconnecting}
+                        studyMode={{
+                            currentTask,
+                            onProceedToNextTask: handleProceedToNextTask,
+                            proceedButtonText: getProceedButtonText()
+                        }}
+                    />
+                );
+            
+            case 'conclusion':
+                return <StudyConclusion />;
+            
+            default:
+                return <StudyLanding onBeginStudy={handleBeginStudy} />;
+        }
     }
 
     !isMobile
-        ? root.render(<OperatorWithReconnect />)
+        ? root.render(<OperatorWithStudy />)
         : root.render(
               <MobileOperator
                   remoteStreams={allRemoteStreams}

@@ -52,6 +52,11 @@ export const Operator = (props: {
     layout: LayoutDefinition;
     storageHandler: StorageHandler;
     isReconnecting?: boolean;
+    studyMode?: {
+        currentTask: number;
+        onProceedToNextTask: () => void;
+        proceedButtonText: string;
+    };
 }) => {
     // Layout and customization state
     const [customizing, setCustomizing] = React.useState<boolean>(false);
@@ -676,6 +681,23 @@ export const Operator = (props: {
                         gap: "8px"
                     }}>
                         {/* CustomizeButton hidden for all modes */}
+                        {/* Study Proceed Button */}
+                        {props.studyMode && (
+                            <button
+                                onClick={props.studyMode.onProceedToNextTask}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    backgroundColor: "#28a745",
+                                    borderColor: "#28a745"
+                                }}
+                                title="Proceed to next task"
+                            >
+                                <span>{props.studyMode.proceedButtonText}</span>
+                            </button>
+                        )}
                         {/* Home Robot Button */}
                         <button
                             onClick={() => {
