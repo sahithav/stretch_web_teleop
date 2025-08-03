@@ -263,6 +263,8 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     
     // Reload data when task changes 
     React.useEffect(() => {
+        console.log('ProgramEditor: taskKey changed to:', props.taskKey);
+        console.log('ProgramEditor: Reloading data from session storage');
         setCode(getInitialCode());
         setSavedPositions(getInitialSavedPositions());
         setCustomPoses(getInitialCustomPoses());

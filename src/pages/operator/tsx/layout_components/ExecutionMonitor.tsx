@@ -62,9 +62,13 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Load code from session storage
     useEffect(() => {
+        console.log('ExecutionMonitor: taskKey changed to:', props.taskKey);
+        console.log('ExecutionMonitor: Reloading code from session storage');
         const sessionCode = sessionStorage.getItem('programEditorCode');
         if (sessionCode) {
             setCode(sessionCode);
+        } else {
+            setCode(""); // Clear if no session code
         }
     }, [props.taskKey]);
 

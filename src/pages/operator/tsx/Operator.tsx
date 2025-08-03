@@ -646,6 +646,9 @@ export const Operator = (props: {
         taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
     };
     
+    // Debug taskKey
+    console.log('Operator: sharedState taskKey:', props.studyMode ? `task_${props.studyMode.currentTask}` : undefined);
+    
 
 
     /** Properties for the global options area of the sidebar */
