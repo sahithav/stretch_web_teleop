@@ -395,9 +395,18 @@ function renderOperator(storageHandler: StorageHandler) {
                 }
             }
             
-            clearSessionStorage();
             const nextTask = currentTask + 1;
             setCurrentTask(nextTask);
+            
+            // Clear session storage and update with new task
+            clearSessionStorage();
+            
+            // Update session storage with the new task
+            const studyData = {
+                currentTask: nextTask,
+                studyPhase: studyPhase
+            };
+            sessionStorage.setItem('studyData', JSON.stringify(studyData));
             
             // Initialize next task data
             if (nextTask <= 4) {
