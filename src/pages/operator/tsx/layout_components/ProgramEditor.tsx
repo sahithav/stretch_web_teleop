@@ -275,10 +275,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
 
     // Check if human API functions should be hidden (tasks 1 and 3)
     const shouldHideHumanAPI = () => {
-        const userId = sessionStorage.getItem('studyUserId');
-        if (!userId) return false;
-        
-        const studyData = sessionStorage.getItem(`studyData_${userId}`);
+        const studyData = sessionStorage.getItem('studyData');
         if (!studyData) return false;
         
         try {
