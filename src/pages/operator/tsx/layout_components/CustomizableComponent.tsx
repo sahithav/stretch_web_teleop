@@ -75,6 +75,8 @@ export type SharedState = {
     trackDemonstrationRecordingStart?: () => void;
     /** Function to track demonstration recording end for study data */
     trackDemonstrationRecordingEnd?: (rosbagName: string) => void;
+    /** Task key to trigger data reload when task changes */
+    taskKey?: string;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

@@ -14,6 +14,8 @@ import "operator/css/ExecutionMonitor.css";
 type ExecutionMonitorProps = CustomizableComponentProps & {
     /* Programming language for syntax highlighting */
     language?: string;
+    /* Task key to trigger data reload when task changes */
+    taskKey?: string;
 };
 
 // Robot functions 
@@ -64,7 +66,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         if (sessionCode) {
             setCode(sessionCode);
         }
-    }, []);
+    }, [props.taskKey]);
 
     // Load saved positions from session storage
     useEffect(() => {
@@ -77,7 +79,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 console.error("Error parsing saved positions:", error);
             }
         }
-    }, []);
+    }, [props.taskKey]);
 
     // Update line numbers when code changes
     useEffect(() => {

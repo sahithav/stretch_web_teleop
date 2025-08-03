@@ -643,6 +643,7 @@ export const Operator = (props: {
         trackExecutionAttemptEnd: trackExecutionAttemptEnd,
         trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
         trackDemonstrationRecordingEnd: trackDemonstrationRecordingEnd,
+        taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
     };
     
 

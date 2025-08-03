@@ -20,6 +20,8 @@ type ProgramEditorProps = CustomizableComponentProps & {
     readOnly?: boolean;
     /* Callback function when Run Program button is clicked */
     onRunProgram?: (code: string) => void;
+    /* Task key to trigger data reload when task changes */
+    taskKey?: string;
 };
 
 // Robot functions 
@@ -259,6 +261,13 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         (window as any).stopExecutionRef = stopExecutionRef;
     }, []);
     
+    // Reload data when task changes 
+    React.useEffect(() => {
+        setCode(getInitialCode());
+        setSavedPositions(getInitialSavedPositions());
+        setCustomPoses(getInitialCustomPoses());
+    }, [props.taskKey]);
+    
     // Combine default and custom poses
     const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };
     const { customizing, executionError, currentExecutingLine, clearExecutionError, errorLineNumber } = props.sharedState;
@@ -437,7 +446,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             (window as any).remoteRobot.homeTheRobot();
                             console.log(`Command sent to robot!`);
                             console.log(`Waiting...`);
-                            await new Promise(resolve => setTimeout(resolve, 25000));
+                            await new Promise(resolve => setTimeout(resolve, 45000));
                             console.log(`Executing next command...`);
                         } else {
                             console.error("RemoteRobot not available");
