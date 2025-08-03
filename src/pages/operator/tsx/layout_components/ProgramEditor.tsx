@@ -281,12 +281,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const executeProgram = async (program: Program) => {
         console.log("Starting program execution...");
         
-        // Track execution attempt start for study data
-        if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
-            console.log('ProgramEditor: Starting execution attempt tracking');
-            (props.sharedState as any).trackExecutionAttemptStart();
-        }
-        
         // Set execution state to true at the start
         const buttonFunctionProvider = (window as any).buttonFunctionProvider;
         if (buttonFunctionProvider) {
@@ -328,12 +322,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     if (props.sharedState.setErrorLineNumber) {
                         props.sharedState.setErrorLineNumber(line.lineNumber);
                     }
-                    
-                    // Track execution attempt end with error
-                    if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-                        console.log('ProgramEditor: Execution failed with error, tracking attempt');
-                        (props.sharedState as any).trackExecutionAttemptEnd(false);
-                    }
+                
                     
                     break;
                 }
@@ -495,13 +484,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                 props.sharedState.updateCurrentExecutingLine(undefined);
             }
             
-            // Track execution attempt end for study data
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-                // Check if there was an execution error to determine success
-                const hasError = props.sharedState.executionError !== null;
-                console.log('ProgramEditor: Execution completed, hasError:', hasError);
-                (props.sharedState as any).trackExecutionAttemptEnd(!hasError);
-            }
         }
     };
 

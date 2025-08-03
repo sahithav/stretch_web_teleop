@@ -8,6 +8,7 @@ import { SharedState } from "./layout_components/CustomizableComponent";
 import {
     ActionMode,
     ComponentDefinition,
+    ComponentType,
     LayoutDefinition,
 } from "./utils/component_definitions";
 import { className, ActionState, RemoteStream, RobotPose } from "shared/util";
@@ -828,7 +829,12 @@ export const Operator = (props: {
                     })}
                     hidden={!layout.current.displayRosbagRecorder}
                 >
-                    <RosbagRecorder hideLabels={!layout.current.displayLabels} />
+                    <RosbagRecorder 
+                        hideLabels={!layout.current.displayLabels} 
+                        sharedState={sharedState}
+                        definition={{ type: ComponentType.RosbagRecorder }}
+                        path="rosbag-recorder"
+                    />
                 </div>
             </div>
             <div id="operator-header" onClick={handleClickHeader} style={{ display: "flex", flexDirection: "column", padding: "12px 20px" }}>

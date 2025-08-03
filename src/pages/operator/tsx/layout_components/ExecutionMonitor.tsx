@@ -88,11 +88,20 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Message when program finishes executing
     useEffect(() => {
+        // Track execution attempt start when program starts executing
+        if (!prevIsExecutingRef.current && isExecutingProgram) {
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
+                console.log('ExecutionMonitor: Starting execution attempt tracking');
+                (props.sharedState as any).trackExecutionAttemptStart();
+            }
+        }
+        
         if (prevIsExecutingRef.current && !isExecutingProgram && !executionError) {
             setShowDoneMessage(true);
             
             // Track successful execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                console.log('ExecutionMonitor: Execution completed successfully');
                 (props.sharedState as any).trackExecutionAttemptEnd(true);
             }
             
@@ -104,6 +113,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         } else if (prevIsExecutingRef.current && !isExecutingProgram && executionError) {
             // Track failed execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                console.log('ExecutionMonitor: Execution failed with error');
                 (props.sharedState as any).trackExecutionAttemptEnd(false);
             }
         } else if (isExecutingProgram) {
