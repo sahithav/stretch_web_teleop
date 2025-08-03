@@ -19,6 +19,7 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
     console.log('RosbagRecorder: sharedState available:', !!props.sharedState);
     console.log('RosbagRecorder: trackDemonstrationRecordingStart available:', !!(props.sharedState as any)?.trackDemonstrationRecordingStart);
     console.log('RosbagRecorder: trackDemonstrationRecordingEnd available:', !!(props.sharedState as any)?.trackDemonstrationRecordingEnd);
+    console.log('RosbagRecorder: sharedState keys:', props.sharedState ? Object.keys(props.sharedState) : 'no sharedState');
     
     // Get user ID from session storage
     const getUserId = () => {
@@ -32,6 +33,15 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
         setSuccessMessage(null);
         
         if (!isRecording) {
+            // Track demonstration recording start for study data (on button click)
+            console.log('RosbagRecorder: Record button clicked, tracking start...');
+            if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingStart) {
+                console.log('RosbagRecorder: Calling trackDemonstrationRecordingStart');
+                (props.sharedState as any).trackDemonstrationRecordingStart();
+            } else {
+                console.log('RosbagRecorder: trackDemonstrationRecordingStart not available');
+            }
+            
             // Start recording
             try {
                 const userId = getUserId();
@@ -47,15 +57,6 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                 });
                 if (res.ok) {
                     setIsRecording(true);
-                    
-                    // Track demonstration recording start for study data
-                    console.log('RosbagRecorder: Attempting to track recording start...');
-                    if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingStart) {
-                        console.log('RosbagRecorder: Calling trackDemonstrationRecordingStart');
-                        (props.sharedState as any).trackDemonstrationRecordingStart();
-                    } else {
-                        console.log('RosbagRecorder: trackDemonstrationRecordingStart not available');
-                    }
                 } else {
                     const data = await res.json();
                     setError(data.error || "Failed to start recording");
@@ -64,9 +65,18 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                 setError("Failed to start recording");
             }
         } else {
+            // Track demonstration recording end for study data (on button click)
+            const userId = getUserId();
+            console.log('RosbagRecorder: Stop button clicked, tracking end...');
+            if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingEnd) {
+                console.log('RosbagRecorder: Calling trackDemonstrationRecordingEnd');
+                (props.sharedState as any).trackDemonstrationRecordingEnd(`${userId}_${rosbagCounter}`);
+            } else {
+                console.log('RosbagRecorder: trackDemonstrationRecordingEnd not available');
+            }
+            
             // Stop recording
             try {
-                const userId = getUserId();
                 const res = await fetch("/stop_rosbag", { 
                     method: "POST",
                     headers: {
@@ -82,15 +92,6 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
                     setRosbagCounter(prev => prev + 1);
                     setSuccessMessage(`Recording saved as ${userId}_${rosbagCounter}. Open demo in Foxglove and create your program!`);
                     setTimeout(() => setSuccessMessage(null), 5000);
-                    
-                    // Track demonstration recording end for study data
-                    console.log('RosbagRecorder: Attempting to track recording end...');
-                    if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingEnd) {
-                        console.log('RosbagRecorder: Calling trackDemonstrationRecordingEnd');
-                        (props.sharedState as any).trackDemonstrationRecordingEnd(`${userId}_${rosbagCounter}`);
-                    } else {
-                        console.log('RosbagRecorder: trackDemonstrationRecordingEnd not available');
-                    }
                 } else {
                     const data = await res.json();
                     setError(data.error || "Failed to stop recording");

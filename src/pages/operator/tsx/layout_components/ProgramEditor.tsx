@@ -281,6 +281,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const executeProgram = async (program: Program) => {
         console.log("Starting program execution...");
         
+        // Track execution attempt start for study data
+        if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
+            console.log('ProgramEditor: Starting execution attempt tracking');
+            (props.sharedState as any).trackExecutionAttemptStart();
+        }
+        
         // Set execution state to true at the start
         const buttonFunctionProvider = (window as any).buttonFunctionProvider;
         if (buttonFunctionProvider) {
@@ -798,11 +804,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             console.log("Setting isExecuting to true");
             setIsExecuting(true);
             
-            // Track execution attempt start for study data
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
-                console.log('ProgramEditor: Starting execution attempt tracking');
-                (props.sharedState as any).trackExecutionAttemptStart();
-            }
+            // Execution attempt tracking moved to executeProgram function
             
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {

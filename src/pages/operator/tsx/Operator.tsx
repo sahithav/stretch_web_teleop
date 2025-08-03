@@ -136,7 +136,7 @@ export const Operator = (props: {
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
         console.log('Tracking execution attempt end, success:', success, 'currentExecutionAttempt:', currentExecutionAttempt);
-        if (props.studyMode && currentExecutionAttempt.pause_and_confirm_resets >= 0) {
+        if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             
