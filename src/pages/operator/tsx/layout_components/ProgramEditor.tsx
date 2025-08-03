@@ -276,13 +276,22 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     // Check if human API functions should be hidden (tasks 1 and 3)
     const shouldHideHumanAPI = () => {
         const studyData = sessionStorage.getItem('studyData');
-        if (!studyData) return false;
+        console.log('ProgramEditor: studyData from session storage:', studyData);
+        
+        if (!studyData) {
+            console.log('ProgramEditor: No studyData found, showing human API functions');
+            return false;
+        }
         
         try {
             const data = JSON.parse(studyData);
             const currentTask = data.currentTask || 1;
-            return currentTask === 1 || currentTask === 3;
+            console.log('ProgramEditor: Current task:', currentTask);
+            const shouldHide = currentTask === 1 || currentTask === 3;
+            console.log('ProgramEditor: Should hide human API functions:', shouldHide);
+            return shouldHide;
         } catch (error) {
+            console.log('ProgramEditor: Error parsing studyData, showing human API functions');
             return false;
         }
     };

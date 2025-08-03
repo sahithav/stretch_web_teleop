@@ -42,13 +42,22 @@ export const Library = (props: CustomizableComponentProps) => {
     // Check if human API functions should be hidden (tasks 1 and 3)
     const shouldHideHumanAPI = () => {
         const studyData = sessionStorage.getItem('studyData');
-        if (!studyData) return false;
+        console.log('Library: studyData from session storage:', studyData);
+        
+        if (!studyData) {
+            console.log('Library: No studyData found, showing human API functions');
+            return false;
+        }
         
         try {
             const data = JSON.parse(studyData);
             const currentTask = data.currentTask || 1;
-            return currentTask === 1 || currentTask === 3;
+            console.log('Library: Current task:', currentTask);
+            const shouldHide = currentTask === 1 || currentTask === 3;
+            console.log('Library: Should hide human API functions:', shouldHide);
+            return shouldHide;
         } catch (error) {
+            console.log('Library: Error parsing studyData, showing human API functions');
             return false;
         }
     };
