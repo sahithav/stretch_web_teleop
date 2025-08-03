@@ -92,17 +92,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Message when program finishes executing
     useEffect(() => {
-        // Track execution attempt start when program starts executing
+        // Reset program finished state when starting execution
         if (!prevIsExecutingRef.current && isExecutingProgram) {
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
-                (props.sharedState as any).trackExecutionAttemptStart();
-            }
-            // Reset program finished state when starting execution
             if (setIsProgramFinished) {
                 setIsProgramFinished(false);
             }
         }
         
+        // Track execution attempt end when program is finished
         if (isProgramFinished && !executionError) {
             setShowDoneMessage(true);
             
