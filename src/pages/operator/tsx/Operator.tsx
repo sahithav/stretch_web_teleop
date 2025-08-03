@@ -266,6 +266,10 @@ export const Operator = (props: {
     // Function to handle "Done teleoperating" button click
     const handleDoneTeleoperating = () => {
         setWaitingForUserConfirmation(false);
+        
+        // Stop automatic human API rosbag recording
+        stopHumanApiRecording();
+        
         // Set execution state back to true
         if ((window as any).buttonFunctionProvider) {
             (window as any).buttonFunctionProvider.setExecutionState(true);
@@ -608,6 +612,61 @@ export const Operator = (props: {
         setSelectedPath(undefined);
     }
 
+    // State for automatic human API rosbag recording
+    const [humanApiRosbagCounter, setHumanApiRosbagCounter] = React.useState(1);
+    const [isHumanApiRecording, setIsHumanApiRecording] = React.useState(false);
+    
+    // Function to start automatic human API rosbag recording
+    const startHumanApiRecording = async () => {
+        if (isHumanApiRecording) return;
+        
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return;
+        
+        try {
+            const response = await fetch('/start_humanapi_rosbag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, rosbagNumber: humanApiRosbagCounter })
+            });
+            
+            if (response.ok) {
+                setIsHumanApiRecording(true);
+                console.log(`Started human API rosbag recording: ${userId}_${humanApiRosbagCounter}`);
+            } else {
+                console.error('Failed to start human API rosbag recording');
+            }
+        } catch (error) {
+            console.error('Error starting human API rosbag recording:', error);
+        }
+    };
+    
+    // Function to stop automatic human API rosbag recording
+    const stopHumanApiRecording = async () => {
+        if (!isHumanApiRecording) return;
+        
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return;
+        
+        try {
+            const response = await fetch('/stop_humanapi_rosbag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, rosbagNumber: humanApiRosbagCounter })
+            });
+            
+            if (response.ok) {
+                setIsHumanApiRecording(false);
+                setHumanApiRosbagCounter(prev => prev + 1);
+                console.log(`Stopped human API rosbag recording: ${userId}_${humanApiRosbagCounter}`);
+            } else {
+                console.error('Failed to stop human API rosbag recording');
+            }
+        } catch (error) {
+            console.error('Error stopping human API rosbag recording:', error);
+        }
+    };
+    
     /** State passed from the operator and shared by all components */
     const sharedState: SharedState = {
         customizing: customizing,
@@ -644,12 +703,10 @@ export const Operator = (props: {
         trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
         trackDemonstrationRecordingEnd: trackDemonstrationRecordingEnd,
         taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
+        startHumanApiRecording: startHumanApiRecording,
+        stopHumanApiRecording: stopHumanApiRecording,
     };
     
-    // Debug taskKey
-    console.log('Operator: sharedState taskKey:', props.studyMode ? `task_${props.studyMode.currentTask}` : undefined);
-    
-
 
     /** Properties for the global options area of the sidebar */
     const globalOptionsProps: GlobalOptionsProps = {

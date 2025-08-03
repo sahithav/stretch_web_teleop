@@ -463,6 +463,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     }
                     else if (line.command === "TakeControl") {
                         console.log(`Taking control from robot`);
+                        
+                        // Start automatic human API rosbag recording
+                        if (props.sharedState && (props.sharedState as any).startHumanApiRecording) {
+                            (props.sharedState as any).startHumanApiRecording();
+                        }
+                        
                         if (buttonFunctionProvider) {
                             buttonFunctionProvider.setExecutionState(false);
                         }

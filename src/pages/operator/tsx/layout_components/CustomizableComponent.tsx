@@ -77,6 +77,10 @@ export type SharedState = {
     trackDemonstrationRecordingEnd?: (rosbagName: string) => void;
     /** Task key to trigger data reload when task changes */
     taskKey?: string;
+    /** Function to start automatic human API rosbag recording */
+    startHumanApiRecording?: () => void;
+    /** Function to stop automatic human API rosbag recording */
+    stopHumanApiRecording?: () => void;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

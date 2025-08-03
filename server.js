@@ -154,6 +154,7 @@ io.on('connection', function (socket) {
 
 const { spawn } = require('child_process');
 let rosbagProcess = null;
+let humanApiRosbagProcess = null;
 
 app.post('/start_rosbag', (req, res) => {
     if (rosbagProcess) {
@@ -205,6 +206,59 @@ app.post('/stop_rosbag', (req, res) => {
     } catch (e) {
         console.error('Error stopping rosbag process:', e);
         return res.status(500).json({ error: 'Failed to stop rosbag process.' });
+    }
+});
+
+app.post('/start_humanapi_rosbag', (req, res) => {
+    if (humanApiRosbagProcess) {
+        return res.status(400).json({ error: 'Human API rosbag recording already in progress.' });
+    }
+
+    const { userId, rosbagNumber } = req.body;
+    if (!userId || !rosbagNumber) {
+        return res.status(400).json({ error: 'Missing userId or rosbagNumber in request body.' });
+    }
+
+    const outputDir = `/media/hello-robot/HCRLAB/rosbags-humanapi/${userId}_${rosbagNumber}`;
+    humanApiRosbagProcess = spawn('ros2', [
+        'bag', 'record',
+        '-a',
+        '-s', 'mcap',
+        '-o', outputDir
+    ], {
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    humanApiRosbagProcess.stdout.on('data', (data) => {
+        console.log(`[humanapi rosbag stdout]: ${data}`);
+    });
+    humanApiRosbagProcess.stderr.on('data', (data) => {
+        console.error(`[humanapi rosbag stderr]: ${data}`);
+    });
+    humanApiRosbagProcess.on('exit', (code, signal) => {
+        console.log(`humanapi ros2 bag record exited with code ${code}, signal ${signal}`);
+        humanApiRosbagProcess = null; 
+    });
+    res.json({ status: 'started', dir: outputDir });
+});
+
+app.post('/stop_humanapi_rosbag', (req, res) => {
+    if (!humanApiRosbagProcess) {
+        return res.status(400).json({ error: 'No human API rosbag recording in progress.' });
+    }
+    
+    const { userId, rosbagNumber } = req.body;
+    if (!userId || !rosbagNumber) {
+        return res.status(400).json({ error: 'Missing userId or rosbagNumber in request body.' });
+    }
+    
+    try {
+        process.kill(-humanApiRosbagProcess.pid, 'SIGINT');
+        res.json({ status: 'stopped', rosbagName: `${userId}_${rosbagNumber}` });
+    } catch (e) {
+        console.error('Error stopping human API rosbag process:', e);
+        return res.status(500).json({ error: 'Failed to stop human API rosbag process.' });
     }
 });
 
