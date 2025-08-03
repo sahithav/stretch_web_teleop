@@ -39,6 +39,23 @@ export const Library = (props: CustomizableComponentProps) => {
     const { customizing } = props.sharedState;
     const selected = isSelected(props);
     
+    // Check if human API functions should be hidden (tasks 1 and 3)
+    const shouldHideHumanAPI = () => {
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return false;
+        
+        const studyData = sessionStorage.getItem(`studyData_${userId}`);
+        if (!studyData) return false;
+        
+        try {
+            const data = JSON.parse(studyData);
+            const currentTask = data.currentTask || 1;
+            return currentTask === 1 || currentTask === 3;
+        } catch (error) {
+            return false;
+        }
+    };
+    
     // Load saved positions from session storage or use defaults
     const getInitialSavedPositions = (): SavedPosition[] => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
@@ -244,35 +261,37 @@ export const Library = (props: CustomizableComponentProps) => {
                             </div>
                         </div>
                         
-                        <div className="library-subsection">
-                            <h4 className="library-subsection-title human-heading">Human</h4>
-                            <div className="library-text">
-                                <div className="function-group">
-                                    <div 
-                                        className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("PauseAndConfirm()\n")}
-                                    >
-                                        PauseAndConfirm()
+                        {!shouldHideHumanAPI() && (
+                            <div className="library-subsection">
+                                <h4 className="library-subsection-title human-heading">Human</h4>
+                                <div className="library-text">
+                                    <div className="function-group">
+                                        <div 
+                                            className="library-function-item"
+                                            onClick={() => props.sharedState.insertTextAtCursor?.("PauseAndConfirm()\n")}
+                                        >
+                                            PauseAndConfirm()
+                                        </div>
+                                        <div className="function-description">
+                                            Pause execution and wait for your confirmation.{'\n'}
+                                            Input(Optional): Message shown while execution is paused.
+                                        </div>
                                     </div>
-                                    <div className="function-description">
-                                        Pause execution and wait for your confirmation.{'\n'}
-                                        Input(Optional): Message shown while execution is paused.
-                                    </div>
-                                </div>
-                                <div className="function-group">
-                                    <div 
-                                        className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("TakeControl()\n")}
-                                    >
-                                        TakeControl()
-                                    </div>
-                                    <div className="function-description">
-                                        Control the robot by tele-operating it.{'\n'}
-                                        Input: N/A
+                                    <div className="function-group">
+                                        <div 
+                                            className="library-function-item"
+                                            onClick={() => props.sharedState.insertTextAtCursor?.("TakeControl()\n")}
+                                        >
+                                            TakeControl()
+                                        </div>
+                                        <div className="function-description">
+                                            Control the robot by tele-operating it.{'\n'}
+                                            Input: N/A
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                     
                     {/* Saved Positions Section */}

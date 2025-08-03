@@ -53,6 +53,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const { customizing, currentExecutingLine, isExecutingProgram, isProgramFinished, setIsProgramFinished, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
+  
     // Create dynamic array that updates when savedPositions changes
     const allFunctions = React.useMemo(() => {
         return [...ROBOT_FUNCTIONS, ...HUMAN_FUNCTIONS, ...savedPositions];
@@ -145,7 +146,6 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             highlightedText = highlightedText.replace(regex, `<span class="robot-function">${func}</span>`);
         });
         
-        // Highlight human functions in green
         HUMAN_FUNCTIONS.forEach(func => {
             const regex = new RegExp(`\\b${func}\\b`, 'g');
             highlightedText = highlightedText.replace(regex, `<span class="human-function">${func}</span>`);

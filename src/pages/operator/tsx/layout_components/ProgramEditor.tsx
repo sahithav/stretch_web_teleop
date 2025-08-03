@@ -273,9 +273,31 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const { customizing, executionError, currentExecutingLine, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
+    // Check if human API functions should be hidden (tasks 1 and 3)
+    const shouldHideHumanAPI = () => {
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return false;
+        
+        const studyData = sessionStorage.getItem(`studyData_${userId}`);
+        if (!studyData) return false;
+        
+        try {
+            const data = JSON.parse(studyData);
+            const currentTask = data.currentTask || 1;
+            return currentTask === 1 || currentTask === 3;
+        } catch (error) {
+            return false;
+        }
+    };
+    
     // Create dynamic array that updates when savedPositions changes
     const allFunctions = React.useMemo(() => {
-        return [...ROBOT_FUNCTIONS, ...HUMAN_FUNCTIONS, ...savedPositions];
+        const functions = [...ROBOT_FUNCTIONS, ...savedPositions];
+        // Only include human API functions if not in tasks 1 or 3
+        if (!shouldHideHumanAPI()) {
+            functions.push(...HUMAN_FUNCTIONS);
+        }
+        return functions;
     }, [savedPositions]);
 
         // Function to wait for goal completion
@@ -534,11 +556,13 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         highlightedText = highlightedText.replace(regex, `<span class="robot-function">${func}</span>`);
     });
     
-    // Highlight human functions in green
-    HUMAN_FUNCTIONS.forEach(func => {
-        const regex = new RegExp(`\\b${func}\\b`, 'g');
-        highlightedText = highlightedText.replace(regex, `<span class="human-function">${func}</span>`);
-    });
+    // Highlight human functions in green (only if not hidden)
+    if (!shouldHideHumanAPI()) {
+        HUMAN_FUNCTIONS.forEach(func => {
+            const regex = new RegExp(`\\b${func}\\b`, 'g');
+            highlightedText = highlightedText.replace(regex, `<span class="human-function">${func}</span>`);
+        });
+    }
     
     // Highlight saved positions in blue
     savedPositions.forEach(position => {

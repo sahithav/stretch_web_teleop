@@ -43,9 +43,6 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                     
                     <div className="user-id-display">
                         <p><strong>Your User ID: {userId}</strong></p>
-                        <p style={{ fontSize: "14px", color: "#666", fontStyle: "italic" }}>
-                            Please note this ID for reference during the study.
-                        </p>
                     </div>
                 </div>
                 
