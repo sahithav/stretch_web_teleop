@@ -72,6 +72,7 @@ export const Operator = (props: {
     const [isExecutingProgram, setIsExecutingProgram] = React.useState<boolean>(false);
     const [currentExecutingLine, setCurrentExecutingLine] = React.useState<number | undefined>(undefined);
     const [showExecutionMessage, setShowExecutionMessage] = React.useState<boolean>(false);
+    const [isProgramFinished, setIsProgramFinished] = React.useState<boolean>(false);
     const [waitingForUserConfirmation, setWaitingForUserConfirmation] = React.useState<boolean>(false);
     const [pauseAndConfirmMessage, setPauseAndConfirmMessage] = React.useState<string>("");
     const [executionError, setExecutionError] = React.useState<{ type: 'syntax' | 'invalid_input' | 'unknown_pose'; message: string } | null>(null);
@@ -705,6 +706,8 @@ export const Operator = (props: {
         taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
         startHumanApiRecording: startHumanApiRecording,
         stopHumanApiRecording: stopHumanApiRecording,
+        isProgramFinished: isProgramFinished,
+        setIsProgramFinished: setIsProgramFinished,
     };
     
 

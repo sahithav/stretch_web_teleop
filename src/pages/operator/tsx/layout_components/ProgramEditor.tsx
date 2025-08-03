@@ -484,6 +484,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             }
             
             console.log("Program execution complete!");
+            
+            // Set program finished state
+            if (props.sharedState.setIsProgramFinished) {
+                props.sharedState.setIsProgramFinished(true);
+            }
         } catch (error) {
             console.error("Error during program execution:", error);
         } finally {

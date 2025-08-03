@@ -81,6 +81,10 @@ export type SharedState = {
     startHumanApiRecording?: () => void;
     /** Function to stop automatic human API rosbag recording */
     stopHumanApiRecording?: () => void;
+    /** Whether the program has finished executing */
+    isProgramFinished?: boolean;
+    /** Function to set program finished state */
+    setIsProgramFinished?: (finished: boolean) => void;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

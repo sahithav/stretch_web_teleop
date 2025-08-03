@@ -50,7 +50,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const [showDoneMessage, setShowDoneMessage] = useState(false);
     const prevIsExecutingRef = React.useRef(false);
     
-    const { customizing, currentExecutingLine, isExecutingProgram, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
+    const { customizing, currentExecutingLine, isExecutingProgram, isProgramFinished, setIsProgramFinished, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
     // Create dynamic array that updates when savedPositions changes
@@ -95,17 +95,19 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         // Track execution attempt start when program starts executing
         if (!prevIsExecutingRef.current && isExecutingProgram) {
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
-
                 (props.sharedState as any).trackExecutionAttemptStart();
+            }
+            // Reset program finished state when starting execution
+            if (setIsProgramFinished) {
+                setIsProgramFinished(false);
             }
         }
         
-        if (prevIsExecutingRef.current && !isExecutingProgram && !executionError) {
+        if (isProgramFinished && !executionError) {
             setShowDoneMessage(true);
             
             // Track successful execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-
                 (props.sharedState as any).trackExecutionAttemptEnd(true);
             }
             
@@ -114,10 +116,9 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             }, 5000); 
             
             return () => clearTimeout(timer);
-        } else if (prevIsExecutingRef.current && !isExecutingProgram && executionError) {
+        } else if (isProgramFinished && executionError) {
             // Track failed execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-
                 (props.sharedState as any).trackExecutionAttemptEnd(false);
             }
         } else if (isExecutingProgram) {
@@ -125,7 +126,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             setShowDoneMessage(false);
         }
         prevIsExecutingRef.current = isExecutingProgram;
-    }, [isExecutingProgram, executionError]);
+    }, [isExecutingProgram, isProgramFinished, executionError]);
 
     // Syntax highlighting function 
     const highlightSyntax = (text: string): string => {
