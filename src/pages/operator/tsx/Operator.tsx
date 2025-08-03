@@ -136,7 +136,7 @@ export const Operator = (props: {
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
-        console.log('Tracking execution attempt end, success:', success, 'currentExecutionAttempt:', currentExecutionAttempt);
+
         if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
@@ -166,7 +166,7 @@ export const Operator = (props: {
                     
                     studyData.tasks[currentTask].execution_attempts.push(executionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                    console.log('Execution attempt tracked:', executionData);
+        
                 }
             }
         }
@@ -174,7 +174,7 @@ export const Operator = (props: {
     
     // Function to track demonstration recording start
     const trackDemonstrationRecordingStart = () => {
-        console.log('Tracking demonstration recording start...');
+
         if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
@@ -204,7 +204,7 @@ export const Operator = (props: {
                     
                     studyData.tasks[currentTask].demonstration_recordings.push(recordingData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                    console.log('Demonstration recording start tracked');
+        
                 }
             }
         }
@@ -212,7 +212,7 @@ export const Operator = (props: {
     
     // Function to track demonstration recording end
     const trackDemonstrationRecordingEnd = (rosbagName: string) => {
-        console.log('Tracking demonstration recording end with rosbag name:', rosbagName);
+
         if (props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
@@ -231,7 +231,7 @@ export const Operator = (props: {
                         lastRecording.rosbag_name = rosbagName;
                         
                         sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                        console.log('Demonstration recording end tracked');
+            
                     }
                 }
             }
@@ -299,16 +299,16 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
-        console.log('Reset button clicked, studyMode:', props.studyMode, 'isExecutingProgram:', isExecutingProgram);
+
         // Track pause and confirm reset for study data
         if (props.studyMode && isExecutingProgram) {
-            console.log('Tracking pause and confirm reset');
+
             setCurrentExecutionAttempt(prev => {
                 const newAttempt = {
                     ...prev,
                     pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
                 };
-                console.log('Updated execution attempt:', newAttempt);
+
                 return newAttempt;
             });
         }
@@ -737,7 +737,7 @@ export const Operator = (props: {
         
         // Track program editor session end when switching away
         if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start) {
-            console.log('Tracking program editor session end, previousMode:', previousMode, 'newMode:', newMode);
+    
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode?.currentTask;
             

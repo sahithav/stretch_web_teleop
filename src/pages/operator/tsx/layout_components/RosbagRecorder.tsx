@@ -17,8 +17,7 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
     
     // Debug shared state
     console.log('RosbagRecorder: sharedState available:', !!props.sharedState);
-    console.log('RosbagRecorder: trackDemonstrationRecordingStart available:', !!(props.sharedState as any)?.trackDemonstrationRecordingStart);
-    console.log('RosbagRecorder: trackDemonstrationRecordingEnd available:', !!(props.sharedState as any)?.trackDemonstrationRecordingEnd);
+    
     console.log('RosbagRecorder: sharedState keys:', props.sharedState ? Object.keys(props.sharedState) : 'no sharedState');
     
     // Get user ID from session storage
@@ -34,12 +33,8 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
         
         if (!isRecording) {
             // Track demonstration recording start for study data (on button click)
-            console.log('RosbagRecorder: Record button clicked, tracking start...');
             if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingStart) {
-                console.log('RosbagRecorder: Calling trackDemonstrationRecordingStart');
                 (props.sharedState as any).trackDemonstrationRecordingStart();
-            } else {
-                console.log('RosbagRecorder: trackDemonstrationRecordingStart not available');
             }
             
             // Start recording
@@ -67,12 +62,8 @@ export const RosbagRecorder = (props: CustomizableComponentProps) => {
         } else {
             // Track demonstration recording end for study data (on button click)
             const userId = getUserId();
-            console.log('RosbagRecorder: Stop button clicked, tracking end...');
             if (props.sharedState && (props.sharedState as any).trackDemonstrationRecordingEnd) {
-                console.log('RosbagRecorder: Calling trackDemonstrationRecordingEnd');
                 (props.sharedState as any).trackDemonstrationRecordingEnd(`${userId}_${rosbagCounter}`);
-            } else {
-                console.log('RosbagRecorder: trackDemonstrationRecordingEnd not available');
             }
             
             // Stop recording

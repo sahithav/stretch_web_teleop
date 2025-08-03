@@ -447,16 +447,16 @@ function renderOperator(storageHandler: StorageHandler) {
         // Save study data when study concludes
         React.useEffect(() => {
             if (studyPhase === 'conclusion') {
-                console.log('Study concluded, attempting to save study data...');
+        
                 const userId = sessionStorage.getItem('studyUserId');
                 console.log('User ID:', userId);
                 
                 if (userId) {
                     const studyData = sessionStorage.getItem(`studyData_${userId}`);
-                    console.log('Study data from session storage:', studyData);
+    
                     
                     if (studyData) {
-                        console.log('Sending study data to server...');
+
                         fetch('/save_study_data', {
                             method: 'POST',
                             headers: {
@@ -468,7 +468,7 @@ function renderOperator(storageHandler: StorageHandler) {
                             })
                         }).then(response => {
                             if (response.ok) {
-                                console.log('Study data saved successfully');
+    
                             } else {
                                 console.error('Failed to save study data');
                                 response.json().then(errorData => {

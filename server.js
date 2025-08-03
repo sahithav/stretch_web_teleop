@@ -209,7 +209,7 @@ app.post('/stop_rosbag', (req, res) => {
 });
 
 app.post('/save_study_data', (req, res) => {
-    console.log('Received save_study_data request:', req.body);
+    
     try {
         const { userId, studyData } = req.body;
         
@@ -221,9 +221,9 @@ app.post('/save_study_data', (req, res) => {
         const filePath = `/media/hello-robot/HCRLAB/data/user_${userId}_study_data.json`;
         const content = JSON.stringify(studyData, null, 2);
         
-        console.log('Writing study data to:', filePath);
+        
         fs.writeFileSync(filePath, content, 'utf8');
-        console.log(`Study data saved successfully to: ${filePath}`);
+        
         
         res.json({ success: true, message: 'Study data saved successfully' });
     } catch (error) {
