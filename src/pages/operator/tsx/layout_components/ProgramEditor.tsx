@@ -20,8 +20,6 @@ type ProgramEditorProps = CustomizableComponentProps & {
     readOnly?: boolean;
     /* Callback function when Run Program button is clicked */
     onRunProgram?: (code: string) => void;
-    /* Task key to trigger data reload when task changes */
-    taskKey?: string;
 };
 
 // Robot functions 
@@ -263,12 +261,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     
     // Reload data when task changes 
     React.useEffect(() => {
-        console.log('ProgramEditor: taskKey changed to:', props.taskKey);
+        console.log('ProgramEditor: taskKey changed to:', props.sharedState.taskKey);
         console.log('ProgramEditor: Reloading data from session storage');
         setCode(getInitialCode());
         setSavedPositions(getInitialSavedPositions());
         setCustomPoses(getInitialCustomPoses());
-    }, [props.taskKey]);
+    }, [props.sharedState.taskKey]);
     
     // Combine default and custom poses
     const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };

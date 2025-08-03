@@ -14,8 +14,6 @@ import "operator/css/ExecutionMonitor.css";
 type ExecutionMonitorProps = CustomizableComponentProps & {
     /* Programming language for syntax highlighting */
     language?: string;
-    /* Task key to trigger data reload when task changes */
-    taskKey?: string;
 };
 
 // Robot functions 
@@ -62,7 +60,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Load code from session storage
     useEffect(() => {
-        console.log('ExecutionMonitor: taskKey changed to:', props.taskKey);
+        console.log('ExecutionMonitor: taskKey changed to:', props.sharedState.taskKey);
         console.log('ExecutionMonitor: Reloading code from session storage');
         const sessionCode = sessionStorage.getItem('programEditorCode');
         if (sessionCode) {
@@ -70,7 +68,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         } else {
             setCode(""); // Clear if no session code
         }
-    }, [props.taskKey]);
+    }, [props.sharedState.taskKey]);
 
     // Load saved positions from session storage
     useEffect(() => {
@@ -83,7 +81,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 console.error("Error parsing saved positions:", error);
             }
         }
-    }, [props.taskKey]);
+    }, [props.sharedState.taskKey]);
 
     // Update line numbers when code changes
     useEffect(() => {
