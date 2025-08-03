@@ -1256,13 +1256,16 @@ export const Operator = (props: {
                                 <li>Wrote a program in Program Editor mode</li>
                                 <li>Successfully executed the program</li>
                             </ul>
-                            <p style={{ 
+                                                        <p style={{
                                 marginBottom: "0",
                                 fontSize: "14px",
                                 color: "#666",
                                 fontStyle: "italic"
                             }}>
-                                Are you ready to proceed to the next task?
+                                {props.studyMode?.currentTask === 4 
+                                    ? "Are you ready to end the study?" 
+                                    : "Are you ready to proceed to the next task?"
+                                }
                             </p>
                         </div>
                         <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>

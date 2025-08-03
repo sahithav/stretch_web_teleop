@@ -21,24 +21,21 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                 
                 <div className="study-intro">
                     <p>
-                        Welcome to our robot teleoperation study! This study will help us understand 
-                        how different interface modes affect user performance and experience when 
-                        controlling a robot.
+                        Thank you for participating. This study aims to explore how people interact with robots in shared autonomy settings. You will be asked to use a web-based interface to control a robot and answer questions to evaluate your experience with using the system.
                     </p>
                     
                     <p>
-                        You will be asked to complete 4 different tasks using three different modes:
+                        You will complete four tasks, each involving:
                     </p>
                     
                     <ul>
-                        <li><strong>Demonstrate Mode:</strong> Direct control of the robot</li>
-                        <li><strong>Program Editor Mode:</strong> Create and edit robot programs</li>
-                        <li><strong>Execution Monitor Mode:</strong> Monitor and supervise robot execution</li>
+                        <li>Recording yourself manually controlling the robot to demonstrate the task.</li>
+                        <li>Creating and executing a program using available functions and data from your recording.</li>
                     </ul>
                     
                     <p>
-                        Each task will take approximately 10-15 minutes to complete. 
-                        Please read the consent form carefully before beginning.
+                        Each task is expected to take approximately 10–15 minutes.
+                        Before you begin, please read and sign the consent form carefully.
                     </p>
                     
                     <div className="user-id-display">
@@ -48,12 +45,12 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                 
                 <div className="study-actions">
                     <a 
-                        href="#" 
+                        href="https://docs.google.com/forms/d/e/1FAIpQLSecrYP9Vj3Nu7BtFQAN6i1FvJETd19KuJPdv4VeTKUOVCG-xA/viewform?usp=dialog" 
                         className="consent-link"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        📄 Read Consent Form
+                        📄 Consent Form
                     </a>
                     
                     <button 

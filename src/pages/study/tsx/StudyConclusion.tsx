@@ -2,6 +2,9 @@ import React from "react";
 import "../css/StudyConclusion.css";
 
 export const StudyConclusion: React.FC = () => {
+    // Get user ID from session storage
+    const userId = sessionStorage.getItem('studyUserId') || 'Unknown';
+    
     return (
         <div className="study-conclusion">
             <div className="study-conclusion-content">
@@ -9,7 +12,7 @@ export const StudyConclusion: React.FC = () => {
                 
                 <div className="study-thanks">
                     <p>
-                        Thank you for participating in our robot teleoperation study! 
+                        Thank you for participating in our shared autonomy study! 
                         Your feedback and participation are invaluable to our research.
                     </p>
                     
@@ -20,19 +23,23 @@ export const StudyConclusion: React.FC = () => {
                     </p>
                     
                     <p>
-                        Please take a moment to complete our post-study questionnaire. 
+                        Please complete our post-study questionnaire. 
                         This will help us gather additional insights about your experience.
                     </p>
+                    
+                    <div className="user-id-display">
+                        <p><strong>Your User ID: {userId}</strong></p>
+                    </div>
                 </div>
                 
                 <div className="study-actions">
                     <a 
-                        href="#" 
+                        href="https://docs.google.com/forms/d/e/1FAIpQLScY7rERkwkHS0kaidTkwdZVlcfoxao7a2pUWzrUZ8kG8nEBlg/viewform?usp=dialog" 
                         className="questionnaire-link"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        📋 Complete Post-Study Questionnaire
+                        📋 Post-Study Questionnaire
                     </a>
                     
                     <p className="study-complete">
