@@ -116,8 +116,10 @@ export const Operator = (props: {
     
     // Track current execution attempt
     const [currentExecutionAttempt, setCurrentExecutionAttempt] = React.useState({
-        pause_and_confirm_resets: 0
+        pause_and_confirm_resets: 0,
+        execution_start: null as string | null
     });
+    const hasTrackedExecutionEndRef = React.useRef(false);
     
     // Function to track saved position addition
     const trackSavedPositionAdded = () => {
@@ -132,14 +134,22 @@ export const Operator = (props: {
     // Function to track execution attempt start
     const trackExecutionAttemptStart = () => {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
+            // Reset the tracking flag when starting new execution
+            hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
-                pause_and_confirm_resets: 0
+                pause_and_confirm_resets: 0,
+                execution_start: new Date().toISOString()
             });
         }
     };
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
+        // Prevent duplicate tracking
+        if (hasTrackedExecutionEndRef.current) {
+            console.log('Execution attempt already tracked, skipping duplicate');
+            return;
+        }
 
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             const userId = sessionStorage.getItem('studyUserId');
@@ -165,6 +175,7 @@ export const Operator = (props: {
                     }
                     
                     const executionData = {
+                        execution_start: currentExecutionAttempt.execution_start,
                         execution_end: new Date().toISOString(),
                         success: success,
                         pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
@@ -172,7 +183,11 @@ export const Operator = (props: {
                     
                     studyData.tasks[taskLetter].execution_attempts.push(executionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-        
+                    
+                    // Mark as tracked to prevent duplicates
+                    hasTrackedExecutionEndRef.current = true;
+                    
+                    console.log('Execution attempt tracked:', executionData);
                 }
             }
         }
