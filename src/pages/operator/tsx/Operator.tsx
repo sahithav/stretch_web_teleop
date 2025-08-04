@@ -398,6 +398,7 @@ export const Operator = (props: {
     const [robotNotHomed, setRobotNotHomed] =
         React.useState<boolean>(true); // Start as "not homed" until we get confirmation from ROS
     function showHomeTheRobotGlobalControl(isHomed: boolean) {
+        console.log("Operator: Received isHomed:", isHomed, "Setting robotNotHomed to:", !isHomed);
         setRobotNotHomed(!isHomed);
     }
     homeTheRobotFunctionProvider.setIsHomedCallback(
@@ -755,6 +756,9 @@ export const Operator = (props: {
         setIsProgramFinished: setIsProgramFinished,
         studyMode: props.studyMode,
     };
+    
+    // Debug logging for robotNotHomed state
+    console.log("Operator: Current robotNotHomed state:", robotNotHomed);
     
 
     /** Properties for the global options area of the sidebar */

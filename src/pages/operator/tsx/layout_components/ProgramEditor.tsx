@@ -869,6 +869,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             console.log("Run Program button clicked!");
             
             // Check if robot is homed before allowing execution
+            console.log("ProgramEditor: robotNotHomed value:", props.sharedState.robotNotHomed);
             if (props.sharedState.robotNotHomed) {
                 console.log("Robot is not homed, preventing program execution");
                 // The existing robot not homed banner will be shown by the Operator component
