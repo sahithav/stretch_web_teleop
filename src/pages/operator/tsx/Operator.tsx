@@ -783,6 +783,7 @@ export const Operator = (props: {
         if (newMode === "Program Editor" && props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
             
             // Start new program editor session
             setCurrentProgramSession({
@@ -791,12 +792,12 @@ export const Operator = (props: {
             });
             
             // Initialize task data if not exists
-            if (studyData && !studyData.tasks[currentTask]) {
+            if (studyData && taskOrder && !studyData.tasks[taskOrder[currentTask - 1]]) {
                 setStudyData(prev => ({
                     ...prev,
                     tasks: {
                         ...prev.tasks,
-                        [currentTask]: {
+                        [taskOrder[currentTask - 1]]: {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -813,16 +814,18 @@ export const Operator = (props: {
     
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode?.currentTask;
+            const taskOrder = props.studyMode?.taskOrder;
             
             console.log('User ID:', userId, 'Current Task:', currentTask);
             
-            if (userId && currentTask) {
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
                     
-                    if (!studyData.tasks[currentTask]) {
-                        studyData.tasks[currentTask] = {
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -838,7 +841,7 @@ export const Operator = (props: {
                         saved_positions_added: currentProgramSession.saved_positions_added
                     };
                     
-                    studyData.tasks[currentTask].program_editor_sessions.push(sessionData);
+                    studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
                     console.log('Program editor session tracked:', sessionData);
                 }
