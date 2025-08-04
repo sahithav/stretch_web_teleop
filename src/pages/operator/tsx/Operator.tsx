@@ -59,6 +59,8 @@ export const Operator = (props: {
         onProceedToNextTask: () => void;
         proceedButtonText: string;
         isPracticeRound?: boolean;
+        taskOrder?: string[];
+        taskDefinitions?: { [key: string]: string };
     };
 }) => {
     // Layout and customization state
@@ -142,16 +144,18 @@ export const Operator = (props: {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
             
             console.log('User ID:', userId, 'Current Task:', currentTask);
             
-            if (userId && currentTask) {
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
                     
-                    if (!studyData.tasks[currentTask]) {
-                        studyData.tasks[currentTask] = {
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -166,7 +170,7 @@ export const Operator = (props: {
                         pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
                     };
                     
-                    studyData.tasks[currentTask].execution_attempts.push(executionData);
+                    studyData.tasks[taskLetter].execution_attempts.push(executionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
         
                 }
@@ -180,16 +184,18 @@ export const Operator = (props: {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
             
             console.log('User ID:', userId, 'Current Task:', currentTask);
             
-            if (userId && currentTask) {
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
                     
-                    if (!studyData.tasks[currentTask]) {
-                        studyData.tasks[currentTask] = {
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -204,7 +210,7 @@ export const Operator = (props: {
                         rosbag_name: null
                     };
                     
-                    studyData.tasks[currentTask].demonstration_recordings.push(recordingData);
+                    studyData.tasks[taskLetter].demonstration_recordings.push(recordingData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
         
                 }
@@ -218,16 +224,18 @@ export const Operator = (props: {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
             
             console.log('User ID:', userId, 'Current Task:', currentTask);
             
-            if (userId && currentTask) {
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
                     
-                    if (studyData.tasks && studyData.tasks[currentTask] && studyData.tasks[currentTask].demonstration_recordings.length > 0) {
-                        const recordings = studyData.tasks[currentTask].demonstration_recordings;
+                    if (studyData.tasks && studyData.tasks[taskLetter] && studyData.tasks[taskLetter].demonstration_recordings.length > 0) {
+                        const recordings = studyData.tasks[taskLetter].demonstration_recordings;
                         const lastRecording = recordings[recordings.length - 1];
                         lastRecording.recording_end = new Date().toISOString();
                         lastRecording.rosbag_name = rosbagName;
@@ -1248,11 +1256,11 @@ export const Operator = (props: {
                         textAlign: "center"
                     }}>
                         <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
-                            Task {props.studyMode?.currentTask} Completion Confirmation
+                            Task Completion Confirmation
                         </h3>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
                             <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                Please confirm that you have completed Task {props.studyMode?.currentTask}:
+                                Please confirm that you have:
                             </p>
                             <ul style={{ 
                                 marginBottom: "20px", 
@@ -1349,7 +1357,7 @@ export const Operator = (props: {
                         textAlign: "center"
                     }}>
                         <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
-                            {props.studyMode?.isPracticeRound ? "Practice Round Complete" : `Task ${props.studyMode?.currentTask} Description`}
+                            {props.studyMode?.isPracticeRound ? "Practice Round Complete" : "Task Description"}
                         </h3>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
                             {props.studyMode?.isPracticeRound ? (
@@ -1387,7 +1395,9 @@ export const Operator = (props: {
                             ) : (
                                 <>
                                     <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                        <strong>Task {props.studyMode?.currentTask}:</strong> [Task description will go here]
+                                        <strong>Task:</strong> {props.studyMode?.taskOrder && props.studyMode?.taskDefinitions ? 
+                                            props.studyMode.taskDefinitions[props.studyMode.taskOrder[props.studyMode.currentTask - 1]] : 
+                                            '[Task description will go here]'}
                                     </p>
                                     <div style={{ 
                                         marginBottom: "20px", 

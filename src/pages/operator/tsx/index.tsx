@@ -328,6 +328,22 @@ function renderOperator(storageHandler: StorageHandler) {
         const [studyPhase, setStudyPhase] = useState<'landing' | 'practice' | 'operator' | 'conclusion'>('landing');
         const [currentTask, setCurrentTask] = useState(1);
         const [isPracticeRound, setIsPracticeRound] = useState(false);
+        const [taskOrder, setTaskOrder] = useState<string[]>([]);
+        
+        // Task definitions with their descriptions
+        const taskDefinitions = {
+            'R': 'Pick up the pill bottle and place on the box',
+            'B': 'Pick up the pill bottle and place on the table', 
+            'O': 'Pour the substance in cup A into cup B',
+            'M': 'Pour the substance in cup A into cup B'
+        };
+        
+        // Function to generate random task order
+        const generateRandomTaskOrder = () => {
+            const tasks = ['R', 'B', 'O', 'M'];
+            const shuffled = [...tasks].sort(() => Math.random() - 0.5);
+            return shuffled;
+        };
 
         useEffect(() => {
             // Observe the DOM for the loader
@@ -373,6 +389,13 @@ function renderOperator(storageHandler: StorageHandler) {
             setCurrentTask(1);
             setIsPracticeRound(true);
             
+            // Generate random task order for the study
+            const randomOrder = generateRandomTaskOrder();
+            setTaskOrder(randomOrder);
+            
+            // Store task order in session storage
+            sessionStorage.setItem('taskOrder', JSON.stringify(randomOrder));
+            
             // Track study start time
             const userId = sessionStorage.getItem('studyUserId');
             if (userId) {
@@ -395,13 +418,24 @@ function renderOperator(storageHandler: StorageHandler) {
                 setCurrentTask(1);
                 clearSessionStorage();
                 
+                // Load or generate task order
+                const savedTaskOrder = sessionStorage.getItem('taskOrder');
+                if (savedTaskOrder) {
+                    setTaskOrder(JSON.parse(savedTaskOrder));
+                } else {
+                    const randomOrder = generateRandomTaskOrder();
+                    setTaskOrder(randomOrder);
+                    sessionStorage.setItem('taskOrder', JSON.stringify(randomOrder));
+                }
+                
                 // Initialize task 1 data
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
                     const existingData = sessionStorage.getItem(`studyData_${userId}`);
                     if (existingData) {
                         const studyData = JSON.parse(existingData);
-                        studyData.tasks[1] = {
+                        const taskLetter = taskOrder[0]; // First task
+                        studyData.tasks[taskLetter] = {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -423,12 +457,13 @@ function renderOperator(storageHandler: StorageHandler) {
             
             // Track task end time for current task
             const userId = sessionStorage.getItem('studyUserId');
-            if (userId && currentTask <= 4) {
+            if (userId && currentTask <= 4 && taskOrder.length > 0) {
+                const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
-                    if (studyData.tasks && studyData.tasks[currentTask]) {
-                        studyData.tasks[currentTask].task_end_time = new Date().toISOString();
+                    if (studyData.tasks && studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter].task_end_time = new Date().toISOString();
                         sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
                     }
                 }
@@ -448,13 +483,14 @@ function renderOperator(storageHandler: StorageHandler) {
             sessionStorage.setItem('studyData', JSON.stringify(studyData));
             
             // Initialize next task data
-            if (nextTask <= 4) {
+            if (nextTask <= 4 && taskOrder.length > 0) {
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
                     const existingData = sessionStorage.getItem(`studyData_${userId}`);
                     if (existingData) {
                         const studyData = JSON.parse(existingData);
-                        studyData.tasks[nextTask] = {
+                        const taskLetter = taskOrder[nextTask - 1];
+                        studyData.tasks[taskLetter] = {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -488,9 +524,9 @@ function renderOperator(storageHandler: StorageHandler) {
             }
             
             switch (currentTask) {
-                case 1: return 'Proceed to Task 2';
-                case 2: return 'Proceed to Task 3';
-                case 3: return 'Proceed to Task 4';
+                case 1: return 'Start First Task';
+                case 2: return 'Proceed to Next Task';
+                case 3: return 'Proceed to Next Task';
                 case 4: return 'End Study';
                 default: return 'Proceed';
             }
@@ -558,7 +594,14 @@ function renderOperator(storageHandler: StorageHandler) {
                             currentTask,
                             onProceedToNextTask: handleProceedToNextTask,
                             proceedButtonText: getProceedButtonText(),
-                            isPracticeRound
+                            isPracticeRound,
+                            taskOrder,
+                            taskDefinitions: {
+                                'R': 'Pick up the pill bottle and place on the box',
+                                'B': 'Pick up the pill bottle and place on the table', 
+                                'O': 'Pour the substance in cup A into cup B',
+                                'M': 'Pour the substance in cup A into cup B'
+                            }
                         }}
                     />
                 );
