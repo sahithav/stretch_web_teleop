@@ -1402,9 +1402,8 @@ export const Operator = (props: {
                                             paddingLeft: "20px",
                                             lineHeight: "1.6"
                                         }}>
-                                            <li>You have completed the practice round</li>
-                                            <li>You are now familiar with the interface</li>
-                                            <li>No data was recorded during practice</li>
+                                            <li>You have completed the practice round.</li>
+                                            <li>You are now familiar with the interface.</li>
                                         </ul>
                                     </div>
                                     <p style={{ 
@@ -1413,7 +1412,7 @@ export const Operator = (props: {
                                         color: "#666",
                                         fontStyle: "italic"
                                     }}>
-                                        Click "Proceed to Task 1" to begin the actual study tasks.
+                                        Click "Start First Task" to begin.
                                     </p>
                                 </>
                             ) : (
@@ -1426,19 +1425,19 @@ export const Operator = (props: {
                                     <div style={{ 
                                         marginBottom: "20px", 
                                         padding: "16px",
-                                        backgroundColor: "#f8f9fa",
+                                        backgroundColor: "#fff3cd",
                                         borderRadius: "6px",
-                                        border: "1px solid #e9ecef"
+                                        border: "1px solid #ffeaa7"
                                     }}>
-                                        <h4 style={{ marginBottom: "12px", color: "#495057" }}>Instructions:</h4>
+                                        <h4 style={{ marginBottom: "12px", color: "#856404" }}>Instructions:</h4>
                                         <ol style={{ 
                                             marginBottom: "0",
                                             paddingLeft: "20px",
                                             lineHeight: "1.6"
                                         }}>
-                                            <li>Teleoperate the robot to execute the task</li>
-                                            <li>Create your program in Program Editor mode</li>
-                                            <li>Execute the program successfully</li>
+                                            <li>Teleoperate the robot to execute the task.</li>
+                                            <li>Create your program in the Program Editor.</li>
+                                            <li>Execute the program to perform the tasksuccessfully</li>
                                         </ol>
                                     </div>
                                     <p style={{ 
@@ -1447,7 +1446,7 @@ export const Operator = (props: {
                                         color: "#666",
                                         fontStyle: "italic"
                                     }}>
-                                        Click "Ready to Start" when you're ready to begin Task {props.studyMode?.currentTask}.
+                                        Click "Ready to Start" when you're ready to begin the next task.
                                     </p>
                                 </>
                             )}
@@ -1470,7 +1469,6 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowTaskDescription(false);
                                     if (props.studyMode?.isPracticeRound) {
-                                        // For practice round, proceed to task 1
                                         props.studyMode.onProceedToNextTask();
                                     }
                                 }}

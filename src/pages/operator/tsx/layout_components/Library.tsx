@@ -39,7 +39,7 @@ export const Library = (props: CustomizableComponentProps) => {
     const { customizing } = props.sharedState;
     const selected = isSelected(props);
     
-    // Check if human API functions should be hidden (tasks 1 and 3)
+    // Check if human API functions should be hidden (tasks R and O)
     const shouldHideHumanAPI = () => {
         const studyData = sessionStorage.getItem('studyData');
         console.log('Library: studyData from session storage:', studyData);
@@ -52,10 +52,23 @@ export const Library = (props: CustomizableComponentProps) => {
         try {
             const data = JSON.parse(studyData);
             const currentTask = data.currentTask || 1;
-            console.log('Library: Current task:', currentTask);
-            const shouldHide = currentTask === 1 || currentTask === 3;
-            console.log('Library: Should hide human API functions:', shouldHide);
-            return shouldHide;
+            console.log('Library: Current task number:', currentTask);
+            
+            // Get the task order from sharedState
+            const taskOrder = (props.sharedState as any).studyMode?.taskOrder;
+            
+            if (taskOrder && taskOrder.length > 0) {
+                const taskLetter = taskOrder[currentTask - 1];
+                console.log('Library: Current task letter:', taskLetter);
+                
+                // Hide human API for tasks R and O, show for tasks B and M
+                const shouldHide = taskLetter === 'R' || taskLetter === 'O';
+                console.log('Library: Should hide human API functions:', shouldHide);
+                return shouldHide;
+            } else {
+                console.log('Library: No task order available, showing human API functions');
+                return false;
+            }
         } catch (error) {
             console.log('Library: Error parsing studyData, showing human API functions');
             return false;

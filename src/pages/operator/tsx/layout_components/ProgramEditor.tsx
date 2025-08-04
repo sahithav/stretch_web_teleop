@@ -273,7 +273,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const { customizing, executionError, currentExecutingLine, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
-    // Check if human API functions should be hidden (tasks 1 and 3)
+    // Check if human API functions should be hidden (tasks R and O)
     const shouldHideHumanAPI = () => {
         const studyData = sessionStorage.getItem('studyData');
         console.log('ProgramEditor: studyData from session storage:', studyData);
@@ -286,10 +286,23 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         try {
             const data = JSON.parse(studyData);
             const currentTask = data.currentTask || 1;
-            console.log('ProgramEditor: Current task:', currentTask);
-            const shouldHide = currentTask === 1 || currentTask === 3;
-            console.log('ProgramEditor: Should hide human API functions:', shouldHide);
-            return shouldHide;
+            console.log('ProgramEditor: Current task number:', currentTask);
+            
+            // Get the task order from sharedState
+            const taskOrder = (props.sharedState as any).studyMode?.taskOrder;
+            
+            if (taskOrder && taskOrder.length > 0) {
+                const taskLetter = taskOrder[currentTask - 1];
+                console.log('ProgramEditor: Current task letter:', taskLetter);
+                
+                // Hide human API for tasks R and O, show for tasks B and M
+                const shouldHide = taskLetter === 'R' || taskLetter === 'O';
+                console.log('ProgramEditor: Should hide human API functions:', shouldHide);
+                return shouldHide;
+            } else {
+                console.log('ProgramEditor: No task order available, showing human API functions');
+                return false;
+            }
         } catch (error) {
             console.log('ProgramEditor: Error parsing studyData, showing human API functions');
             return false;
@@ -406,6 +419,9 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                     message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
                                 });
                             }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
+                            }
                             break;
                         }
                     }
@@ -436,6 +452,9 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                     type: 'unknown_pose',
                                     message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
                                 });
+                            }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
                             }
                             break;
                         }
@@ -469,6 +488,9 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                     type: 'unknown_pose',
                                     message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
                                 });
+                            }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
                             }
                             break;
                         }

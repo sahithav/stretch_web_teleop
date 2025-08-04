@@ -47,14 +47,14 @@
 
 .practice-task {
     background: #f8f9fa;
-    border-left: 4px solid #007bff;
+    border-left: 4px solid #0d4a5c;
     padding: 16px;
     margin: 20px 0;
     border-radius: 4px;
 }
 
 .practice-task h3 {
-    color: #007bff;
+    color: #0d4a5c;
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: 600;
