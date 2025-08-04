@@ -140,13 +140,16 @@ export const Operator = (props: {
                 pause_and_confirm_resets: 0,
                 execution_start: new Date().toISOString()
             });
+            console.log('Execution attempt started at:', new Date().toISOString());
         }
     };
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
-        // Prevent duplicate tracking
-        if (hasTrackedExecutionEndRef.current) {
+        console.log('trackExecutionAttemptEnd called with success:', success, 'hasTrackedExecutionEndRef.current:', hasTrackedExecutionEndRef.current, 'execution_start:', currentExecutionAttempt.execution_start);
+        
+        // Prevent duplicate tracking only if we have a valid execution start and haven't tracked yet
+        if (hasTrackedExecutionEndRef.current && currentExecutionAttempt.execution_start) {
             console.log('Execution attempt already tracked, skipping duplicate');
             return;
         }
@@ -331,14 +334,15 @@ export const Operator = (props: {
     const handleReset = () => {
 
         // Track pause and confirm reset for study data
-        if (props.studyMode && isExecutingProgram) {
 
+        if (props.studyMode && (window as any).pauseAndConfirmResolve) {
+            console.log('Tracking pause and confirm reset');
             setCurrentExecutionAttempt(prev => {
                 const newAttempt = {
                     ...prev,
                     pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
                 };
-
+                console.log('Updated pause_and_confirm_resets to:', newAttempt.pause_and_confirm_resets);
                 return newAttempt;
             });
         }
