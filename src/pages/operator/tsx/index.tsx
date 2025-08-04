@@ -520,11 +520,11 @@ function renderOperator(storageHandler: StorageHandler) {
         // Get the button text based on current task
         const getProceedButtonText = () => {
             if (isPracticeRound) {
-                return 'Proceed to Task 1';
+                return 'Start First Task';
             }
             
             switch (currentTask) {
-                case 1: return 'Start First Task';
+                case 1: return 'Proceed to Next Task';
                 case 2: return 'Proceed to Next Task';
                 case 3: return 'Proceed to Next Task';
                 case 4: return 'End Study';

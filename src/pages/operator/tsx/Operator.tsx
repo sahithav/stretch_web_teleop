@@ -1076,7 +1076,7 @@ export const Operator = (props: {
                                     height: "40px",
                                     padding: "8px 16px"
                                 }}
-                                title={props.studyMode?.isPracticeRound ? "Proceed to Task 1" : "Proceed to next task"}
+                                title={props.studyMode?.isPracticeRound ? "Start First Task" : "Proceed to next task"}
                             >
                                 <span>{props.studyMode.proceedButtonText}</span>
                             </button>
@@ -1452,7 +1452,7 @@ export const Operator = (props: {
                                 }}
                             >
                                 <CheckIcon style={{ fontSize: "1em" }} />
-                                {props.studyMode?.isPracticeRound ? "Proceed to Task 1" : "Ready to Start"}
+                                {props.studyMode?.isPracticeRound ? "Start First Task" : "Ready to Start"}
                             </button>
                         </div>
                     </div>
