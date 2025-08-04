@@ -309,6 +309,7 @@ export const Operator = (props: {
             (window as any).pauseAndConfirmResolve = null;
             (window as any).pauseAndConfirmMessage = null;
         }
+        setIsProgramFinished(false);
     };
 
     // Function to handle "Reset" button click
@@ -337,6 +338,7 @@ export const Operator = (props: {
             (window as any).pauseAndConfirmResolve = null;
             (window as any).pauseAndConfirmMessage = null;
         }
+        setIsProgramFinished(false);
     };
 
     // Effect to detect when PauseAndConfirm is called
