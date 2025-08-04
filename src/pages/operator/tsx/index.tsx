@@ -482,7 +482,7 @@ function renderOperator(storageHandler: StorageHandler) {
             };
             sessionStorage.setItem('studyData', JSON.stringify(studyData));
             
-            // Initialize next task data
+            // Initialize next task data (but not for task 5 which doesn't exist)
             if (nextTask <= 4 && taskOrder.length > 0) {
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
@@ -498,6 +498,28 @@ function renderOperator(storageHandler: StorageHandler) {
                             execution_attempts: []
                         };
                         sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    }
+                }
+            }
+            
+            // Initialize task 4 data when we start task 4 (since there's no next task)
+            if (nextTask === 4 && taskOrder.length > 0) {
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (existingData) {
+                        const studyData = JSON.parse(existingData);
+                        const taskLetter = taskOrder[3]; 
+                        if (!studyData.tasks[taskLetter]) {
+                            studyData.tasks[taskLetter] = {
+                                task_start_time: new Date().toISOString(),
+                                task_end_time: null,
+                                program_editor_sessions: [],
+                                demonstration_recordings: [],
+                                execution_attempts: []
+                            };
+                            sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                        }
                     }
                 }
             }
