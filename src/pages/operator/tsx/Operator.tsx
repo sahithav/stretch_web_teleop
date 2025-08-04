@@ -1299,20 +1299,7 @@ export const Operator = (props: {
                             Task Completion Confirmation
                         </h3>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
-                            <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                Please confirm that you have:
-                            </p>
-                            <ul style={{ 
-                                marginBottom: "20px", 
-                                paddingLeft: "20px",
-                                lineHeight: "1.6"
-                            }}>
-                                <li>Demonstrated the task (recorded demo)</li>
-                                <li>Wrote a program in Program Editor mode</li>
-                                <li>Successfully executed the program</li>
-                            </ul>
-                            
-                            {/* Questionnaire Section */}
+                            {/* Questionnaire Section - Wrapped around confirmation content */}
                             {props.studyMode?.taskOrder && props.studyMode?.currentTask && (
                                 <div style={{
                                     marginBottom: "20px",
@@ -1321,47 +1308,64 @@ export const Operator = (props: {
                                     borderRadius: "6px",
                                     border: "2px solid #e9ecef"
                                 }}>
-                                    <h4 style={{ 
-                                        marginBottom: "12px", 
-                                        color: "#495057",
-                                        fontSize: "1em",
-                                        fontWeight: "600"
-                                    }}>
-                                        📋 Task Questionnaire
-                                    </h4>
-                                    <p style={{
-                                        marginBottom: "12px",
-                                        fontSize: "14px",
-                                        color: "#666",
-                                        lineHeight: "1.4"
-                                    }}>
-                                        Please complete the questionnaire for this task before proceeding to the next task.
+                                    <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                        Please confirm that you have:
                                     </p>
-                                    <a 
-                                        href={getQuestionnaireUrl(props.studyMode.taskOrder[props.studyMode.currentTask - 1])}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: "inline-block",
-                                            padding: "8px 16px",
-                                            background: "#0d4a5c",
-                                            color: "white",
-                                            textDecoration: "none",
-                                            borderRadius: "4px",
-                                            fontWeight: "500",
-                                            fontSize: "14px",
-                                            transition: "all 0.3s ease"
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.background = "#0a3a47";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.background = "#0d4a5c";
-                                        }}
-                                    >
-                                        📄 Complete Questionnaire
-                                    </a>
+                                    <ul style={{ 
+                                        marginBottom: "20px", 
+                                        paddingLeft: "20px",
+                                        lineHeight: "1.6"
+                                    }}>
+                                        <li>Demonstrated the task (recorded demo)</li>
+                                        <li>Wrote a program in Program Editor mode</li>
+                                        <li>Successfully executed the program</li>
+                                    </ul>
+                                    
+                                    <div style={{ textAlign: "center", marginTop: "16px" }}>
+                                        <a 
+                                            href={getQuestionnaireUrl(props.studyMode.taskOrder[props.studyMode.currentTask - 1])}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: "inline-block",
+                                                padding: "8px 16px",
+                                                background: "#0d4a5c",
+                                                color: "white",
+                                                textDecoration: "none",
+                                                borderRadius: "4px",
+                                                fontWeight: "500",
+                                                fontSize: "14px",
+                                                transition: "all 0.3s ease"
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = "#0a3a47";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = "#0d4a5c";
+                                            }}
+                                        >
+                                            📄 Complete Questionnaire
+                                        </a>
+                                    </div>
                                 </div>
+                            )}
+                            
+                            {/* Show confirmation content without background if no questionnaire */}
+                            {(!props.studyMode?.taskOrder || !props.studyMode?.currentTask) && (
+                                <>
+                                    <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                        Please confirm that you have:
+                                    </p>
+                                    <ul style={{ 
+                                        marginBottom: "20px", 
+                                        paddingLeft: "20px",
+                                        lineHeight: "1.6"
+                                    }}>
+                                        <li>Demonstrated the task (recorded demo)</li>
+                                        <li>Wrote a program in Program Editor mode</li>
+                                        <li>Successfully executed the program</li>
+                                    </ul>
+                                </>
                             )}
                             
                             <p style={{
