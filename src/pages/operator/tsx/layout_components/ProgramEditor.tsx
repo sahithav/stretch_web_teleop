@@ -954,7 +954,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             Running... View execution details in the Execution Monitor.
                         </span>
                     )}
-                    {!isExecuting && props.sharedState.robotNotHomed && (
+                    {!isExecuting && (
                         <span 
                             style={{
                                 color: "#0d4a5c",
