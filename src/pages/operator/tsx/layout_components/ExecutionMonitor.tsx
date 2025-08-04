@@ -49,6 +49,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const [savedPositions, setSavedPositions] = useState<string[]>(DEFAULT_SAVED_POSITIONS);
     const [showDoneMessage, setShowDoneMessage] = useState(false);
     const prevIsExecutingRef = React.useRef(false);
+    const hasTrackedExecutionEndRef = React.useRef(false);
     
     const { customizing, currentExecutingLine, isExecutingProgram, isProgramFinished, setIsProgramFinished, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
@@ -98,15 +99,18 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             if (setIsProgramFinished) {
                 setIsProgramFinished(false);
             }
+            // Reset tracking flag when starting new execution
+            hasTrackedExecutionEndRef.current = false;
         }
         
-        // Track execution attempt end when program is finished
-        if (isProgramFinished && !executionError) {
+        // Track execution attempt end when program is finished (only once per execution)
+        if (isProgramFinished && !executionError && !hasTrackedExecutionEndRef.current) {
             setShowDoneMessage(true);
             
             // Track successful execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
                 (props.sharedState as any).trackExecutionAttemptEnd(true);
+                hasTrackedExecutionEndRef.current = true;
             }
             
             const timer = setTimeout(() => {
@@ -114,10 +118,11 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             }, 5000); 
             
             return () => clearTimeout(timer);
-        } else if (isProgramFinished && executionError) {
+        } else if (isProgramFinished && executionError && !hasTrackedExecutionEndRef.current) {
             // Track failed execution completion for study data
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
                 (props.sharedState as any).trackExecutionAttemptEnd(false);
+                hasTrackedExecutionEndRef.current = true;
             }
         } else if (isExecutingProgram) {
             // Program is executing, hide done message

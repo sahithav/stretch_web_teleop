@@ -822,7 +822,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         if (isExecuting) {
             // Stop execution
             console.log("Stop Program button clicked!");
-            
             // Track execution attempt end with failure (user stopped)
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
     
