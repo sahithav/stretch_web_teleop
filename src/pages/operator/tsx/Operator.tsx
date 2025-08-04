@@ -122,6 +122,21 @@ export const Operator = (props: {
     const hasTrackedExecutionEndRef = React.useRef(false);
     
     // Function to track saved position addition
+    const getQuestionnaireUrl = (taskLetter: string): string => {
+        switch (taskLetter) {
+            case 'R':
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSdoTmoCgTXAtpBBrVoUR8Q5Gu-lNwlQbIpdOrt_vzVH1zCT3Q/viewform?usp=header';
+            case 'B':
+                return 'https://docs.google.com/forms/d/1_FbOLY0eF3bNXF0mDDdMGBIkmxds1V2wkUYqWC9F9XE/edit';
+            case 'O':
+                return 'https://docs.google.com/forms/d/1tI3SdU1_s-KIVmct7Trj1A1SrXQIpCKNjmbYU2XJ3IQ/edit';
+            case 'M':
+                return 'https://docs.google.com/forms/d/1vTl31OYNJQjM3YzLZuRTawIAMAXXRghytROVFv7loIc/edit';
+            default:
+                return '';
+        }
+    };
+
     const trackSavedPositionAdded = () => {
         if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
             setCurrentProgramSession(prev => ({
@@ -1295,7 +1310,60 @@ export const Operator = (props: {
                                 <li>Wrote a program in Program Editor mode</li>
                                 <li>Successfully executed the program</li>
                             </ul>
-                                                        <p style={{
+                            
+                            {/* Questionnaire Section */}
+                            {props.studyMode?.taskOrder && props.studyMode?.currentTask && (
+                                <div style={{
+                                    marginBottom: "20px",
+                                    padding: "16px",
+                                    backgroundColor: "#f8f9fa",
+                                    borderRadius: "6px",
+                                    border: "2px solid #e9ecef"
+                                }}>
+                                    <h4 style={{ 
+                                        marginBottom: "12px", 
+                                        color: "#495057",
+                                        fontSize: "1em",
+                                        fontWeight: "600"
+                                    }}>
+                                        📋 Task Questionnaire
+                                    </h4>
+                                    <p style={{
+                                        marginBottom: "12px",
+                                        fontSize: "14px",
+                                        color: "#666",
+                                        lineHeight: "1.4"
+                                    }}>
+                                        Please complete the questionnaire for this task before proceeding to the next task.
+                                    </p>
+                                    <a 
+                                        href={getQuestionnaireUrl(props.studyMode.taskOrder[props.studyMode.currentTask - 1])}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: "inline-block",
+                                            padding: "8px 16px",
+                                            background: "#0d4a5c",
+                                            color: "white",
+                                            textDecoration: "none",
+                                            borderRadius: "4px",
+                                            fontWeight: "500",
+                                            fontSize: "14px",
+                                            transition: "all 0.3s ease"
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = "#0a3a47";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = "#0d4a5c";
+                                        }}
+                                    >
+                                        📄 Complete Questionnaire
+                                    </a>
+                                </div>
+                            )}
+                            
+                            <p style={{
                                 marginBottom: "0",
                                 fontSize: "14px",
                                 color: "#666",
