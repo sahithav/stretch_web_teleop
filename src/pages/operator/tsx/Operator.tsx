@@ -753,6 +753,7 @@ export const Operator = (props: {
         stopHumanApiRecording: stopHumanApiRecording,
         isProgramFinished: isProgramFinished,
         setIsProgramFinished: setIsProgramFinished,
+        studyMode: props.studyMode,
     };
     
 
@@ -1505,7 +1506,7 @@ export const Operator = (props: {
                                         }}>
                                             <li>Teleoperate the robot to execute the task.</li>
                                             <li>Create your program in the Program Editor.</li>
-                                            <li>Execute the program to perform the tasksuccessfully</li>
+                                            <li>Execute the program to perform the task successfully.</li>
                                         </ol>
                                     </div>
                                     <p style={{ 

@@ -85,6 +85,15 @@ export type SharedState = {
     isProgramFinished?: boolean;
     /** Function to set program finished state */
     setIsProgramFinished?: (finished: boolean) => void;
+    /** Study mode data for API visibility */
+    studyMode?: {
+        currentTask: number;
+        onProceedToNextTask: () => void;
+        proceedButtonText: string;
+        isPracticeRound?: boolean;
+        taskOrder?: string[];
+        taskDefinitions?: { [key: string]: string };
+    };
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

@@ -289,7 +289,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             console.log('ProgramEditor: Current task number:', currentTask);
             
             // Get the task order from sharedState
-            const taskOrder = (props.sharedState as any).studyMode?.taskOrder;
+            const taskOrder = props.sharedState.studyMode?.taskOrder;
             
             if (taskOrder && taskOrder.length > 0) {
                 const taskLetter = taskOrder[currentTask - 1];
