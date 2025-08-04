@@ -55,11 +55,10 @@ export const Operator = (props: {
     storageHandler: StorageHandler;
     isReconnecting?: boolean;
     studyMode?: {
-        currentTask: string; 
+        currentTask: number;
         onProceedToNextTask: () => void;
         proceedButtonText: string;
         isPracticeRound?: boolean;
-        taskOrder?: string[]; // Array of task identifiers in random order
     };
 }) => {
     // Layout and customization state
@@ -88,48 +87,24 @@ export const Operator = (props: {
     const [showStudyConfirmation, setShowStudyConfirmation] = React.useState<boolean>(false);
     const [showTaskDescription, setShowTaskDescription] = React.useState<boolean>(false);
     
-         // Task definitions with unique identifiers
-     const TASK_DEFINITIONS = {
-         'r': {
-             id: 'r',
-             description: 'Pick up the pill bottle and place on the box',
-             title: 'Task R'
-         },
-         'b': {
-             id: 'b', 
-             description: 'Pick up the pill bottle and place on the table',
-             title: 'Task B'
-         },
-         'o': {
-             id: 'o',
-             description: 'Pour the substance in cup A into cup B',
-             title: 'Task O'
-         },
-         'm': {
-             id: 'm',
-             description: 'Pour the substance in cup A into cup B',
-             title: 'Task M'
-         }
-     };
-     
-     // Study data tracking
-     const [studyData, setStudyData] = React.useState(() => {
-         const userId = sessionStorage.getItem('studyUserId');
-         if (!userId) return null;
-         
-         const existingData = sessionStorage.getItem(`studyData_${userId}`);
-         if (existingData) {
-             return JSON.parse(existingData);
-         }
-         
-         return {
-             metadata: {
-                 study_start_time: null,
-                 study_end_time: null
-             },
-             tasks: {}
-         };
-     });
+    // Study data tracking
+    const [studyData, setStudyData] = React.useState(() => {
+        const userId = sessionStorage.getItem('studyUserId');
+        if (!userId) return null;
+        
+        const existingData = sessionStorage.getItem(`studyData_${userId}`);
+        if (existingData) {
+            return JSON.parse(existingData);
+        }
+        
+        return {
+            metadata: {
+                study_start_time: null,
+                study_end_time: null
+            },
+            tasks: {}
+        };
+    });
     
     // Track current program editor session
     const [currentProgramSession, setCurrentProgramSession] = React.useState({
@@ -142,171 +117,135 @@ export const Operator = (props: {
         pause_and_confirm_resets: 0
     });
     
-         // Function to track saved position addition
-     const trackSavedPositionAdded = () => {
-         // Don't track during practice round
-         if (props.studyMode?.isPracticeRound) return;
-         
-         if (programMode === "Program Editor" && currentProgramSession.session_start) {
-             setCurrentProgramSession(prev => ({
-                 ...prev,
-                 saved_positions_added: prev.saved_positions_added + 1
-             }));
-         }
-     };
+    // Function to track saved position addition
+    const trackSavedPositionAdded = () => {
+        if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
+            setCurrentProgramSession(prev => ({
+                ...prev,
+                saved_positions_added: prev.saved_positions_added + 1
+            }));
+        }
+    };
     
-         // Function to track execution attempt start
-     const trackExecutionAttemptStart = () => {
-         // Don't track during practice round
-         if (props.studyMode?.isPracticeRound) return;
-         
-         if (props.studyMode) {
-             setCurrentExecutionAttempt({
-                 pause_and_confirm_resets: 0
-             });
-         }
-     };
+    // Function to track execution attempt start
+    const trackExecutionAttemptStart = () => {
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            setCurrentExecutionAttempt({
+                pause_and_confirm_resets: 0
+            });
+        }
+    };
     
-         // Function to track execution attempt end
-     const trackExecutionAttemptEnd = (success: boolean) => {
-         // Don't track during practice round
-         if (props.studyMode?.isPracticeRound) return;
- 
-         if (props.studyMode) {
-             const userId = sessionStorage.getItem('studyUserId');
-             const currentTask = props.studyMode.currentTask;
-             
-             console.log('User ID:', userId, 'Current Task:', currentTask);
-             
-             if (userId && currentTask) {
-                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                 if (existingData) {
-                     const studyData = JSON.parse(existingData);
-                     
-                     if (!studyData.tasks[currentTask]) {
-                         studyData.tasks[currentTask] = {
-                             task_id: currentTask,
-                             task_title: TASK_DEFINITIONS[currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${currentTask}`,
-                             task_description: TASK_DEFINITIONS[currentTask as keyof typeof TASK_DEFINITIONS]?.description || '',
-                             task_start_time: new Date().toISOString(),
-                             task_end_time: null,
-                             program_editor_sessions: [],
-                             demonstration_recordings: [],
-                             execution_attempts: []
-                         };
-                     }
-                     
-                     const executionData = {
-                         execution_end: new Date().toISOString(),
-                         success: success,
-                         pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
-                     };
-                     
-                     studyData.tasks[currentTask].execution_attempts.push(executionData);
-                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-         
-                 }
-             }
-         }
-     };
+    // Function to track execution attempt end
+    const trackExecutionAttemptEnd = (success: boolean) => {
+
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                    }
+                    
+                    const executionData = {
+                        execution_end: new Date().toISOString(),
+                        success: success,
+                        pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
+                    };
+                    
+                    studyData.tasks[currentTask].execution_attempts.push(executionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+        
+                }
+            }
+        }
+    };
     
-         // Function to track demonstration recording start
-     const trackDemonstrationRecordingStart = () => {
-         // Don't track during practice round
-         if (props.studyMode?.isPracticeRound) return;
- 
-         if (props.studyMode) {
-             const userId = sessionStorage.getItem('studyUserId');
-             const currentTask = props.studyMode.currentTask;
-             
-             console.log('User ID:', userId, 'Current Task:', currentTask);
-             
-             if (userId && currentTask) {
-                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                 if (existingData) {
-                     const studyData = JSON.parse(existingData);
-                     
-                     if (!studyData.tasks[currentTask]) {
-                         studyData.tasks[currentTask] = {
-                             task_start_time: new Date().toISOString(),
-                             task_end_time: null,
-                             program_editor_sessions: [],
-                             demonstration_recordings: [],
-                             execution_attempts: []
-                         };
-                     }
-                     
-                     const recordingData = {
-                         recording_start: new Date().toISOString(),
-                         recording_end: null,
-                         rosbag_name: null
-                     };
-                     
-                     studyData.tasks[currentTask].demonstration_recordings.push(recordingData);
-                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-         
-                 }
-             }
-         }
-     };
+    // Function to track demonstration recording start
+    const trackDemonstrationRecordingStart = () => {
+
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                    }
+                    
+                    const recordingData = {
+                        recording_start: new Date().toISOString(),
+                        recording_end: null,
+                        rosbag_name: null
+                    };
+                    
+                    studyData.tasks[currentTask].demonstration_recordings.push(recordingData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+        
+                }
+            }
+        }
+    };
     
-         // Function to track demonstration recording end
-     const trackDemonstrationRecordingEnd = (rosbagName: string) => {
-         // Don't track during practice round
-         if (props.studyMode?.isPracticeRound) return;
- 
-         if (props.studyMode) {
-             const userId = sessionStorage.getItem('studyUserId');
-             const currentTask = props.studyMode.currentTask;
-             
-             console.log('User ID:', userId, 'Current Task:', currentTask);
-             
-             if (userId && currentTask) {
-                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                 if (existingData) {
-                     const studyData = JSON.parse(existingData);
-                     
-                     if (studyData.tasks && studyData.tasks[currentTask] && studyData.tasks[currentTask].demonstration_recordings.length > 0) {
-                         const recordings = studyData.tasks[currentTask].demonstration_recordings;
-                         const lastRecording = recordings[recordings.length - 1];
-                         lastRecording.recording_end = new Date().toISOString();
-                         lastRecording.rosbag_name = rosbagName;
-                         
-                         sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-             
-                     }
-                 }
-             }
-         }
-     };
+    // Function to track demonstration recording end
+    const trackDemonstrationRecordingEnd = (rosbagName: string) => {
+
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (studyData.tasks && studyData.tasks[currentTask] && studyData.tasks[currentTask].demonstration_recordings.length > 0) {
+                        const recordings = studyData.tasks[currentTask].demonstration_recordings;
+                        const lastRecording = recordings[recordings.length - 1];
+                        lastRecording.recording_end = new Date().toISOString();
+                        lastRecording.rosbag_name = rosbagName;
+                        
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+            
+                    }
+                }
+            }
+        }
+    };
     
-         // Show task description modal when study starts 
-     React.useEffect(() => {
-         console.log('Task description modal check:', {
-             studyMode: props.studyMode,
-             isPracticeRound: props.studyMode?.isPracticeRound,
-             currentTask: props.studyMode?.currentTask,
-             taskOrder: props.studyMode?.taskOrder
-         });
-         
-         if (props.studyMode && props.studyMode.isPracticeRound) {
-             console.log('Showing practice round modal');
-             setShowTaskDescription(true);
-         } else if (props.studyMode && props.studyMode.taskOrder && props.studyMode.taskOrder.indexOf(props.studyMode.currentTask) === 0) {
-             console.log('Showing first task modal');
-             setShowTaskDescription(true);
-         }
-     }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound, props.studyMode?.taskOrder]);
-     
-     // Show task description modal when switching to a new task (not practice round)
-     React.useEffect(() => {
-         if (props.studyMode && !props.studyMode.isPracticeRound && props.studyMode.taskOrder) {
-             const currentIndex = props.studyMode.taskOrder.indexOf(props.studyMode.currentTask);
-             if (currentIndex > 0) { // Not the first task (first task is handled above)
-                 setShowTaskDescription(true);
-             }
-         }
-     }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound, props.studyMode?.taskOrder]);
+    // Show task description modal when study starts (Task 1)
+    React.useEffect(() => {
+        if (props.studyMode && props.studyMode.currentTask === 1) {
+            setShowTaskDescription(true);
+        }
+    }, [props.studyMode?.currentTask]);
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -768,10 +707,9 @@ export const Operator = (props: {
         taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
         startHumanApiRecording: startHumanApiRecording,
         stopHumanApiRecording: stopHumanApiRecording,
-                 isProgramFinished: isProgramFinished,
-         setIsProgramFinished: setIsProgramFinished,
-         isPracticeRound: props.studyMode?.isPracticeRound || false,
-     };
+        isProgramFinished: isProgramFinished,
+        setIsProgramFinished: setIsProgramFinished,
+    };
     
 
     /** Properties for the global options area of the sidebar */
@@ -833,74 +771,71 @@ export const Operator = (props: {
             }
         }
         
-                 // Track program editor session start
-         if (newMode === "Program Editor" && props.studyMode && !props.studyMode.isPracticeRound) {
-             const userId = sessionStorage.getItem('studyUserId');
-             const currentTask = props.studyMode.currentTask;
-             
-             // Start new program editor session
-             setCurrentProgramSession({
-                 session_start: new Date().toISOString(),
-                 saved_positions_added: 0
-             });
-             
-             // Initialize task data if not exists
-             if (studyData && !studyData.tasks[currentTask]) {
-                 setStudyData(prev => ({
-                     ...prev,
-                     tasks: {
-                         ...prev.tasks,
-                         [currentTask]: {
-                             task_start_time: new Date().toISOString(),
-                             task_end_time: null,
-                             program_editor_sessions: [],
-                             demonstration_recordings: [],
-                             execution_attempts: []
-                         }
-                     }
-                 }));
-             }
-         }
+        // Track program editor session start
+        if (newMode === "Program Editor" && props.studyMode) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            
+            // Start new program editor session
+            setCurrentProgramSession({
+                session_start: new Date().toISOString(),
+                saved_positions_added: 0
+            });
+            
+            // Initialize task data if not exists
+            if (studyData && !studyData.tasks[currentTask]) {
+                setStudyData(prev => ({
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [currentTask]: {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        }
+                    }
+                }));
+            }
+        }
         
-                 // Track program editor session end when switching away
-         if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
-     
-             const userId = sessionStorage.getItem('studyUserId');
-             const currentTask = props.studyMode?.currentTask;
-             
-             console.log('User ID:', userId, 'Current Task:', currentTask);
-             
-             if (userId && currentTask) {
-                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                 if (existingData) {
-                     const studyData = JSON.parse(existingData);
-                     
-                     if (!studyData.tasks[currentTask]) {
-                         studyData.tasks[currentTask] = {
-                             task_id: currentTask,
-                             task_title: TASK_DEFINITIONS[currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${currentTask}`,
-                             task_description: TASK_DEFINITIONS[currentTask as keyof typeof TASK_DEFINITIONS]?.description || '',
-                             task_start_time: new Date().toISOString(),
-                             task_end_time: null,
-                             program_editor_sessions: [],
-                             demonstration_recordings: [],
-                             execution_attempts: []
-                         };
-                     }
-                     
-                     const sessionData = {
-                         session_start: currentProgramSession.session_start,
-                         session_end: new Date().toISOString(),
-                         program_content: sessionStorage.getItem('programEditorCode') || "",
-                         saved_positions_added: currentProgramSession.saved_positions_added
-                     };
-                     
-                     studyData.tasks[currentTask].program_editor_sessions.push(sessionData);
-                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                     console.log('Program editor session tracked:', sessionData);
-                 }
-             }
-         }
+        // Track program editor session end when switching away
+        if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start) {
+    
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode?.currentTask;
+            
+            console.log('User ID:', userId, 'Current Task:', currentTask);
+            
+            if (userId && currentTask) {
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[currentTask]) {
+                        studyData.tasks[currentTask] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                    }
+                    
+                    const sessionData = {
+                        session_start: currentProgramSession.session_start,
+                        session_end: new Date().toISOString(),
+                        program_content: sessionStorage.getItem('programEditorCode') || "",
+                        saved_positions_added: currentProgramSession.saved_positions_added
+                    };
+                    
+                    studyData.tasks[currentTask].program_editor_sessions.push(sessionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    console.log('Program editor session tracked:', sessionData);
+                }
+            }
+        }
         
         updateLayout();
     };
@@ -1115,7 +1050,13 @@ export const Operator = (props: {
                         {props.studyMode && (
                             <button
                                 onClick={() => {
-                                    setShowStudyConfirmation(true);
+                                    if (props.studyMode?.isPracticeRound) {
+                                        // For practice round, show task description modal
+                                        setShowTaskDescription(true);
+                                    } else {
+                                        // For actual tasks, show completion confirmation
+                                        setShowStudyConfirmation(true);
+                                    }
                                 }}
                                 className="btn-turquoise font-white"
                                 style={{
@@ -1127,9 +1068,9 @@ export const Operator = (props: {
                                     height: "40px",
                                     padding: "8px 16px"
                                 }}
-                                title="Proceed to next task"
+                                title={props.studyMode?.isPracticeRound ? "Proceed to Task 1" : "Proceed to next task"}
                             >
-                                                                 <span>{props.studyMode.isPracticeRound ? "Proceed to First Task" : "Proceed to Next Task"}</span>
+                                <span>{props.studyMode.proceedButtonText}</span>
                             </button>
                         )}
                     </div>
@@ -1306,39 +1247,34 @@ export const Operator = (props: {
                         boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
                         textAlign: "center"
                     }}>
-                                                 <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
-                             {props.studyMode?.isPracticeRound ? "Practice Round Completion" : `${TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`} Completion Confirmation`}
-                         </h3>
-                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
-                             <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                 Please confirm that you have completed {props.studyMode?.isPracticeRound ? "the practice round" : TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`}:
-                             </p>
-                             <p style={{ marginBottom: "16px", lineHeight: "1.5", fontStyle: "italic", color: "#666" }}>
-                                 {props.studyMode?.isPracticeRound ? "" : TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.description || ""}
-                             </p>
-                             <ul style={{ 
-                                 marginBottom: "20px", 
-                                 paddingLeft: "20px",
-                                 lineHeight: "1.6"
-                             }}>
-                                 <li>Demonstrated the task (recorded demo)</li>
-                                 <li>Wrote a program in Program Editor mode</li>
-                                 <li>Successfully executed the program</li>
-                             </ul>
-                             <p style={{
-                                 marginBottom: "0",
-                                 fontSize: "14px",
-                                 color: "#666",
-                                 fontStyle: "italic"
-                             }}>
-                                 {props.studyMode?.isPracticeRound 
-                                     ? "Are you ready to proceed to the first task?" 
-                                     : props.studyMode?.taskOrder && props.studyMode.taskOrder.indexOf(props.studyMode.currentTask) === props.studyMode.taskOrder.length - 1
-                                         ? "Are you ready to end the study?" 
-                                         : "Are you ready to proceed to the next task?"
-                                 }
-                             </p>
-                         </div>
+                        <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
+                            Task {props.studyMode?.currentTask} Completion Confirmation
+                        </h3>
+                        <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
+                            <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                Please confirm that you have completed Task {props.studyMode?.currentTask}:
+                            </p>
+                            <ul style={{ 
+                                marginBottom: "20px", 
+                                paddingLeft: "20px",
+                                lineHeight: "1.6"
+                            }}>
+                                <li>Demonstrated the task (recorded demo)</li>
+                                <li>Wrote a program in Program Editor mode</li>
+                                <li>Successfully executed the program</li>
+                            </ul>
+                                                        <p style={{
+                                marginBottom: "0",
+                                fontSize: "14px",
+                                color: "#666",
+                                fontStyle: "italic"
+                            }}>
+                                {props.studyMode?.currentTask === 4 
+                                    ? "Are you ready to end the study?" 
+                                    : "Are you ready to proceed to the next task?"
+                                }
+                            </p>
+                        </div>
                         <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
                             <button
                                 style={{
@@ -1373,22 +1309,12 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowStudyConfirmation(false);
                                     props.studyMode?.onProceedToNextTask();
-                                                                         // Show task description for next task (except for last task which goes to conclusion)
-                                     if (props.studyMode?.taskOrder && props.studyMode.taskOrder.indexOf(props.studyMode.currentTask) < props.studyMode.taskOrder.length - 1) {
-                                         setTimeout(() => {
-                                             setShowTaskDescription(true);
-                                         }, 100);
-                                     }
-                                     
-                                     // Also show task description when switching to a new task
-                                     if (props.studyMode && !props.studyMode.isPracticeRound && props.studyMode.taskOrder) {
-                                         const currentIndex = props.studyMode.taskOrder.indexOf(props.studyMode.currentTask);
-                                         if (currentIndex > 0) { // Not the first task
-                                             setTimeout(() => {
-                                                 setShowTaskDescription(true);
-                                             }, 100);
-                                         }
-                                     }
+                                    // Show task description for next task (except for Task 4 which goes to conclusion)
+                                    if (props.studyMode?.currentTask < 4) {
+                                        setTimeout(() => {
+                                            setShowTaskDescription(true);
+                                        }, 100);
+                                    }
                                 }}
                             >
                                 <CheckIcon style={{ fontSize: "1em" }} />
@@ -1422,14 +1348,46 @@ export const Operator = (props: {
                         boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
                         textAlign: "center"
                     }}>
-                                                 <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
-                             {props.studyMode?.isPracticeRound ? "Practice Round" : TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`}
-                         </h3>
+                        <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
+                            {props.studyMode?.isPracticeRound ? "Practice Round Complete" : `Task ${props.studyMode?.currentTask} Description`}
+                        </h3>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
                             {props.studyMode?.isPracticeRound ? (
                                 <>
                                     <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                        <strong>Practice Round:</strong> Familiarize yourself with the interface by completing a simple task.
+                                        <strong>Practice Task:</strong> Pick up the cube and place it down in the same spot
+                                    </p>
+                                    <div style={{ 
+                                        marginBottom: "20px", 
+                                        padding: "16px",
+                                        backgroundColor: "#fff3cd",
+                                        borderRadius: "6px",
+                                        border: "1px solid #ffeaa7"
+                                    }}>
+                                        <h4 style={{ marginBottom: "12px", color: "#856404" }}>Practice Round Summary:</h4>
+                                        <ul style={{ 
+                                            marginBottom: "0",
+                                            paddingLeft: "20px",
+                                            lineHeight: "1.6"
+                                        }}>
+                                            <li>You have completed the practice round</li>
+                                            <li>You are now familiar with the interface</li>
+                                            <li>No data was recorded during practice</li>
+                                        </ul>
+                                    </div>
+                                    <p style={{ 
+                                        marginBottom: "0",
+                                        fontSize: "14px",
+                                        color: "#666",
+                                        fontStyle: "italic"
+                                    }}>
+                                        Click "Proceed to Task 1" to begin the actual study tasks.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
+                                        <strong>Task {props.studyMode?.currentTask}:</strong> [Task description will go here]
                                     </p>
                                     <div style={{ 
                                         marginBottom: "20px", 
@@ -1438,10 +1396,6 @@ export const Operator = (props: {
                                         borderRadius: "6px",
                                         border: "1px solid #e9ecef"
                                     }}>
-                                        <h4 style={{ marginBottom: "12px", color: "#495057" }}>Practice Task:</h4>
-                                        <p style={{ marginBottom: "12px", lineHeight: "1.6" }}>
-                                            Pick up a cube and place it back down in the same spot.
-                                        </p>
                                         <h4 style={{ marginBottom: "12px", color: "#495057" }}>Instructions:</h4>
                                         <ol style={{ 
                                             marginBottom: "0",
@@ -1459,40 +1413,8 @@ export const Operator = (props: {
                                         color: "#666",
                                         fontStyle: "italic"
                                     }}>
-                                        Click "Ready to Start" when you're ready to begin the practice round.
+                                        Click "Ready to Start" when you're ready to begin Task {props.studyMode?.currentTask}.
                                     </p>
-                                </>
-                            ) : (
-                                                                 <>
-                                     <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                         <strong>{TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`}:</strong> {TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.description || '[Task description will go here]'}
-                                     </p>
-                                    <div style={{ 
-                                        marginBottom: "20px", 
-                                        padding: "16px",
-                                        backgroundColor: "#f8f9fa",
-                                        borderRadius: "6px",
-                                        border: "1px solid #e9ecef"
-                                    }}>
-                                        <h4 style={{ marginBottom: "12px", color: "#495057" }}>Instructions:</h4>
-                                        <ol style={{ 
-                                            marginBottom: "0",
-                                            paddingLeft: "20px",
-                                            lineHeight: "1.6"
-                                        }}>
-                                            <li>Teleoperate the robot to execute the task</li>
-                                            <li>Create your program in Program Editor mode</li>
-                                            <li>Execute the program successfully</li>
-                                        </ol>
-                                    </div>
-                                                                         <p style={{ 
-                                         marginBottom: "0",
-                                         fontSize: "14px",
-                                         color: "#666",
-                                         fontStyle: "italic"
-                                     }}>
-                                         Click "Ready to Start" when you're ready to begin {TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`}.
-                                     </p>
                                 </>
                             )}
                         </div>
@@ -1513,10 +1435,14 @@ export const Operator = (props: {
                                 }}
                                 onClick={() => {
                                     setShowTaskDescription(false);
+                                    if (props.studyMode?.isPracticeRound) {
+                                        // For practice round, proceed to task 1
+                                        props.studyMode.onProceedToNextTask();
+                                    }
                                 }}
                             >
                                 <CheckIcon style={{ fontSize: "1em" }} />
-                                Ready to Start
+                                {props.studyMode?.isPracticeRound ? "Proceed to Task 1" : "Ready to Start"}
                             </button>
                         </div>
                     </div>

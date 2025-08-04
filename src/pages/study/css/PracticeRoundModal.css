@@ -1,0 +1,129 @@
+.practice-round-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.practice-round-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.practice-round-modal-content {
+    text-align: center;
+}
+
+.practice-round-modal h2 {
+    color: #2c3e50;
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.practice-round-description {
+    text-align: left;
+    margin-bottom: 32px;
+}
+
+.practice-round-description p {
+    color: #34495e;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.practice-task {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 16px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.practice-task h3 {
+    color: #007bff;
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.practice-task p {
+    color: #495057;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.practice-instructions {
+    margin: 24px 0;
+}
+
+.practice-instructions h4 {
+    color: #2c3e50;
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.practice-instructions ol {
+    color: #34495e;
+    font-size: 16px;
+    line-height: 1.6;
+    padding-left: 20px;
+}
+
+.practice-instructions li {
+    margin-bottom: 8px;
+}
+
+.practice-note {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 20px 0;
+}
+
+.practice-note p {
+    color: #856404;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.practice-round-actions {
+    margin-top: 32px;
+}
+
+.proceed-to-practice-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.proceed-to-practice-btn:hover {
+    background: #218838;
+}
+
+.proceed-to-practice-btn:active {
+    background: #1e7e34;
+} 

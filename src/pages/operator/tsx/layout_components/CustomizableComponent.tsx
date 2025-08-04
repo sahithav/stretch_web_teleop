@@ -85,8 +85,6 @@ export type SharedState = {
     isProgramFinished?: boolean;
     /** Function to set program finished state */
     setIsProgramFinished?: (finished: boolean) => void;
-    /** Whether currently in practice round mode */
-    isPracticeRound?: boolean;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or

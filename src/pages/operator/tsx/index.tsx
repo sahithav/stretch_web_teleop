@@ -16,6 +16,7 @@ import { cmd } from "shared/commands";
 import { Operator } from "./Operator";
 import { StudyLanding } from "../../study/tsx/StudyLanding";
 import { StudyConclusion } from "../../study/tsx/StudyConclusion";
+import { PracticeRoundModal } from "../../study/tsx/PracticeRoundModal";
 import { DEFAULT_VELOCITY_SCALE } from "./static_components/SpeedControl";
 import { StorageHandler } from "./storage_handler/StorageHandler";
 import { FirebaseStorageHandler } from "./storage_handler/FirebaseStorageHandler";
@@ -324,8 +325,9 @@ function renderOperator(storageHandler: StorageHandler) {
     // Add a React state for isReconnecting and study state
     function OperatorWithStudy() {
         const [reconnecting, setReconnecting] = useState(false);
-        const [studyPhase, setStudyPhase] = useState<'landing' | 'operator' | 'conclusion'>('landing');
+        const [studyPhase, setStudyPhase] = useState<'landing' | 'practice' | 'operator' | 'conclusion'>('landing');
         const [currentTask, setCurrentTask] = useState(1);
+        const [isPracticeRound, setIsPracticeRound] = useState(false);
 
         useEffect(() => {
             // Observe the DOM for the loader
@@ -362,9 +364,14 @@ function renderOperator(storageHandler: StorageHandler) {
 
         // Handle beginning the study
         const handleBeginStudy = () => {
+            setStudyPhase('practice');
+        };
+
+        const handleProceedToPractice = () => {
             clearSessionStorage();
             setStudyPhase('operator');
             setCurrentTask(1);
+            setIsPracticeRound(true);
             
             // Track study start time
             const userId = sessionStorage.getItem('studyUserId');
@@ -382,6 +389,38 @@ function renderOperator(storageHandler: StorageHandler) {
 
         // Handle proceeding to next task
         const handleProceedToNextTask = () => {
+            if (isPracticeRound) {
+                // End practice round and start actual study
+                setIsPracticeRound(false);
+                setCurrentTask(1);
+                clearSessionStorage();
+                
+                // Initialize task 1 data
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (existingData) {
+                        const studyData = JSON.parse(existingData);
+                        studyData.tasks[1] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    }
+                }
+                
+                // Update session storage with task 1
+                const studyData = {
+                    currentTask: 1,
+                    studyPhase: 'operator'
+                };
+                sessionStorage.setItem('studyData', JSON.stringify(studyData));
+                return;
+            }
+            
             // Track task end time for current task
             const userId = sessionStorage.getItem('studyUserId');
             if (userId && currentTask <= 4) {
@@ -444,6 +483,10 @@ function renderOperator(storageHandler: StorageHandler) {
 
         // Get the button text based on current task
         const getProceedButtonText = () => {
+            if (isPracticeRound) {
+                return 'Proceed to Task 1';
+            }
+            
             switch (currentTask) {
                 case 1: return 'Proceed to Task 2';
                 case 2: return 'Proceed to Task 3';
@@ -501,6 +544,9 @@ function renderOperator(storageHandler: StorageHandler) {
             case 'landing':
                 return <StudyLanding onBeginStudy={handleBeginStudy} />;
             
+            case 'practice':
+                return <PracticeRoundModal onProceedToPractice={handleProceedToPractice} />;
+            
             case 'operator':
                 return (
                     <Operator
@@ -511,7 +557,8 @@ function renderOperator(storageHandler: StorageHandler) {
                         studyMode={{
                             currentTask,
                             onProceedToNextTask: handleProceedToNextTask,
-                            proceedButtonText: getProceedButtonText()
+                            proceedButtonText: getProceedButtonText(),
+                            isPracticeRound
                         }}
                     />
                 );
