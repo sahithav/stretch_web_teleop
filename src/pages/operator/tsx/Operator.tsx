@@ -149,32 +149,34 @@ export const Operator = (props: {
     // Function to track execution attempt start
     const trackExecutionAttemptStart = () => {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
-            // Reset the tracking flag when starting new execution
+            console.log('=== Starting new execution attempt ===');
+            // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
                 pause_and_confirm_resets: 0,
                 execution_start: new Date().toISOString()
             });
-            console.log('Execution attempt started at:', new Date().toISOString());
         }
     };
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
-        console.log('trackExecutionAttemptEnd called with success:', success, 'hasTrackedExecutionEndRef.current:', hasTrackedExecutionEndRef.current, 'execution_start:', currentExecutionAttempt.execution_start);
+        console.log('=== trackExecutionAttemptEnd called ===');
+        console.log('Success:', success);
+        console.log('Already tracked:', hasTrackedExecutionEndRef.current);
+        console.log('Execution start:', currentExecutionAttempt.execution_start);
+        console.log('Pause and confirm resets:', currentExecutionAttempt.pause_and_confirm_resets);
         
-        // Prevent duplicate tracking only if we have a valid execution start and haven't tracked yet
-        if (hasTrackedExecutionEndRef.current && currentExecutionAttempt.execution_start) {
-            console.log('Execution attempt already tracked, skipping duplicate');
+        // Prevent duplicate tracking
+        if (hasTrackedExecutionEndRef.current) {
+            console.log('Execution already tracked, skipping duplicate');
             return;
         }
 
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode && !props.studyMode.isPracticeRound && currentExecutionAttempt.execution_start) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
-            
-            console.log('User ID:', userId, 'Current Task:', currentTask);
             
             if (userId && currentTask && taskOrder) {
                 const taskLetter = taskOrder[currentTask - 1];
@@ -205,7 +207,9 @@ export const Operator = (props: {
                     // Mark as tracked to prevent duplicates
                     hasTrackedExecutionEndRef.current = true;
                     
-                    console.log('Execution attempt tracked:', executionData);
+                    console.log('=== Execution attempt tracked successfully ===');
+                    console.log('Execution data:', executionData);
+                    console.log('Total execution attempts:', studyData.tasks[taskLetter].execution_attempts.length);
                 }
             }
         }
@@ -347,11 +351,9 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
-
         // Track pause and confirm reset for study data
-
         if (props.studyMode && (window as any).pauseAndConfirmResolve) {
-            console.log('Tracking pause and confirm reset');
+            console.log('=== Tracking pause and confirm reset ===');
             setCurrentExecutionAttempt(prev => {
                 const newAttempt = {
                     ...prev,

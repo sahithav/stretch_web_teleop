@@ -830,11 +830,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         if (isExecuting) {
             // Stop execution
             console.log("Stop Program button clicked!");
-            // Track execution attempt end with failure (user stopped)
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-    
-                (props.sharedState as any).trackExecutionAttemptEnd(false);
-            }
             
             setIsExecuting(false);
             stopExecutionRef.current = true;
@@ -864,8 +859,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             
             console.log("Setting isExecuting to true");
             setIsExecuting(true);
-            
-            // Execution attempt tracking moved to executeProgram function
             
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {
@@ -959,6 +952,18 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             }}
                         >
                             Running... View execution details in the Execution Monitor.
+                        </span>
+                    )}
+                    {!isExecuting && props.sharedState.robotNotHomed && (
+                        <span 
+                            style={{
+                                color: "#0d4a5c",
+                                fontWeight: "bold",
+                                fontSize: "14px",
+                                marginLeft: "16px"
+                            }}
+                        >
+                            Make sure you home the robot before running your program.
                         </span>
                     )}
                 </div>
