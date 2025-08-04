@@ -125,13 +125,13 @@ export const Operator = (props: {
     const getQuestionnaireUrl = (taskLetter: string): string => {
         switch (taskLetter) {
             case 'R':
-                return 'https://docs.google.com/forms/d/e/1FAIpQLSdoTmoCgTXAtpBBrVoUR8Q5Gu-lNwlQbIpdOrt_vzVH1zCT3Q/viewform?usp=header';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSdoTmoCgTXAtpBBrVoUR8Q5Gu-lNwlQbIpdOrt_vzVH1zCT3Q/viewform?usp=preview';
             case 'B':
-                return 'https://docs.google.com/forms/d/1_FbOLY0eF3bNXF0mDDdMGBIkmxds1V2wkUYqWC9F9XE/edit';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSdBPedZJWU3br5EZbC0__HmJ5GvwhwjJP0NRxW1Lm4KbOIk6g/viewform?usp=preview';
             case 'O':
-                return 'https://docs.google.com/forms/d/1tI3SdU1_s-KIVmct7Trj1A1SrXQIpCKNjmbYU2XJ3IQ/edit';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSc_Vq7SfH3gEThPPsEcK2vBpNh0CptfTkMKkwVqNOJzE4vWiw/viewform?usp=preview';
             case 'M':
-                return 'https://docs.google.com/forms/d/1vTl31OYNJQjM3YzLZuRTawIAMAXXRghytROVFv7loIc/edit';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSePpvjDoGOfD3lmMFZYQBAyaw2SkVMay-5RivF6N6MbZ_tiBA/viewform?usp=preview';
             default:
                 return '';
         }
@@ -396,7 +396,7 @@ export const Operator = (props: {
     const [showTabletState, setShowTabletState] =
         React.useState<ActionState>();
     const [robotNotHomed, setRobotNotHomed] =
-        React.useState<boolean>(false);
+        React.useState<boolean>(true); // Start as "not homed" until we get confirmation from ROS
     function showHomeTheRobotGlobalControl(isHomed: boolean) {
         setRobotNotHomed(!isHomed);
     }
@@ -1465,11 +1465,11 @@ export const Operator = (props: {
                                     <div style={{ 
                                         marginBottom: "20px", 
                                         padding: "16px",
-                                        backgroundColor: "#fff3cd",
+                                        backgroundColor: "#f8f9fa",
                                         borderRadius: "6px",
-                                        border: "1px solid #ffeaa7"
+                                        border: "2px solid #e9ecef"
                                     }}>
-                                        <h4 style={{ marginBottom: "12px", color: "#856404" }}>Practice Round Summary:</h4>
+                                        <h4 style={{ marginBottom: "12px", color: "#495057" }}>Practice Round Summary:</h4>
                                         <ul style={{ 
                                             marginBottom: "0",
                                             paddingLeft: "20px",
