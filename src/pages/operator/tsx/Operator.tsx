@@ -282,8 +282,29 @@ export const Operator = (props: {
     
          // Show task description modal when study starts 
      React.useEffect(() => {
-         if (props.studyMode && (props.studyMode.isPracticeRound || props.studyMode.taskOrder?.indexOf(props.studyMode.currentTask) === 0)) {
+         console.log('Task description modal check:', {
+             studyMode: props.studyMode,
+             isPracticeRound: props.studyMode?.isPracticeRound,
+             currentTask: props.studyMode?.currentTask,
+             taskOrder: props.studyMode?.taskOrder
+         });
+         
+         if (props.studyMode && props.studyMode.isPracticeRound) {
+             console.log('Showing practice round modal');
              setShowTaskDescription(true);
+         } else if (props.studyMode && props.studyMode.taskOrder && props.studyMode.taskOrder.indexOf(props.studyMode.currentTask) === 0) {
+             console.log('Showing first task modal');
+             setShowTaskDescription(true);
+         }
+     }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound, props.studyMode?.taskOrder]);
+     
+     // Show task description modal when switching to a new task (not practice round)
+     React.useEffect(() => {
+         if (props.studyMode && !props.studyMode.isPracticeRound && props.studyMode.taskOrder) {
+             const currentIndex = props.studyMode.taskOrder.indexOf(props.studyMode.currentTask);
+             if (currentIndex > 0) { // Not the first task (first task is handled above)
+                 setShowTaskDescription(true);
+             }
          }
      }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound, props.studyMode?.taskOrder]);
     
@@ -1108,7 +1129,7 @@ export const Operator = (props: {
                                 }}
                                 title="Proceed to next task"
                             >
-                                                                 <span>{props.studyMode.isPracticeRound ? "Proceed to First Task" : props.studyMode.proceedButtonText}</span>
+                                                                 <span>{props.studyMode.isPracticeRound ? "Proceed to First Task" : "Proceed to Next Task"}</span>
                             </button>
                         )}
                     </div>
@@ -1292,6 +1313,9 @@ export const Operator = (props: {
                              <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
                                  Please confirm that you have completed {props.studyMode?.isPracticeRound ? "the practice round" : TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.title || `Task ${props.studyMode?.currentTask}`}:
                              </p>
+                             <p style={{ marginBottom: "16px", lineHeight: "1.5", fontStyle: "italic", color: "#666" }}>
+                                 {props.studyMode?.isPracticeRound ? "" : TASK_DEFINITIONS[props.studyMode?.currentTask as keyof typeof TASK_DEFINITIONS]?.description || ""}
+                             </p>
                              <ul style={{ 
                                  marginBottom: "20px", 
                                  paddingLeft: "20px",
@@ -1349,11 +1373,21 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowStudyConfirmation(false);
                                     props.studyMode?.onProceedToNextTask();
-                                    // Show task description for next task (except for last task which goes to conclusion)
+                                                                         // Show task description for next task (except for last task which goes to conclusion)
                                      if (props.studyMode?.taskOrder && props.studyMode.taskOrder.indexOf(props.studyMode.currentTask) < props.studyMode.taskOrder.length - 1) {
                                          setTimeout(() => {
                                              setShowTaskDescription(true);
                                          }, 100);
+                                     }
+                                     
+                                     // Also show task description when switching to a new task
+                                     if (props.studyMode && !props.studyMode.isPracticeRound && props.studyMode.taskOrder) {
+                                         const currentIndex = props.studyMode.taskOrder.indexOf(props.studyMode.currentTask);
+                                         if (currentIndex > 0) { // Not the first task
+                                             setTimeout(() => {
+                                                 setShowTaskDescription(true);
+                                             }, 100);
+                                         }
                                      }
                                 }}
                             >
