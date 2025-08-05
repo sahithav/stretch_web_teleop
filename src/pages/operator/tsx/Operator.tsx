@@ -1345,7 +1345,8 @@ export const Operator = (props: {
                                 color: "#495057",
                                 display: "inline-flex",
                                 alignItems: "baseline",
-                                gap: "6px"
+                                gap: "6px",
+                                transform: "translateY(1px)"
                             }}>
                                 {sessionStorage.getItem('studyUserId') || 'Unknown'}
                                 <span
