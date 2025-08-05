@@ -380,7 +380,17 @@ export const Operator = (props: {
             (window as any).pauseAndConfirmResolve = null;
             (window as any).pauseAndConfirmMessage = null;
         }
-        setIsProgramFinished(true);
+        
+        setIsProgramFinished(false);
+        setIsExecutingProgram(false);
+        
+        // Clear current executing line
+        updateCurrentExecutingLine(undefined);
+        
+        // Reset button function provider execution state
+        if ((window as any).buttonFunctionProvider) {
+            (window as any).buttonFunctionProvider.setExecutionState(false);
+        }
     };
 
     // Effect to detect when PauseAndConfirm is called
