@@ -266,6 +266,16 @@ export const STOW_WRIST_GRIPPER: RobotPose = {
     joint_wrist_yaw: 3.19579,
 };
 
+export const HOME_POSE: RobotPose = {
+    joint_lift: 0.6000133947603754,
+    wrist_extension:0.10000127,
+    joint_head_pan: -1.734968752451231,
+    joint_wrist_roll: -0.0015339807878856412,
+    joint_gripper_finger_left: 0.0003447935031709283,
+    joint_wrist_pitch: -0.6258641614573416,
+    joint_wrist_yaw: 0.002556634646760688,
+};
+
 export const STOW_WRIST_TABLET: RobotPose = {
     joint_wrist_roll: Math.PI / 2.0,
     joint_wrist_pitch: 0.0,

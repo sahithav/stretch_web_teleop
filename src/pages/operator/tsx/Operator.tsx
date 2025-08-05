@@ -1004,6 +1004,14 @@ export const Operator = (props: {
                                     {sessionStorage.getItem('studyUserId') || 'Unknown'}
                                 </span>
                             </div>
+                            {props.studyMode.isPracticeRound && (
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <span style={{ marginRight: "6px" }}>Practice Task:</span>
+                                    <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
+                                        Pick up the cube and place it down in the same spot.
+                                    </span>
+                                </div>
+                            )}
                             {!props.studyMode.isPracticeRound && props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                     <span style={{ marginRight: "6px" }}>Task:</span>
@@ -1557,7 +1565,7 @@ export const Operator = (props: {
                             {props.studyMode?.isPracticeRound ? (
                                 <>
                                     <p style={{ marginBottom: "16px", lineHeight: "1.5" }}>
-                                        <strong>Practice Task:</strong> Pick up the cube and place it down in the same spot
+                                        <strong>Practice Task:</strong> Pick up the cube and place it down in the same spot.
                                     </p>
                                     <div style={{ 
                                         marginBottom: "20px", 

@@ -14,20 +14,20 @@ export const PracticeRoundModal: React.FC<PracticeRoundModalProps> = ({ onProcee
                     
                     <div className="practice-round-description">
                         <p>
-                            This is a practice round to familiarize yourself with the interface.
+                            This is a practice round to familiarize yourself with the interface and controls.
                         </p>
                         
                         <div className="practice-task">
                             <h3>Practice Task:</h3>
-                            <p>Pick up the cube and place it down in the same spot</p>
+                            <p>Pick up the cube and place it down in the same spot.</p>
                         </div>
                         
                         <div className="practice-instructions">
                             <h4>What you'll do:</h4>
                             <ol>
-                                <li>Record yourself manually controlling the robot to demonstrate the task</li>
-                                <li>Create and execute a program using available functions and data from your recording</li>
-                                <li>Familiarize yourself with the interface and controls</li>
+                                <li>Record yourself manually controlling the robot to demonstrate the task.</li>
+                                <li>Create and execute a program using available functions and data from your recording.</li>
+                                <li>Familiarize yourself with the interface and controls.</li>
                             </ol>
                         </div>
                         

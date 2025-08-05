@@ -4,7 +4,7 @@ import {
     SharedState,
     isSelected,
 } from "./CustomizableComponent";
-import { className, RobotPose } from "shared/util";
+import { className, RobotPose, HOME_POSE } from "shared/util";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -494,13 +494,13 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                         }
                     }
                     else if (line.command === "ResetRobot") {
-                        console.log(`Sending ResetRobot command (homing the robot)`);
-                        // Send homeTheRobot command to robot
+                        console.log(`Sending ResetRobot command (setting robot to home pose)`);
+                        // Send setRobotPose command to robot with stow pose
                         if ((window as any).remoteRobot) {
-                            (window as any).remoteRobot.homeTheRobot();
+                            (window as any).remoteRobot.setRobotPose(HOME_POSE);
                             console.log(`Command sent to robot!`);
                             console.log(`Waiting...`);
-                            await new Promise(resolve => setTimeout(resolve, 35000));
+                            await new Promise(resolve => setTimeout(resolve, 5000));
                             console.log(`Executing next command...`);
                         } else {
                             console.error("RemoteRobot not available");
