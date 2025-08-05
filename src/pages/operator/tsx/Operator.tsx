@@ -1628,28 +1628,10 @@ export const Operator = (props: {
                                             paddingLeft: "20px",
                                             lineHeight: "1.6"
                                         }}>
-                                            <li>Teleoperate the robot to execute the task.</li>
-                                            <li>Create your program in the Program Editor.</li>
+                                            <li>Teleoperate the robot to execute the task. If you have already recorded a demonstration for this task, you do not need to re-record one. You can go straight to editing your program.</li>
+                                            <li>Create your program in the Program Editor using {getAvailableAPIs()}.</li>
                                             <li>Execute the program to perform the task successfully.</li>
                                         </ol>
-                                    </div>
-                                    <div style={{ 
-                                        marginBottom: "16px", 
-                                        padding: "12px",
-                                        backgroundColor: "#e7f3ff",
-                                        borderRadius: "6px",
-                                        border: "1px solid #b3d9ff"
-                                    }}>
-                                        <h4 style={{ marginBottom: "8px", color: "#0d4a5c", fontSize: "14px" }}>Important Notes:</h4>
-                                        <ul style={{ 
-                                            marginBottom: "0",
-                                            paddingLeft: "20px",
-                                            lineHeight: "1.5",
-                                            fontSize: "13px"
-                                        }}>
-                                            <li><strong>Available APIs:</strong> You can write your program using {getAvailableAPIs()}.</li>
-                                            <li><strong>Demonstration Recording:</strong> If you have already recorded a demonstration for this task, you do not need to re-record one. You can go straight to editing your program.</li>
-                                        </ul>
                                     </div>
                                     <p style={{ 
                                         marginBottom: "0",
