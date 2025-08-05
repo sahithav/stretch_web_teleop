@@ -351,22 +351,21 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
-        console.log('=== handleReset called ===');
-        console.log('props.studyMode:', props.studyMode);
-        console.log('pauseAndConfirmResolve exists:', !!(window as any).pauseAndConfirmResolve);
-        console.log('currentExecutionAttempt:', currentExecutionAttempt);
+
         
         // Track pause and confirm reset for study data
         if (props.studyMode && (window as any).pauseAndConfirmResolve) {
             console.log('=== Tracking pause and confirm reset ===');
-            setCurrentExecutionAttempt(prev => {
-                const newAttempt = {
-                    ...prev,
-                    pause_and_confirm_resets: prev.pause_and_confirm_resets + 1
-                };
-                console.log('Updated pause_and_confirm_resets to:', newAttempt.pause_and_confirm_resets);
-                return newAttempt;
-            });
+            const newPauseAndConfirmResets = currentExecutionAttempt.pause_and_confirm_resets + 1;
+            console.log('Updated pause_and_confirm_resets to:', newPauseAndConfirmResets);
+            
+            setCurrentExecutionAttempt(prev => ({
+                ...prev,
+                pause_and_confirm_resets: newPauseAndConfirmResets
+            }));
+            
+            // Also update the current execution attempt immediately for tracking
+            currentExecutionAttempt.pause_and_confirm_resets = newPauseAndConfirmResets;
         } else {
             console.log('=== NOT tracking pause and confirm reset ===');
             console.log('Reason: studyMode:', !!props.studyMode, 'pauseAndConfirmResolve:', !!(window as any).pauseAndConfirmResolve);
@@ -424,7 +423,6 @@ export const Operator = (props: {
     const [robotNotHomed, setRobotNotHomed] =
         React.useState<boolean>(true); // Start as "not homed" until we get confirmation from ROS
     function showHomeTheRobotGlobalControl(isHomed: boolean) {
-        console.log("Operator: Received isHomed:", isHomed, "Setting robotNotHomed to:", !isHomed);
         setRobotNotHomed(!isHomed);
     }
     homeTheRobotFunctionProvider.setIsHomedCallback(
@@ -783,8 +781,7 @@ export const Operator = (props: {
         studyMode: props.studyMode,
     };
     
-    // Debug logging for robotNotHomed state
-    console.log("Operator: Current robotNotHomed state:", robotNotHomed);
+
     
 
     /** Properties for the global options area of the sidebar */
