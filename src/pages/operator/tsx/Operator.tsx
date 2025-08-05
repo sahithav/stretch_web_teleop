@@ -987,7 +987,7 @@ export const Operator = (props: {
                     width: "100%",
                     position: "relative"
                 }}>
-                    {/* User ID Display */}
+                    {/* User ID and Task Display */}
                     {props.studyMode && (
                         <div style={{
                             position: "absolute",
@@ -995,12 +995,23 @@ export const Operator = (props: {
                             display: "flex",
                             alignItems: "center",
                             fontSize: "14px",
-                            color: "#495057"
+                            color: "#495057",
+                            gap: "20px"
                         }}>
-                            <span style={{ marginRight: "6px" }}>ID:</span>
-                            <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
-                                {sessionStorage.getItem('studyUserId') || 'Unknown'}
-                            </span>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <span style={{ marginRight: "6px" }}>ID:</span>
+                                <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
+                                    {sessionStorage.getItem('studyUserId') || 'Unknown'}
+                                </span>
+                            </div>
+                            {!props.studyMode.isPracticeRound && props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <span style={{ marginRight: "6px" }}>Task:</span>
+                                    <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
+                                        {props.studyMode.taskDefinitions[props.studyMode.taskOrder[props.studyMode.currentTask - 1]]}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
                     

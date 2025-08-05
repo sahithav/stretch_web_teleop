@@ -619,10 +619,10 @@ function renderOperator(storageHandler: StorageHandler) {
                             isPracticeRound,
                             taskOrder,
                             taskDefinitions: {
-                                'R': 'Pick up the pill bottle and place on the box',
-                                'B': 'Pick up the pill bottle and place on the table', 
-                                'O': 'Pour the substance in cup A into cup B',
-                                'M': 'Pour the substance in cup A into cup B'
+                                'R': 'Pick up the pill bottle and place it on the box.',
+                                'B': 'Pick up the pill bottle and place it on the box.', 
+                                'O': 'Pour the pasta in the bowl into the pan.',
+                                'M': 'Pour the pasta in the bowl into the pan.'
                             }
                         }}
                     />
