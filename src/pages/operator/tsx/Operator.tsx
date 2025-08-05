@@ -1342,40 +1342,46 @@ export const Operator = (props: {
                             <span style={{
                                 fontFamily: "'Courier New', monospace",
                                 fontWeight: "bold",
-                                color: "#495057"
+                                color: "#495057",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px"
                             }}>
                                 {sessionStorage.getItem('studyUserId') || 'Unknown'}
-                            </span>
-                            <button
-                                onClick={() => {
-                                    const userId = sessionStorage.getItem('studyUserId');
-                                    if (userId) {
-                                        navigator.clipboard.writeText(userId);
-                                        // Brief feedback
-                                        const button = event?.target as HTMLButtonElement;
-                                        if (button) {
-                                            const originalText = button.textContent;
-                                            button.textContent = 'Copied!';
-                                            setTimeout(() => {
-                                                button.textContent = originalText;
-                                            }, 1000);
+                                <span
+                                    onClick={() => {
+                                        const userId = sessionStorage.getItem('studyUserId');
+                                        if (userId) {
+                                            navigator.clipboard.writeText(userId);
+                                            // Brief feedback
+                                            const icon = event?.target as HTMLElement;
+                                            if (icon) {
+                                                const originalText = icon.textContent;
+                                                icon.textContent = ' ✓';
+                                                setTimeout(() => {
+                                                    icon.textContent = originalText;
+                                                }, 1000);
+                                            }
                                         }
-                                    }
-                                }}
-                                style={{
-                                    padding: "2px 6px",
-                                    background: "#0d4a5c",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "3px",
-                                    fontSize: "10px",
-                                    cursor: "pointer",
-                                    fontWeight: "500"
-                                }}
-                                title="Copy User ID"
-                            >
-                                📋
-                            </button>
+                                    }}
+                                    style={{
+                                        cursor: "pointer",
+                                        fontSize: "14px",
+                                        opacity: 0.7,
+                                        transition: "opacity 0.2s ease",
+                                        userSelect: "none"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.opacity = "1";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.opacity = "0.7";
+                                    }}
+                                    title="Copy User ID"
+                                >
+                                    📋
+                                </span>
+                            </span>
                         </div>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
                             {/* Questionnaire Section - Wrapped around confirmation content */}
