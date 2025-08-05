@@ -84,11 +84,8 @@ export const Library = (props: CustomizableComponentProps) => {
                 console.error("Error parsing saved positions:", error);
             }
         }
-        // Default positions if no session data
-        return [
-            { name: "stowGripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
-            { name: "centerWrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() },
-        ];
+        // No default positions - temporary  
+        return [];
     };
     
     const [savedPositions, setSavedPositions] = useState<SavedPosition[]>(getInitialSavedPositions());
@@ -333,12 +330,8 @@ export const Library = (props: CustomizableComponentProps) => {
                                 <button 
                                     className="clear-positions-btn"
                                     onClick={() => {
-                                        // Reset to default positions
-                                        const defaultPositions = [
-                                            { name: "stowGripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
-                                            { name: "centerWrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() }
-                                        ];
-                                        setSavedPositions(defaultPositions);
+                                        // Reset to empty positions
+                                        setSavedPositions([]);
                                         sessionStorage.removeItem('librarySavedPositions');
                                     }}
                                 >
