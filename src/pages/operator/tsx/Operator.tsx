@@ -773,7 +773,7 @@ export const Operator = (props: {
         trackExecutionAttemptEnd: trackExecutionAttemptEnd,
         trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
         trackDemonstrationRecordingEnd: trackDemonstrationRecordingEnd,
-        taskKey: props.studyMode ? `task_${props.studyMode.currentTask}` : undefined,
+        taskKey: props.studyMode ? (props.studyMode.isPracticeRound ? 'practice_round' : `task_${props.studyMode.currentTask}`) : undefined,
         startHumanApiRecording: startHumanApiRecording,
         stopHumanApiRecording: stopHumanApiRecording,
         isProgramFinished: isProgramFinished,
