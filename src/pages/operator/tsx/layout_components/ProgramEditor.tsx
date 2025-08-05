@@ -372,7 +372,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     if (props.sharedState.setErrorLineNumber) {
                         props.sharedState.setErrorLineNumber(line.lineNumber);
                     }
-                
+                    
+                    if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                        console.log('ProgramEditor: Tracking execution failure due to line error');
+                        (props.sharedState as any).trackExecutionAttemptEnd(false);
+                    }
                     
                     break;
                 }

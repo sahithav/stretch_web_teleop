@@ -351,6 +351,11 @@ export const Operator = (props: {
 
     // Function to handle "Reset" button click
     const handleReset = () => {
+        console.log('=== handleReset called ===');
+        console.log('props.studyMode:', props.studyMode);
+        console.log('pauseAndConfirmResolve exists:', !!(window as any).pauseAndConfirmResolve);
+        console.log('currentExecutionAttempt:', currentExecutionAttempt);
+        
         // Track pause and confirm reset for study data
         if (props.studyMode && (window as any).pauseAndConfirmResolve) {
             console.log('=== Tracking pause and confirm reset ===');
@@ -362,6 +367,9 @@ export const Operator = (props: {
                 console.log('Updated pause_and_confirm_resets to:', newAttempt.pause_and_confirm_resets);
                 return newAttempt;
             });
+        } else {
+            console.log('=== NOT tracking pause and confirm reset ===');
+            console.log('Reason: studyMode:', !!props.studyMode, 'pauseAndConfirmResolve:', !!(window as any).pauseAndConfirmResolve);
         }
         
         // Home the robot
