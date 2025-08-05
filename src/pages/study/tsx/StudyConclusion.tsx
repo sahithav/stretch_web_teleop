@@ -48,7 +48,7 @@ export const StudyConclusion: React.FC = () => {
                                     }}
                                     title="Copy User ID to clipboard"
                                 >
-                                    📋
+                                    ⎘
                                 </span>
                             </span>
                         </p>

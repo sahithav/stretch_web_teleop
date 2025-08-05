@@ -1345,7 +1345,8 @@ export const Operator = (props: {
                                 color: "#495057",
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "6px"
+                                gap: "6px",
+                                lineHeight: "1"
                             }}>
                                 {sessionStorage.getItem('studyUserId') || 'Unknown'}
                                 <span
@@ -1369,7 +1370,8 @@ export const Operator = (props: {
                                         fontSize: "14px",
                                         opacity: 0.7,
                                         transition: "opacity 0.2s ease",
-                                        userSelect: "none"
+                                        userSelect: "none",
+                                        lineHeight: "1"
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.opacity = "1";
@@ -1379,7 +1381,7 @@ export const Operator = (props: {
                                     }}
                                     title="Copy User ID"
                                 >
-                                    📋
+                                    ⎘
                                 </span>
                             </span>
                         </div>

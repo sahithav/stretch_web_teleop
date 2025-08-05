@@ -59,7 +59,7 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                                     }}
                                     title="Copy User ID to clipboard"
                                 >
-                                    📋
+                                    ⎘
                                 </span>
                             </span>
                         </p>
