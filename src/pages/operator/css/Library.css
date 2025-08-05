@@ -5,7 +5,7 @@
     flex-direction: column;
     height: 100%;
     min-height: 300px;
-    min-width: 400px;
+    min-width: 250px;
     flex: 1 1 0;
     width: 100%;
     max-width: 100%;
@@ -151,8 +151,8 @@
     font-size: 13px;
     font-weight: bold;
     transition: background-color 0.2s ease;
-    min-width: 100px;
-    max-width: 140px;
+    min-width: 120px;
+    max-width: 160px;
     flex: 1;
     white-space: nowrap;
 }
