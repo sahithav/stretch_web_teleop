@@ -38,22 +38,12 @@ const HUMAN_FUNCTIONS = [
 
 // Default saved positions 
 const DEFAULT_SAVED_POSITIONS = [
-    'stowGripper',
-    'centerWrist'
+    // No default positions for now
 ];
 
 // Define default saved positions
-const POSE_DEFINITIONS = {
-    stowGripper: {
-        joint_wrist_roll: 0.0,
-        joint_wrist_pitch: -0.497,
-        joint_wrist_yaw: 3.19579,
-    },
-    centerWrist: {
-        joint_wrist_roll: 0.0,
-        joint_wrist_pitch: 0.0,
-        joint_wrist_yaw: 0.0,
-    }
+const POSE_DEFINITIONS: { [key: string]: RobotPose } = {
+    // No default poses for now
 };
 
 // Program data structure for parsing 

@@ -32,8 +32,7 @@ const HUMAN_FUNCTIONS = [
 
 // Default saved positions 
 const DEFAULT_SAVED_POSITIONS = [
-    'stowGripper',
-    'centerWrist'
+    // No default positions for now
 ];
 
 /**
