@@ -174,8 +174,8 @@
     font-size: 14px;
     font-weight: normal;
     transition: background-color 0.2s ease;
-    min-width: 70px;
-    max-width: 110px;
+    min-width: 130px;
+    max-width: 170px;
     flex: 1;
     white-space: nowrap;
 }
