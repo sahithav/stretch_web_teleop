@@ -1343,10 +1343,9 @@ export const Operator = (props: {
                                 fontFamily: "'Courier New', monospace",
                                 fontWeight: "bold",
                                 color: "#495057",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                lineHeight: "1"
+                                display: "inline-flex",
+                                alignItems: "baseline",
+                                gap: "6px"
                             }}>
                                 {sessionStorage.getItem('studyUserId') || 'Unknown'}
                                 <span
@@ -1370,8 +1369,7 @@ export const Operator = (props: {
                                         fontSize: "14px",
                                         opacity: 0.7,
                                         transition: "opacity 0.2s ease",
-                                        userSelect: "none",
-                                        lineHeight: "1"
+                                        userSelect: "none"
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.opacity = "1";
