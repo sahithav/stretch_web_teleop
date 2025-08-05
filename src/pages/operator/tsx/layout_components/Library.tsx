@@ -41,38 +41,33 @@ export const Library = (props: CustomizableComponentProps) => {
     
     // Check if human API functions should be hidden (tasks R and O)
     const shouldHideHumanAPI = () => {
-        const studyData = sessionStorage.getItem('studyData');
-        console.log('Library: studyData from session storage:', studyData);
+        // Get the current task and task order from sharedState
+        const currentTask = props.sharedState.studyMode?.currentTask;
+        const taskOrder = props.sharedState.studyMode?.taskOrder;
+        const isPracticeRound = props.sharedState.studyMode?.isPracticeRound;
         
-        if (!studyData) {
-            console.log('Library: No studyData found, showing human API functions');
+        console.log('Library: Current task from sharedState:', currentTask);
+        console.log('Library: Task order from sharedState:', taskOrder);
+        console.log('Library: Is practice round:', isPracticeRound);
+        
+        // In practice round, always show human API functions
+        if (isPracticeRound) {
+            console.log('Library: Practice round - showing human API functions');
             return false;
         }
         
-        try {
-            const data = JSON.parse(studyData);
-            const currentTask = data.currentTask || 1;
-            console.log('Library: Current task number:', currentTask);
-            
-            // Get the task order from sharedState
-            const taskOrder = props.sharedState.studyMode?.taskOrder;
-            
-            if (taskOrder && taskOrder.length > 0) {
-                const taskLetter = taskOrder[currentTask - 1];
-                console.log('Library: Current task letter:', taskLetter);
-                
-                // Hide human API for tasks R and O, show for tasks B and M
-                const shouldHide = taskLetter === 'R' || taskLetter === 'O';
-                console.log('Library: Should hide human API functions:', shouldHide);
-                return shouldHide;
-            } else {
-                console.log('Library: No task order available, showing human API functions');
-                return false;
-            }
-        } catch (error) {
-            console.log('Library: Error parsing studyData, showing human API functions');
+        if (!currentTask || !taskOrder || taskOrder.length === 0) {
+            console.log('Library: No study mode data available, showing human API functions');
             return false;
         }
+        
+        const taskLetter = taskOrder[currentTask - 1];
+        console.log('Library: Current task letter:', taskLetter);
+        
+        // Hide human API for tasks R and O, show for tasks B and M
+        const shouldHide = taskLetter === 'R' || taskLetter === 'O';
+        console.log('Library: Should hide human API functions:', shouldHide);
+        return shouldHide;
     };
     
     // Load saved positions from session storage or use defaults

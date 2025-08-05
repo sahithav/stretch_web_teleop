@@ -278,9 +278,17 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         // Get the current task and task order from sharedState
         const currentTask = props.sharedState.studyMode?.currentTask;
         const taskOrder = props.sharedState.studyMode?.taskOrder;
+        const isPracticeRound = props.sharedState.studyMode?.isPracticeRound;
         
         console.log('ProgramEditor: Current task from sharedState:', currentTask);
         console.log('ProgramEditor: Task order from sharedState:', taskOrder);
+        console.log('ProgramEditor: Is practice round:', isPracticeRound);
+        
+        // In practice round, always show human API functions
+        if (isPracticeRound) {
+            console.log('ProgramEditor: Practice round - showing human API functions');
+            return false;
+        }
         
         if (!currentTask || !taskOrder || taskOrder.length === 0) {
             console.log('ProgramEditor: No study mode data available, showing human API functions');
