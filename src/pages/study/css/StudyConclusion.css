@@ -87,14 +87,12 @@
 
 .user-id-value {
     font-family: 'Courier New', monospace;
-    background: #e9ecef;
-    padding: 4px 8px;
-    border-radius: 4px;
     font-weight: bold;
     color: #495057;
     display: flex;
     align-items: center;
     gap: 6px;
+    transform: translateY(2px);
 }
 
 .copy-icon {
