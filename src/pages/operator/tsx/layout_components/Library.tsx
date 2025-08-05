@@ -327,7 +327,8 @@ export const Library = (props: CustomizableComponentProps) => {
                                 display: "flex", 
                                 gap: "8px", 
                                 paddingTop: "16px",
-                                justifyContent: "flex-start"
+                                justifyContent: "flex-start",
+                                flexWrap: "wrap"
                             }}>
                                 <button 
                                     className="clear-positions-btn"

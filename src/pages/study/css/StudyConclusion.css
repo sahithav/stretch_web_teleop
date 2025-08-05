@@ -92,7 +92,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    transform: translateY(2px);
+    transform: translateY(1.5px);
 }
 
 .copy-icon {
