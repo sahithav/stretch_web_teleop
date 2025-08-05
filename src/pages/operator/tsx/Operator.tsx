@@ -1325,6 +1325,58 @@ export const Operator = (props: {
                         <h3 style={{ marginBottom: "16px", fontSize: "1.2em" }}>
                             Task Completion Confirmation
                         </h3>
+                        {/* Small User ID display */}
+                        <div style={{
+                            marginBottom: "16px",
+                            padding: "8px 12px",
+                            backgroundColor: "#f8f9fa",
+                            borderRadius: "4px",
+                            border: "1px solid #e9ecef",
+                            fontSize: "12px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "8px"
+                        }}>
+                            <span style={{ color: "#666" }}>User ID:</span>
+                            <span style={{
+                                fontFamily: "'Courier New', monospace",
+                                fontWeight: "bold",
+                                color: "#495057"
+                            }}>
+                                {sessionStorage.getItem('studyUserId') || 'Unknown'}
+                            </span>
+                            <button
+                                onClick={() => {
+                                    const userId = sessionStorage.getItem('studyUserId');
+                                    if (userId) {
+                                        navigator.clipboard.writeText(userId);
+                                        // Brief feedback
+                                        const button = event?.target as HTMLButtonElement;
+                                        if (button) {
+                                            const originalText = button.textContent;
+                                            button.textContent = 'Copied!';
+                                            setTimeout(() => {
+                                                button.textContent = originalText;
+                                            }, 1000);
+                                        }
+                                    }
+                                }}
+                                style={{
+                                    padding: "2px 6px",
+                                    background: "#0d4a5c",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "3px",
+                                    fontSize: "10px",
+                                    cursor: "pointer",
+                                    fontWeight: "500"
+                                }}
+                                title="Copy User ID"
+                            >
+                                📋
+                            </button>
+                        </div>
                         <div style={{ fontSize: "1.1em", marginBottom: 24, textAlign: "left" }}>
                             {/* Questionnaire Section - Wrapped around confirmation content */}
                             {props.studyMode?.taskOrder && props.studyMode?.currentTask && (

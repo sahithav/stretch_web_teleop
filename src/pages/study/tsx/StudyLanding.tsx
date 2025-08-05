@@ -39,7 +39,28 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                     </p>
                     
                     <div className="user-id-display">
-                        <p><strong>Your User ID: {userId}</strong></p>
+                        <p>
+                            <strong>Your User ID: </strong>
+                            <span className="user-id-value">{userId}</span>
+                            <button 
+                                className="copy-user-id-btn"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(userId.toString());
+                                    //brief feedback
+                                    const button = document.querySelector('.copy-user-id-btn');
+                                    if (button) {
+                                        const originalText = button.textContent;
+                                        button.textContent = 'Copied!';
+                                        setTimeout(() => {
+                                            button.textContent = originalText;
+                                        }, 1000);
+                                    }
+                                }}
+                                title="Copy User ID to clipboard"
+                            >
+                                📋 Copy
+                            </button>
+                        </p>
                     </div>
                 </div>
                 

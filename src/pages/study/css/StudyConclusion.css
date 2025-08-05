@@ -65,4 +65,52 @@
     background: #d4edda;
     border-radius: 6px;
     border: 1px solid #c3e6cb;
+}
+
+.user-id-display {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    text-align: center;
+}
+
+.user-id-display p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.user-id-value {
+    font-family: 'Courier New', monospace;
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.copy-user-id-btn {
+    padding: 6px 12px;
+    background: #0d4a5c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.copy-user-id-btn:hover {
+    background: #0a3a47;
+    transform: translateY(-1px);
+}
+
+.copy-user-id-btn:active {
+    transform: translateY(0);
 } 
