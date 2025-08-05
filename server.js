@@ -166,7 +166,7 @@ app.post('/start_rosbag', (req, res) => {
         return res.status(400).json({ error: 'Missing userId or rosbagNumber in request body.' });
     }
 
-    const outputDir = `/media/hello-robot/HCRLAB/rosbags/${userId}_${rosbagNumber}`;
+    const outputDir = `/media/hello-robot/HCRLAB/demo_recordings/${userId}_${rosbagNumber}`;
     rosbagProcess = spawn('ros2', [
         'bag', 'record',
         '-a',
