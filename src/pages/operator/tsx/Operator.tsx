@@ -368,12 +368,19 @@ export const Operator = (props: {
         if ((window as any).remoteRobot) {
             (window as any).remoteRobot.homeTheRobot();
         }
-        // Also resolve the promise to continue program execution
+        
+        // Stop program execution
+        if ((window as any).stopExecutionRef) {
+            console.log('=== Stopping program execution ===');
+            (window as any).stopExecutionRef.current = true;
+        }
+        
+        // Clear pause and confirm state
         if ((window as any).pauseAndConfirmResolve) {
-            (window as any).pauseAndConfirmResolve();
             (window as any).pauseAndConfirmResolve = null;
             (window as any).pauseAndConfirmMessage = null;
         }
+        
         setIsProgramFinished(false);
     };
 
