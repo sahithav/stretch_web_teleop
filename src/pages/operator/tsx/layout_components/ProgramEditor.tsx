@@ -288,8 +288,8 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         const taskLetter = taskOrder[currentTask - 1];
         console.log('ProgramEditor: Current task letter:', taskLetter);
         
-        // Hide human API for tasks R and O, show for tasks B and M
-        const shouldHide = taskLetter === 'R' || taskLetter === 'O';
+        // Hide human API for tasks O and M, show for other tasks 
+        const shouldHide = taskLetter === 'O' || taskLetter === 'M';
         console.log('ProgramEditor: Should hide human API functions:', shouldHide);
         return shouldHide;
     };

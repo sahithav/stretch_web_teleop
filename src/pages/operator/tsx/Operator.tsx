@@ -144,8 +144,8 @@ export const Operator = (props: {
         
         const taskLetter = props.studyMode.taskOrder[props.studyMode.currentTask - 1];
         
-        // Tasks R and O only have Robot API, tasks B and M have both
-        if (taskLetter === 'R' || taskLetter === 'O') {
+        // Tasks O and M only have Robot API
+        if (taskLetter === 'O' || taskLetter === 'M') {
             return "the Robot API only";
         } else {
             return "both the Robot API and Human API";
@@ -1640,7 +1640,14 @@ export const Operator = (props: {
                                             paddingLeft: "20px",
                                             lineHeight: "1.6"
                                         }}>
-                                            <li>Teleoperate the robot to execute the task. If you have already recorded a demonstration for this task, you do not need to re-record one. You can go straight to editing your program.</li>
+                                            <li>
+                                                Teleoperate the robot to execute the task.
+                                                {props.studyMode?.currentTask === 2 && (
+                                                    <span style={{ display: "block", marginTop: "4px", fontStyle: "italic", color: "#666" }}>
+                                                        You do not need to re-record a demo for this task. You can go straight to editing your program.
+                                                    </span>
+                                                )}
+                                            </li>
                                             <li>Create your program in the Program Editor using {getAvailableAPIs()}.</li>
                                             <li>Execute the program to perform the task successfully.</li>
                                         </ol>

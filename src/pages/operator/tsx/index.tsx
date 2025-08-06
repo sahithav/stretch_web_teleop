@@ -338,9 +338,9 @@ function renderOperator(storageHandler: StorageHandler) {
             'M': 'Pour the substance in cup A into cup B'
         };
         
-        // Function to generate random task order
+        // Function to generate random task order - only O and M for this branch
         const generateRandomTaskOrder = () => {
-            const tasks = ['R', 'B', 'O', 'M'];
+            const tasks = ['O', 'M'];
             const shuffled = [...tasks].sort(() => Math.random() - 0.5);
             return shuffled;
         };
@@ -619,10 +619,8 @@ function renderOperator(storageHandler: StorageHandler) {
                             isPracticeRound,
                             taskOrder,
                             taskDefinitions: {
-                                'R': 'Pick up the pill bottle and place it on the box.',
-                                'B': 'Pick up the pill bottle and place it on the box.', 
-                                'O': 'Pour the pasta in the bowl into the pan.',
-                                'M': 'Pour the pasta in the bowl into the pan.'
+                                'O': 'Pour the substance in cup A into cup B.',
+                                'M': 'Pour the substance in cup A into cup B.'
                             }
                         }}
                     />
