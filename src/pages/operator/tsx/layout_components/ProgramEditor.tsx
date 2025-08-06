@@ -983,7 +983,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                 marginLeft: "16px"
                             }}
                         >
-                            Make sure you home the robot before running your program.
+                            Make sure you reset or home the robot before running your program.
                         </span>
                     )}
                 </div>
