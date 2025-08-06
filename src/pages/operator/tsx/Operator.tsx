@@ -172,6 +172,48 @@ export const Operator = (props: {
                 execution_start: new Date().toISOString()
             });
         }
+        
+        // End program editor session when program execution starts
+        if (currentProgramSession.session_start) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode?.currentTask;
+            const taskOrder = props.studyMode?.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: []
+                        };
+                    }
+                    
+                    const sessionData = {
+                        session_start: currentProgramSession.session_start,
+                        session_end: new Date().toISOString(),
+                        program_content: sessionStorage.getItem('programEditorCode') || "",
+                        saved_positions_added: currentProgramSession.saved_positions_added
+                    };
+                    
+                    studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                    console.log('Program editor session ended due to program execution:', sessionData);
+                    
+                    // Reset the current session
+                    setCurrentProgramSession({
+                        session_start: null,
+                        saved_positions_added: 0
+                    });
+                }
+            }
+        }
     };
     
     // Function to track execution attempt end
@@ -865,8 +907,8 @@ export const Operator = (props: {
         // Expose function globally for ProgramEditor access
         (window as any).switchToModeLayout = switchToModeLayout;
         
-        // Track program editor session start
-        if (newMode === "Program Editor" && props.studyMode) {
+        // Track program editor session start - only if no active session
+        if (newMode === "Program Editor" && props.studyMode && !currentProgramSession.session_start) {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
@@ -895,44 +937,7 @@ export const Operator = (props: {
             }
         }
         
-        // Track program editor session end when switching away
-        if (previousMode === "Program Editor" && newMode !== "Program Editor" && currentProgramSession.session_start) {
-    
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode?.currentTask;
-            const taskOrder = props.studyMode?.taskOrder;
-            
-            console.log('User ID:', userId, 'Current Task:', currentTask);
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: []
-                        };
-                    }
-                    
-                    const sessionData = {
-                        session_start: currentProgramSession.session_start,
-                        session_end: new Date().toISOString(),
-                        program_content: sessionStorage.getItem('programEditorCode') || "",
-                        saved_positions_added: currentProgramSession.saved_positions_added
-                    };
-                    
-                    studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                    console.log('Program editor session tracked:', sessionData);
-                }
-            }
-        }
+        // Program editor sessions now end when program execution starts, not when switching modes
         
         updateLayout();
     };
