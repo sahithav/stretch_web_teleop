@@ -145,7 +145,8 @@ export const Operator = (props: {
         const taskLetter = props.studyMode.taskOrder[props.studyMode.currentTask - 1];
         
         // Tasks O and M only have Robot API
-        if (taskLetter === 'O' || taskLetter === 'M') {
+        // Task O only has Robot API, task M has both (R and B removed for this branch)
+        if (taskLetter === 'O') {
             return "the Robot API only";
         } else {
             return "both the Robot API and Human API";

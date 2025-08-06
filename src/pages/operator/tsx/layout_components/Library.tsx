@@ -64,8 +64,8 @@ export const Library = (props: CustomizableComponentProps) => {
         const taskLetter = taskOrder[currentTask - 1];
         console.log('Library: Current task letter:', taskLetter);
         
-        // Hide human API for tasks O and M, show for other tasks 
-        const shouldHide = taskLetter === 'O' || taskLetter === 'M';
+        // Hide human API for task O, show for task M 
+        const shouldHide = taskLetter === 'O';
         console.log('Library: Should hide human API functions:', shouldHide);
         return shouldHide;
     };

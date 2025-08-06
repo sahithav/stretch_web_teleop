@@ -457,7 +457,7 @@ function renderOperator(storageHandler: StorageHandler) {
             
             // Track task end time for current task
             const userId = sessionStorage.getItem('studyUserId');
-            if (userId && currentTask <= 4 && taskOrder.length > 0) {
+            if (userId && currentTask <= 2 && taskOrder.length > 0) {
                 const taskLetter = taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
@@ -482,8 +482,8 @@ function renderOperator(storageHandler: StorageHandler) {
             };
             sessionStorage.setItem('studyData', JSON.stringify(studyData));
             
-            // Initialize next task data (but not for task 5 which doesn't exist)
-            if (nextTask <= 4 && taskOrder.length > 0) {
+            // Initialize next task data 
+            if (nextTask <= 2 && taskOrder.length > 0) {
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
                     const existingData = sessionStorage.getItem(`studyData_${userId}`);
@@ -502,14 +502,14 @@ function renderOperator(storageHandler: StorageHandler) {
                 }
             }
             
-            // Initialize task 4 data when we start task 4 (since there's no next task)
-            if (nextTask === 4 && taskOrder.length > 0) {
+            // Initialize task 2 data when we start task 2
+            if (nextTask === 2 && taskOrder.length > 0) {
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
                     const existingData = sessionStorage.getItem(`studyData_${userId}`);
                     if (existingData) {
                         const studyData = JSON.parse(existingData);
-                        const taskLetter = taskOrder[3]; 
+                        const taskLetter = taskOrder[1]; 
                         if (!studyData.tasks[taskLetter]) {
                             studyData.tasks[taskLetter] = {
                                 task_start_time: new Date().toISOString(),
@@ -524,7 +524,7 @@ function renderOperator(storageHandler: StorageHandler) {
                 }
             }
             
-            if (nextTask > 4) {
+            if (nextTask > 2) {
                 // Track study end time
                 const userId = sessionStorage.getItem('studyUserId');
                 if (userId) {
@@ -547,9 +547,7 @@ function renderOperator(storageHandler: StorageHandler) {
             
             switch (currentTask) {
                 case 1: return 'Proceed to Next Task';
-                case 2: return 'Proceed to Next Task';
-                case 3: return 'Proceed to Next Task';
-                case 4: return 'End Study';
+                case 2: return 'End Study';
                 default: return 'Proceed';
             }
         };

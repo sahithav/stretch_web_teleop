@@ -25,7 +25,7 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                     </p>
                     
                     <p>
-                        You will complete four tasks, each involving:
+                        You will complete two tasks, each involving:
                     </p>
                     
                     <ul>
