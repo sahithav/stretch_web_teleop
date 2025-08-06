@@ -309,7 +309,7 @@ export const Library = (props: CustomizableComponentProps) => {
                     <div className="library-section" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                         <h3 className="library-section-title">Saved Positions</h3>
                         <div className="library-subsection" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                            <div className="library-text" style={{ flex: 1 }}>
+                            <div className="library-text">
                                 {savedPositions.map((position, index) => (
                                     <div 
                                         key={index}
@@ -335,6 +335,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                 </button>
                             </div>
                             <div style={{ 
+                                marginTop: "auto",
                                 display: "flex", 
                                 justifyContent: "flex-end",
                                 paddingTop: "8px"

@@ -114,6 +114,9 @@
     transition: background-color 0.2s ease;
     color: var(--text-color);
     font-size: 15px;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 .library-function-item:hover {
