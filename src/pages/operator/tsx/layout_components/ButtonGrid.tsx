@@ -76,7 +76,9 @@ for (let i = 0; i < 4; i++) {
 export const ButtonGrid = (props: CustomizableComponentProps) => {
     const { customizing } = props.sharedState;
     const selected = isSelected(props);
-    const isDisabled = props.sharedState.isExecutingProgram;
+    // In Execution Monitor mode, disable controls by default, only enable when TakeControl is being executed
+    const isDisabled = props.sharedState.isExecutingProgram || 
+        (props.sharedState.programMode === "Execution Monitor" && !props.sharedState.waitingForUserConfirmation);
     function handleSelect(event: React.MouseEvent<HTMLDivElement>) {
         event.stopPropagation();
         props.sharedState.onSelect(props.definition, props.path);

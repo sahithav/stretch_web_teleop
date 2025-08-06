@@ -230,9 +230,9 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 </div>
                 {showDoneMessage && (
                     <div style={{
-                        color: "#28a745",
+                        color: "#2e7d32",
                         fontWeight: "bold",
-                        fontSize: "14px",
+                        fontSize: "15px",
                         display: "flex",
                         alignItems: "center"
                     }}>

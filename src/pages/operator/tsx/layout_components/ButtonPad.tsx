@@ -99,7 +99,9 @@ export const ButtonPad = (props: ButtonPadProps) => {
             }
             : {};
 
-    const isDisabled = props.sharedState.isExecutingProgram;
+    // In Execution Monitor mode, disable controls by default, only enable when TakeControl is being executed
+    const isDisabled = props.sharedState.isExecutingProgram || 
+        (props.sharedState.programMode === "Execution Monitor" && !props.sharedState.waitingForUserConfirmation);
 
     return (
         <div

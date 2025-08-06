@@ -949,7 +949,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             style={{
                                 color: "#2e7d32",
                                 fontWeight: "bold",
-                                fontSize: "14px",
+                                fontSize: "15px",
                                 marginLeft: "16px"
                             }}
                         >
@@ -979,7 +979,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             style={{
                                 color: "#ff8c00",
                                 fontWeight: "bold",
-                                fontSize: "14px",
+                                fontSize: "15px",
                                 marginLeft: "16px"
                             }}
                         >
@@ -997,7 +997,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                     border: "none",
                                     borderRadius: 4,
                                     padding: "6px 16px",
-                                    fontSize: "15px",
+                                    fontSize: "16px",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     transition: "background-color 0.2s ease",

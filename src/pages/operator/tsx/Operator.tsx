@@ -794,6 +794,7 @@ export const Operator = (props: {
         isProgramFinished: isProgramFinished,
         setIsProgramFinished: setIsProgramFinished,
         studyMode: props.studyMode,
+        programMode: programMode,
     };
     
 
@@ -938,12 +939,12 @@ export const Operator = (props: {
 
     return (
         <div id="operator">
-            {/* Persistent banner for control mode - only show in Execution Monitor mode */}
-            {programMode === "Execution Monitor" && (
+            {/* Persistent banner for control mode - only show in Execution Monitor mode when program is running */}
+            {programMode === "Execution Monitor" && isExecutingProgram && (
                 <div
                     style={{
                         width: "100%",
-                        background: isExecutingProgram ? "#ff9800" : "#4caf50",
+                        background: "#ff9800",
                         color: "white",
                         textAlign: "center",
                         fontWeight: "bold",
@@ -956,7 +957,7 @@ export const Operator = (props: {
                         pointerEvents: props.isReconnecting ? "none" : "auto"
                     }}
                 >
-                    {isExecutingProgram ? "Robot in control" : "You are in control"}
+                    Robot in control
                 </div>
             )}
             

@@ -94,6 +94,8 @@ export type SharedState = {
         taskOrder?: string[];
         taskDefinitions?: { [key: string]: string };
     };
+    /** Current program mode (Demonstrate, Program Editor, Execution Monitor) */
+    programMode?: string;
 };
 
 /** Properties for any of the customizable components: tabs, video streams, or
