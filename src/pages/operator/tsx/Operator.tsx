@@ -939,8 +939,8 @@ export const Operator = (props: {
 
     return (
         <div id="operator">
-            {/* Persistent banner for control mode - only show in Execution Monitor mode when program is running */}
-            {programMode === "Execution Monitor" && isExecutingProgram && (
+            {/* banner for control mode - only show in Execution Monitor mode when program is running or during TakeControl */}
+            {programMode === "Execution Monitor" && (isExecutingProgram || waitingForUserConfirmation) && (
                 <div
                     style={{
                         width: "100%",
