@@ -617,8 +617,8 @@ function renderOperator(storageHandler: StorageHandler) {
                             isPracticeRound,
                             taskOrder,
                             taskDefinitions: {
-                                'O': 'Pour the substance in cup A into cup B.',
-                                'M': 'Pour the substance in cup A into cup B.'
+                                'O': 'Pour the pasta in the bowl into the pan.',
+                                'M': 'Pour the pasta in the bowl into the pan.'
                             }
                         }}
                     />

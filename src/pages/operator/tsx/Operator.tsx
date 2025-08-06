@@ -1650,7 +1650,7 @@ export const Operator = (props: {
                                                 )}
                                             </li>
                                             <li>Create your program in the Program Editor using {getAvailableAPIs()}.</li>
-                                            <li>Execute the program to perform the task successfully.</li>
+                                            <li>Execute the program to perform the task.</li>
                                         </ol>
                                     </div>
                                     <p style={{ 
