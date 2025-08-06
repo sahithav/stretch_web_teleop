@@ -232,7 +232,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     <div style={{
                         color: "#2e7d32",
                         fontWeight: "bold",
-                        fontSize: "15px",
+                        fontSize: "17px",
                         display: "flex",
                         alignItems: "center"
                     }}>

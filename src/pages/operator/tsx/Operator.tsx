@@ -944,7 +944,7 @@ export const Operator = (props: {
                 <div
                     style={{
                         width: "100%",
-                        background: "#ff9800",
+                        background: waitingForUserConfirmation ? "#4caf50" : "#ff9800",
                         color: "white",
                         textAlign: "center",
                         fontWeight: "bold",
@@ -957,7 +957,7 @@ export const Operator = (props: {
                         pointerEvents: props.isReconnecting ? "none" : "auto"
                     }}
                 >
-                    Robot in control
+                    {waitingForUserConfirmation ? "You are in control" : "Robot in control"}
                 </div>
             )}
             
