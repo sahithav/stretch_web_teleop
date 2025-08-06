@@ -1640,10 +1640,14 @@ export const Operator = (props: {
                                             paddingLeft: "20px",
                                             lineHeight: "1.6"
                                         }}>
-                                            <li>Teleoperate the robot to execute the task.</li>
-                                            {props.studyMode?.currentTask === 2 && (
-                                                <li>You do not need to re-record a demo for this task. You can go straight to editing your program.</li>
-                                            )}
+                                            <li>
+                                                Teleoperate the robot to execute the task.
+                                                {props.studyMode?.currentTask === 2 && (
+                                                    <span style={{ display: "block", marginTop: "4px", fontStyle: "italic", color: "#666" }}>
+                                                        You do not need to re-record a demo for this task. You can go straight to editing your program.
+                                                    </span>
+                                                )}
+                                            </li>
                                             <li>Create your program in the Program Editor using {getAvailableAPIs()}.</li>
                                             <li>Execute the program to perform the task successfully.</li>
                                         </ol>
