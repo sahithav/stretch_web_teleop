@@ -947,19 +947,37 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     {isExecuting && (
                         <span 
                             style={{
-                                color: "#4caf50",
+                                color: "#2e7d32",
                                 fontWeight: "bold",
                                 fontSize: "14px",
                                 marginLeft: "16px"
                             }}
                         >
-                            Running... View execution details in the Execution Monitor.
+                            Running... View execution details in the{" "}
+                            <span 
+                                style={{
+                                    textDecoration: "underline",
+                                    cursor: "pointer",
+                                    color: "#2e7d32"
+                                }}
+                                onClick={() => {
+                                    // Switch to Execution Monitor mode
+                                    const switchToModeLayout = (window as any).switchToModeLayout;
+                                    if (switchToModeLayout) {
+                                        switchToModeLayout("Execution Monitor");
+                                    }
+                                }}
+                                title="Click to switch to Execution Monitor"
+                            >
+                                Execution Monitor
+                            </span>
+                            .
                         </span>
                     )}
                     {!isExecuting && (
                         <span 
                             style={{
-                                color: "#0d4a5c",
+                                color: "#ff8c00",
                                 fontWeight: "bold",
                                 fontSize: "14px",
                                 marginLeft: "16px"
@@ -971,30 +989,57 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                 </div>
                 <div className="program-editor-header-right">
                     {!props.readOnly && (
-                        <button 
-                            className="run-program-button"
-                            onClick={handleRunProgram}
-                            type="button"
-                            disabled={props.sharedState.robotNotHomed}
-                            style={{
-                                backgroundColor: isExecuting ? "#dc3545" : undefined,
-                                opacity: props.sharedState.robotNotHomed ? 0.5 : 1,
-                                cursor: props.sharedState.robotNotHomed ? "not-allowed" : "pointer"
-                            }}
-                            title={props.sharedState.robotNotHomed ? "Robot must be homed before running programs" : ""}
-                        >
-                            {isExecuting ? (
-                                <>
-                                    <CloseIcon style={{ marginRight: "4px" }} />
-                                    Stop
-                                </>
-                            ) : (
-                                <>
-                                    <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                    Run
-                                </>
-                            )}
-                        </button>
+                        <>
+                            <button 
+                                style={{
+                                    background: "#ff8c00",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "6px 16px",
+                                    fontSize: "15px",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.2s ease",
+                                    letterSpacing: "0.5px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    marginRight: "8px"
+                                }}
+                                onClick={() => {
+                                    if ((window as any).remoteRobot) {
+                                        (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                                    }
+                                }}
+                                title="Reset robot to home position"
+                            >
+                                Reset Robot
+                            </button>
+                            <button 
+                                className="run-program-button"
+                                onClick={handleRunProgram}
+                                type="button"
+                                disabled={props.sharedState.robotNotHomed}
+                                style={{
+                                    backgroundColor: isExecuting ? "#dc3545" : undefined,
+                                    opacity: props.sharedState.robotNotHomed ? 0.5 : 1,
+                                    cursor: props.sharedState.robotNotHomed ? "not-allowed" : "pointer"
+                                }}
+                                title={props.sharedState.robotNotHomed ? "Robot must be homed before running programs" : ""}
+                            >
+                                {isExecuting ? (
+                                    <>
+                                        <CloseIcon style={{ marginRight: "4px" }} />
+                                        Stop
+                                    </>
+                                ) : (
+                                    <>
+                                        <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                        Run
+                                    </>
+                                )}
+                            </button>
+                        </>
                     )}
                 </div>
             </div>

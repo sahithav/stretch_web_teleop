@@ -858,6 +858,12 @@ export const Operator = (props: {
             }
         }
         
+        // Update program mode
+        setProgramMode(newMode);
+        
+        // Expose function globally for ProgramEditor access
+        (window as any).switchToModeLayout = switchToModeLayout;
+        
         // Track program editor session start
         if (newMode === "Program Editor" && props.studyMode) {
             const userId = sessionStorage.getItem('studyUserId');
