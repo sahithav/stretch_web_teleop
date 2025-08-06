@@ -14,7 +14,7 @@
     border-radius: 8px;
     overflow: hidden;
     font-family: 'Monaco', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.5;
 }
 
@@ -211,9 +211,9 @@
 .line-number {
     padding: 0 8px;
     color: var(--secondary-text-color);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
-    height: 22.5px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

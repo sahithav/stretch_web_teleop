@@ -12,7 +12,7 @@
     border-radius: 8px;
     overflow: hidden;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.4;
 }
 
@@ -139,14 +139,14 @@
 .line-number {
     padding: 0 8px;
     color: var(--secondary-text-color);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
-    height: 22.5px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     box-sizing: border-box;
-    min-height: 22.5px;
+    min-height: 24px;
 }
 
 .line-number.executing {
@@ -189,15 +189,15 @@
 
 /* Code line styling */
 .code-line {
-    height: 22.5px;
-    line-height: 22.5px;
+    height: 24px;
+    line-height: 24px;
     padding: 0 12px;
     display: flex;
     align-items: center;
     white-space: pre;
     font-family: inherit;
     font-size: inherit;
-    min-height: 22.5px;
+    min-height: 24px;
     box-sizing: border-box;
 }
 

@@ -321,11 +321,23 @@ export const Library = (props: CustomizableComponentProps) => {
                                 ))}
                             </div>
                             <div style={{ 
+                                paddingTop: "8px",
+                                paddingBottom: "8px"
+                            }}>
+                                <button 
+                                    className="add-position-btn"
+                                    onClick={() => setShowModal(true)}
+                                    style={{
+                                        width: "100%"
+                                    }}
+                                >
+                                    + Add Position
+                                </button>
+                            </div>
+                            <div style={{ 
                                 display: "flex", 
-                                gap: "8px", 
-                                paddingTop: "16px",
-                                justifyContent: "flex-start",
-                                flexWrap: "wrap"
+                                justifyContent: "flex-end",
+                                paddingTop: "8px"
                             }}>
                                 <button 
                                     className="clear-positions-btn"
@@ -334,14 +346,13 @@ export const Library = (props: CustomizableComponentProps) => {
                                         setSavedPositions([]);
                                         sessionStorage.removeItem('librarySavedPositions');
                                     }}
+                                    style={{
+                                        minWidth: "auto",
+                                        maxWidth: "auto",
+                                        flex: "none"
+                                    }}
                                 >
                                     Clear
-                                </button>
-                                <button 
-                                    className="add-position-btn"
-                                    onClick={() => setShowModal(true)}
-                                >
-                                    + Add Position
                                 </button>
                             </div>
                         </div>
