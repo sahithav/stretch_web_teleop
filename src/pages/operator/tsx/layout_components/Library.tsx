@@ -209,7 +209,7 @@ export const Library = (props: CustomizableComponentProps) => {
                 <div className="library-sections-container">
                     {/* Functions Section */}
                     <div className="library-section">
-                        <h3 className="library-section-title" style={{ fontWeight: "600", color: "#ff8c00", marginTop: "24px" }}>Robot Functions</h3>
+                        <h3 className="library-section-title" style={{ fontWeight: "600", color: "#ff8c00" }}>Robot Functions</h3>
                         
                         <div className="library-subsection">
                             <div className="library-text">
@@ -270,7 +270,7 @@ export const Library = (props: CustomizableComponentProps) => {
                         
                         {!shouldHideHumanAPI() && (
                             <div className="library-subsection">
-                                <h3 className="library-section-title" style={{ fontWeight: "600", marginTop: "24px", color: "#28a745" }}>Human Functions</h3>
+                                <h3 className="library-section-title" style={{ fontWeight: "600", marginTop: "16px", color: "#28a745" }}>Human Functions</h3>
                                 <div className="library-text">
                                     <div className="function-group">
                                         <div 
