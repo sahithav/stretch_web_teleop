@@ -655,7 +655,8 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     };
 
     const handleStopProgram = () => {
-        // Stop the program execution 
+        console.log("ExecutionMonitor: handleStopProgram called");
+        stopExecutionRef.current = true;
         if ((window as any).stopExecutionRef) {
             (window as any).stopExecutionRef.current = true;
         }
@@ -670,6 +671,9 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         if (props.sharedState.updateCurrentExecutingLine) {
             props.sharedState.updateCurrentExecutingLine(undefined);
         }
+        
+        // Set local execution state to false
+        setIsExecuting(false);
     };
 
     // In customizing state add onClick callback
