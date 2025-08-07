@@ -894,11 +894,19 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     React.useEffect(() => {
         console.log("ProgramEditor: Exposing programEditorRunFunction globally");
         (window as any).programEditorRunFunction = handleRunProgram;
+        console.log("ProgramEditor: Function exposed, window.programEditorRunFunction exists:", !!(window as any).programEditorRunFunction);
         return () => {
             console.log("ProgramEditor: Removing programEditorRunFunction from global");
             delete (window as any).programEditorRunFunction;
         };
     }, [handleRunProgram]);
+
+    // Also expose the function immediately when component mounts
+    React.useEffect(() => {
+        console.log("ProgramEditor: Component mounted, exposing function immediately");
+        (window as any).programEditorRunFunction = handleRunProgram;
+        console.log("ProgramEditor: Immediate exposure, window.programEditorRunFunction exists:", !!(window as any).programEditorRunFunction);
+    }, []); // Empty dependency array to run only on mount
 
     // Create highlighted version of the code with inline suggestion
     const createHighlightedCode = (): string => {

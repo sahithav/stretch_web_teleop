@@ -133,13 +133,28 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         console.log("ExecutionMonitor: window.programEditorRunFunction exists:", !!(window as any).programEditorRunFunction);
         console.log("ExecutionMonitor: Available window functions:", Object.keys(window).filter(key => key.includes('program')));
         
-        // Call the ProgramEditor's run function through the global interface
+        // Try multiple ways to call the ProgramEditor's run function
         const programEditorRunFunction = (window as any).programEditorRunFunction;
         if (programEditorRunFunction) {
             console.log("ExecutionMonitor: Calling programEditorRunFunction");
             programEditorRunFunction();
         } else {
-            console.error("ProgramEditor run function not available");
+            console.log("ExecutionMonitor: ProgramEditor function not found, trying alternative approach");
+            
+            // Try to find the ProgramEditor component in the current layout and call its function
+            const programEditorElement = document.querySelector('.program-editor-root');
+            if (programEditorElement) {
+                console.log("ExecutionMonitor: Found ProgramEditor element, trying to trigger its run button");
+                const runButton = programEditorElement.querySelector('.run-program-button');
+                if (runButton) {
+                    console.log("ExecutionMonitor: Found run button, clicking it");
+                    (runButton as HTMLElement).click();
+                } else {
+                    console.error("ExecutionMonitor: Run button not found in ProgramEditor");
+                }
+            } else {
+                console.error("ExecutionMonitor: ProgramEditor element not found in DOM");
+            }
         }
     };
 
