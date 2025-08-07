@@ -892,8 +892,10 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
 
     // Expose the run function globally 
     React.useEffect(() => {
+        console.log("ProgramEditor: Exposing programEditorRunFunction globally");
         (window as any).programEditorRunFunction = handleRunProgram;
         return () => {
+            console.log("ProgramEditor: Removing programEditorRunFunction from global");
             delete (window as any).programEditorRunFunction;
         };
     }, [handleRunProgram]);

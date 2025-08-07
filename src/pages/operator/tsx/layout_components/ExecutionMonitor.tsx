@@ -130,13 +130,27 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     // Function to handle Run/Stop Program button click
     const handleRunProgram = async () => {
         console.log("ExecutionMonitor: handleRunProgram called, current isExecuting:", isExecuting);
+        console.log("ExecutionMonitor: window.programEditorRunFunction exists:", !!(window as any).programEditorRunFunction);
+        console.log("ExecutionMonitor: Available window functions:", Object.keys(window).filter(key => key.includes('program')));
         
         // Call the ProgramEditor's run function through the global interface
         const programEditorRunFunction = (window as any).programEditorRunFunction;
         if (programEditorRunFunction) {
+            console.log("ExecutionMonitor: Calling programEditorRunFunction");
             programEditorRunFunction();
         } else {
             console.error("ProgramEditor run function not available");
+        }
+    };
+
+    // Function to handle button click (either run or stop)
+    const handleButtonClick = () => {
+        if (isExecuting) {
+            console.log("ExecutionMonitor: Stop button clicked");
+            handleStopProgram();
+        } else {
+            console.log("ExecutionMonitor: Run button clicked");
+            handleRunProgram();
         }
     };
 
@@ -277,7 +291,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     {!waitingForUserConfirmation && (
                         <button 
                             className="run-program-button"
-                            onClick={handleRunProgram}
+                            onClick={handleButtonClick}
                             type="button"
                             style={{
                                 backgroundColor: isExecuting ? "#dc3545" : undefined
