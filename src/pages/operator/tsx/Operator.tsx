@@ -1064,37 +1064,80 @@ export const Operator = (props: {
                 }}>
                     {/* Left side controls */}
                     <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
-                        {/* Program mode dropdown */}
-                        <div style={{ 
-                            display: "flex", 
-                            alignItems: "center",
-                            height: "40px"
-                        }}>
-                            <style>
-                                {`
-                                    .header-dropdown .dropdown-button {
-                                        padding-top: 0.5rem !important;
-                                        padding-bottom: 0.5rem !important;
-                                        height: 40px !important;
-                                        display: flex !important;
-                                        align-items: center !important;
-                                    }
-                                `}
-                            </style>
-                            <div className="header-dropdown">
-                                <Dropdown
-                                    onChange={(idx) => {
-                                        const newMode = programModes[idx];
-                                        setProgramMode(newMode);
-                                        switchToModeLayout(newMode);
-                                    }}
-                                    selectedIndex={programModes.indexOf(programMode)}
-                                    possibleOptions={programModes}
-                                    showActive
-                                    placement="bottom"
-                                />
+                        {/* Program mode dropdown - only show when not in Demonstrate mode */}
+                        {programMode !== "Demonstrate" && (
+                            <div style={{ 
+                                display: "flex", 
+                                alignItems: "center",
+                                height: "40px"
+                            }}>
+                                <style>
+                                    {`
+                                        .header-dropdown .dropdown-button {
+                                            padding-top: 0.5rem !important;
+                                            padding-bottom: 0.5rem !important;
+                                            height: 40px !important;
+                                            display: flex !important;
+                                            align-items: center !important;
+                                        }
+                                    `}
+                                </style>
+                                <div className="header-dropdown">
+                                    <Dropdown
+                                        onChange={(idx) => {
+                                            const newMode = programModes[idx];
+                                            setProgramMode(newMode);
+                                            switchToModeLayout(newMode);
+                                        }}
+                                        selectedIndex={programModes.indexOf(programMode)}
+                                        possibleOptions={programModes}
+                                        showActive
+                                        placement="bottom"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
+                        
+                        {/* Mode switch buttons - only show when in Program Editor or Execution Monitor */}
+                        {programMode === "Program Editor" && (
+                            <button
+                                onClick={() => {
+                                    setProgramMode("Execution Monitor");
+                                    switchToModeLayout("Execution Monitor");
+                                }}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    height: "40px",
+                                    padding: "8px 16px"
+                                }}
+                                title="Switch to Execution Monitor"
+                            >
+                                <span>Execution Monitor</span>
+                            </button>
+                        )}
+                        
+                        {programMode === "Execution Monitor" && (
+                            <button
+                                onClick={() => {
+                                    setProgramMode("Program Editor");
+                                    switchToModeLayout("Program Editor");
+                                }}
+                                className="btn-turquoise font-white"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    height: "40px",
+                                    padding: "8px 16px"
+                                }}
+                                title="Switch to Program Editor"
+                            >
+                                <span>Program Editor</span>
+                            </button>
+                        )}
                     </div>
                     
                     {/* Center controls */}
@@ -1167,32 +1210,61 @@ export const Operator = (props: {
                             <HomeIcon />
                             <span>Home Robot</span>
                         </button>
-                        {/* Study Proceed Button */}
+                        
+                        {/* Study Proceed Button - different text and behavior based on mode */}
                         {props.studyMode && (
-                            <button
-                                onClick={() => {
-                                    if (props.studyMode?.isPracticeRound) {
-                                        // For practice round, show task description modal
-                                        setShowTaskDescription(true);
-                                    } else {
-                                        // For actual tasks, show completion confirmation
-                                        setShowStudyConfirmation(true);
-                                    }
-                                }}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    backgroundColor: "#28a745",
-                                    borderColor: "#28a745",
-                                    height: "40px",
-                                    padding: "8px 16px"
-                                }}
-                                title={props.studyMode?.isPracticeRound ? "Start First Task" : "Proceed to next task"}
-                            >
-                                <span>{props.studyMode.proceedButtonText}</span>
-                            </button>
+                            <>
+                                {/* In Demonstrate mode - show "Edit Program Instead" or "Go to Program Editor" */}
+                                {programMode === "Demonstrate" && (
+                                    <button
+                                        onClick={() => {
+                                            setProgramMode("Program Editor");
+                                            switchToModeLayout("Program Editor");
+                                        }}
+                                        className="btn-turquoise font-white"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "4px",
+                                            backgroundColor: "#ff8c00",
+                                            borderColor: "#ff8c00",
+                                            height: "40px",
+                                            padding: "8px 16px"
+                                        }}
+                                        title="Switch to Program Editor"
+                                    >
+                                        <span>{props.studyMode?.isPracticeRound ? "Edit Program Instead" : "Go to Program Editor"}</span>
+                                    </button>
+                                )}
+                                
+                                {/* In Program Editor or Execution Monitor - show original proceed button */}
+                                {(programMode === "Program Editor" || programMode === "Execution Monitor") && (
+                                    <button
+                                        onClick={() => {
+                                            if (props.studyMode?.isPracticeRound) {
+                                                // For practice round, show task description modal
+                                                setShowTaskDescription(true);
+                                            } else {
+                                                // For actual tasks, show completion confirmation
+                                                setShowStudyConfirmation(true);
+                                            }
+                                        }}
+                                        className="btn-turquoise font-white"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "4px",
+                                            backgroundColor: "#28a745",
+                                            borderColor: "#28a745",
+                                            height: "40px",
+                                            padding: "8px 16px"
+                                        }}
+                                        title={props.studyMode?.isPracticeRound ? "Start First Task" : "Proceed to next task"}
+                                    >
+                                        <span>{props.studyMode.proceedButtonText}</span>
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
