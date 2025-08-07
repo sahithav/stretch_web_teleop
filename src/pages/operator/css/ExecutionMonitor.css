@@ -43,6 +43,12 @@
     gap: 8px;
 }
 
+.execution-monitor-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .execution-monitor-language {
     color: var(--secondary-text-color);
     background: var(--tertiary-background-color);
