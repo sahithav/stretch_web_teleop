@@ -1070,7 +1070,7 @@ export const Operator = (props: {
                                 display: "flex",
                                 alignItems: "center",
                                 backgroundColor: "#f8f9fa",
-                                borderRadius: "20px",
+                                borderRadius: "4px",
                                 padding: "2px",
                                 border: "1px solid #dee2e6",
                                 height: "40px"
@@ -1086,9 +1086,9 @@ export const Operator = (props: {
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
-                                        borderRadius: "18px",
+                                        borderRadius: "2px",
                                         border: "none",
-                                        backgroundColor: programMode === "Program Editor" ? "#007bff" : "transparent",
+                                        backgroundColor: programMode === "Program Editor" ? "#0d6efd" : "transparent",
                                         color: programMode === "Program Editor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Program Editor" ? "600" : "400",
                                         cursor: "pointer",
@@ -1109,9 +1109,9 @@ export const Operator = (props: {
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
-                                        borderRadius: "18px",
+                                        borderRadius: "2px",
                                         border: "none",
-                                        backgroundColor: programMode === "Execution Monitor" ? "#007bff" : "transparent",
+                                        backgroundColor: programMode === "Execution Monitor" ? "#0d6efd" : "transparent",
                                         color: programMode === "Execution Monitor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Execution Monitor" ? "600" : "400",
                                         cursor: "pointer",
@@ -1131,7 +1131,10 @@ export const Operator = (props: {
                         alignItems: "center", 
                         justifyContent: "center",
                         flex: "1 1 auto",
-                        gap: "16px"
+                        gap: "16px",
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)"
                     }}>
                         {/* AudioControl hidden for all modes */}
                         {/* Action mode dropdown and SpeedControl centered for Demonstrate and Execution Monitor modes */}
@@ -1229,6 +1232,7 @@ export const Operator = (props: {
                                         }}
                                         title="Switch to Program Editor"
                                     >
+                                        <CheckIcon style={{ fontSize: "1em" }} />
                                         <span>Done Demonstrating</span>
                                     </button>
                                 )}
