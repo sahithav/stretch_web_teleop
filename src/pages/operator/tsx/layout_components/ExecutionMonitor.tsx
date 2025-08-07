@@ -488,7 +488,6 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         } else {
                             console.error("RemoteRobot not available");
                         }
-                        }
                     }
                     else if (line.command === "PauseAndConfirm") {
                         const message = line.parameters || "Ready to continue? Please confirm before the robot proceeds or reset to revise.";
