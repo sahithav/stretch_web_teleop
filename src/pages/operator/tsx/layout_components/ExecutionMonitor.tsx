@@ -625,24 +625,31 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const highlightSyntax = (text: string): string => {
         let highlightedText = text;
         
-        // If the entire line is a comment (starts with // or #), wrap the whole line
-        highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
-            return whitespace + `<span class="comment">${commentPart}</span>`;
-        });
-        
-        // Handle inline comments - wrap them in comment styling
-        highlightedText = highlightedText.replace(/^(.*?)(\/\/.*|#.*)$/gm, (match, beforeComment, commentPart) => {
-            if (commentPart) {
-                // If there's content before the comment, preserve it with normal highlighting
+        // Split into lines to handle each line separately
+        const lines = highlightedText.split('\n');
+        const processedLines = lines.map(line => {
+            const trimmedLine = line.trim();
+            
+            // Check if line starts with comment markers
+            if (trimmedLine.startsWith('//') || trimmedLine.startsWith('#')) {
+                // Full comment line - wrap in comment styling
+                return `<span class="comment">${line}</span>`;
+            }
+            
+            // Check for inline comments
+            const commentMatch = line.match(/^(.*?)(\/\/.*|#.*)$/);
+            if (commentMatch) {
+                const beforeComment = commentMatch[1];
+                const commentPart = commentMatch[2];
                 const beforeHighlighted = beforeComment ? highlightContent(beforeComment) : '';
                 return beforeHighlighted + `<span class="comment">${commentPart}</span>`;
             }
-            return match;
+            
+            // No comments - apply normal highlighting
+            return highlightContent(line);
         });
         
-        highlightedText = highlightContent(highlightedText);
-        
-        return highlightedText;
+        return processedLines.join('\n');
     };
 
     // Helper function to highlight non-comment content
