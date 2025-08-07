@@ -219,11 +219,11 @@ export const Library = (props: CustomizableComponentProps) => {
                                         className="library-function-item"
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Move_Arm_to_Config()\n")}
                                     >
-                                        Move_Arm_to_Config()
+                                        Move_Arm_to_Config(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
-                                        Move the robot's end effector to a specific pose.{'\n'}
-                                        Input: Saved position from demo recording.
+                                        Adjust the lift and extension of the robot's arm.{'\n'}
+                                        Input: Saved configuration from demo recording.
                                     </div>
                                 </div>
                                 <div className="function-group">
@@ -231,11 +231,11 @@ export const Library = (props: CustomizableComponentProps) => {
                                         className="library-function-item"
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                     >
-                                        Adjust_Gripper_Width()
+                                        Adjust_Gripper_Width(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
-                                        Adjust the width of the end effector.{'\n'}
-                                        Input: Saved position from demo recording.
+                                        Adjust the width of the robot's gripper. {'\n'}
+                                        Input: Saved configuration from demo recording.
                                     </div>
                                 </div>
                                 <div className="function-group">
@@ -243,11 +243,11 @@ export const Library = (props: CustomizableComponentProps) => {
                                         className="library-function-item"
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Rotate_Wrist_to_Config()\n")}
                                     >
-                                        Rotate_Wrist_to_Config()
+                                        Rotate_Wrist_to_Config(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
-                                        Adjust the angle of the end effector.{'\n'}
-                                        Input: Saved position from demo recording.
+                                        Adjust the angle of the robot's wrist.{'\n'}
+                                        Input: Saved configuration from demo recording.
                                     </div>
                                 </div>
                                 <div className="function-group">
@@ -321,7 +321,8 @@ export const Library = (props: CustomizableComponentProps) => {
                                     className="add-position-btn"
                                     onClick={() => setShowModal(true)}
                                     style={{
-                                        width: "100%"
+                                        width: "100%",
+                                        textAlign: "center"
                                     }}
                                 >
                                     + Add Configuration
@@ -394,7 +395,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                     fontWeight: "bold",
                                     fontSize: "0.9em"
                                 }}>
-                                    Position Name
+                                    Configuration Name
                                 </label>
                                 <input
                                     type="text"
