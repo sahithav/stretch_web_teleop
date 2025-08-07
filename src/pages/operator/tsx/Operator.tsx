@@ -431,7 +431,14 @@ export const Operator = (props: {
         
         // Home the robot
         if ((window as any).remoteRobot) {
-            (window as any).remoteRobot.homeTheRobot();
+            // First retract the robot's arm before homing
+            const retractedPose = { wrist_extension: 0.00211174 };
+            (window as any).remoteRobot.setRobotPose(retractedPose);
+            setTimeout(() => {
+                if ((window as any).remoteRobot) {
+                    (window as any).remoteRobot.homeTheRobot();
+                }
+            }, 2000);
         }
         
         // Stop program execution
@@ -1151,7 +1158,14 @@ export const Operator = (props: {
                         <button
                             onClick={() => {
                                 if ((window as any).remoteRobot) {
-                                    (window as any).remoteRobot.homeTheRobot();
+                                    // First retract the robot's arm before homing
+                                    const retractedPose = { wrist_extension: 0.00211174 };
+                                    (window as any).remoteRobot.setRobotPose(retractedPose);
+                                    setTimeout(() => {
+                                        if ((window as any).remoteRobot) {
+                                            (window as any).remoteRobot.homeTheRobot();
+                                        }
+                                    }, 2000);
                                 } else {
                                     console.error("RemoteRobot not available");
                                 }
