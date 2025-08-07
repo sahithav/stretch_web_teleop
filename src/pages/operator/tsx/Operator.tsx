@@ -1073,7 +1073,8 @@ export const Operator = (props: {
                                 borderRadius: "0.4rem",
                                 padding: "2px",
                                 border: "1px solid #dee2e6",
-                                height: "40px"
+                                height: "40px",
+                                minWidth: "280px"
                             }}>
                                 <button
                                     onClick={() => {
@@ -1083,6 +1084,7 @@ export const Operator = (props: {
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
+                                        justifyContent: "center",
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
@@ -1092,7 +1094,9 @@ export const Operator = (props: {
                                         color: programMode === "Program Editor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Program Editor" ? "600" : "400",
                                         cursor: "pointer",
-                                        transition: "background-color 0.15s ease, color 0.15s ease, font-weight 0.15s ease"
+                                        transition: "background-color 0.1s ease-out, color 0.1s ease-out",
+                                        flex: "1",
+                                        minWidth: "0"
                                     }}
                                     title="Switch to Program Editor"
                                 >
@@ -1106,6 +1110,7 @@ export const Operator = (props: {
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
+                                        justifyContent: "center",
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
@@ -1115,7 +1120,9 @@ export const Operator = (props: {
                                         color: programMode === "Execution Monitor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Execution Monitor" ? "600" : "400",
                                         cursor: "pointer",
-                                        transition: "background-color 0.15s ease, color 0.15s ease, font-weight 0.15s ease"
+                                        transition: "background-color 0.1s ease-out, color 0.1s ease-out",
+                                        flex: "1",
+                                        minWidth: "0"
                                     }}
                                     title="Switch to Execution Monitor"
                                 >
