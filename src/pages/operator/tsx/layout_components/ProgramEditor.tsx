@@ -580,6 +580,8 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
             return whitespace + `<span class="comment">${commentPart}</span>`;
         });
+    
+        highlightedText = highlightContent(highlightedText);
         
         return highlightedText;
     };

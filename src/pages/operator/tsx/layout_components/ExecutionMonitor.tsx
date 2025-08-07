@@ -639,6 +639,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
             return whitespace + `<span class="comment">${commentPart}</span>`;
         });
+        highlightedText = highlightContent(highlightedText);
         
         return highlightedText;
     };
