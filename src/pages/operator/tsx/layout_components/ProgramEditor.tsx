@@ -566,7 +566,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const highlightSyntax = (text: string): string => {
         let highlightedText = text;
         
-        // Handle comment lines first - wrap them in comment styling
+        // If the entire line is a comment (starts with // or #), wrap the whole line
+        highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
+            return whitespace + `<span class="comment">${commentPart}</span>`;
+        });
+        
+        // Handle inline comments - wrap them in comment styling
         highlightedText = highlightedText.replace(/^(.*?)(\/\/.*|#.*)$/gm, (match, beforeComment, commentPart) => {
             if (commentPart) {
                 // If there's content before the comment, preserve it with normal highlighting
@@ -576,10 +581,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             return match;
         });
         
-        // If the entire line is a comment (starts with // or #), wrap the whole line
-        highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
-            return whitespace + `<span class="comment">${commentPart}</span>`;
-        });
     
         highlightedText = highlightContent(highlightedText);
         
