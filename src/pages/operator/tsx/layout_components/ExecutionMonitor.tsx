@@ -571,6 +571,11 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 props.sharedState.updateCurrentExecutingLine(undefined);
             }
             
+            // Track execution attempt end as failed when stopped
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(false);
+            }
+            
         } else {
             // Start execution
             console.log("ExecutionMonitor: Run Program button clicked!");
@@ -798,7 +803,21 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     {!waitingForUserConfirmation && (
                         <>
                             <button 
-                                className="clear-program-button"
+                                style={{
+                                    background: "#ff8c00",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "6px 16px",
+                                    fontSize: "16px",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.2s ease",
+                                    letterSpacing: "0.5px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    marginRight: "8px"
+                                }}
                                 onClick={() => {
                                     if ((window as any).remoteRobot) {
                                         const retractedPose = { wrist_extension: 0.00211174 };
@@ -810,10 +829,6 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                                             }
                                         }, 2000);
                                     }
-                                }}
-                                type="button"
-                                style={{
-                                    marginRight: "8px"
                                 }}
                                 title="Reset robot to home position"
                             >
