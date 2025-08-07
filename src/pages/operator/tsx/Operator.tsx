@@ -1156,6 +1156,9 @@ export const Operator = (props: {
                                             display: flex !important;
                                             align-items: center !important;
                                         }
+                                        .header-dropdown .dropdown-popup {
+                                            z-index: 9999 !important;
+                                        }
                                     `}
                                 </style>
                                 <div className="header-dropdown">
@@ -1529,7 +1532,7 @@ export const Operator = (props: {
                                     }}>
                                         <li>Demonstrated the task (recorded demo)</li>
                                         <li>Wrote a program in Program Editor mode</li>
-                                        <li>Successfully executed the program</li>
+                                        <li>Executed the program</li>
                                     </ul>
                                     
                                     <div style={{ textAlign: "center", marginTop: "16px" }}>
@@ -1574,7 +1577,7 @@ export const Operator = (props: {
                                     }}>
                                         <li>Demonstrated the task (recorded demo)</li>
                                         <li>Wrote a program in Program Editor mode</li>
-                                        <li>Successfully executed the program</li>
+                                        <li>Executed the program</li>
                                     </ul>
                                 </>
                             )}

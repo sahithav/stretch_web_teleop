@@ -188,7 +188,17 @@ const SingleButton = (props: SingleButtonProps) => {
                     disable: isDisabled,
                 })}
             />
-            <p>{title}</p>
+            <text
+                x={props.iconPosition.x}
+                y={props.iconPosition.y + height/2 + 15}
+                textAnchor="middle"
+                fontSize="12"
+                fill={isDisabled ? "#999" : "#333"}
+                fontWeight="500"
+                pointerEvents="none"
+            >
+                {title}
+            </text>
         </React.Fragment>
     );
 };

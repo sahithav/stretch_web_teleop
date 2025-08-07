@@ -34,7 +34,6 @@ export const StudyLanding: React.FC<StudyLandingProps> = ({ onBeginStudy }) => {
                     </ul>
                     
                     <p>
-                        Each task is expected to take approximately 10–15 minutes.
                         Before you begin, please read and sign the consent form carefully.
                     </p>
                     

@@ -219,7 +219,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Move_Arm_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the lift and extension of the robot's arm.{'\n'}
@@ -232,7 +232,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the width of the robot's gripper. {'\n'}
@@ -245,7 +245,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Rotate_Wrist_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the angle of the robot's wrist.{'\n'}
@@ -258,7 +258,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Reset_Robot()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Reset_Robot</span>()
+                                        <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Reset_Robot</span>()
                                     </div>
                                     <div className="function-description">
                                         Reset the robot to its home position.{'\n'}
@@ -279,7 +279,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                                 onClick={() => props.sharedState.insertTextAtCursor?.("Pause_And_Confirm()\n")}
                                                 style={{ marginBottom: "12px" }}
                                             >
-                                                <span style={{ fontWeight: "600" }}>Pause_And_Confirm</span>()
+                                                <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Pause_And_Confirm</span>()
                                             </div>
                                             <div className="function-description">
                                                 Pause execution and wait for your confirmation.{'\n'}
@@ -292,7 +292,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                                 onClick={() => props.sharedState.insertTextAtCursor?.("Take_Control()\n")}
                                                 style={{ marginBottom: "12px" }}
                                             >
-                                                <span style={{ fontWeight: "600" }}>Take_Control</span>()
+                                                <span style={{ fontWeight: "600", fontSize: "0.9em" }}>Take_Control</span>()
                                             </div>
                                             <div className="function-description">
                                                 Control the robot by tele-operating it.{'\n'}
