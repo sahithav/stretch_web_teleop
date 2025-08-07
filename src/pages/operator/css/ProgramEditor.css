@@ -185,8 +185,13 @@
 }
 
 .saved-position {
-    color: #007bff; /* Blue for saved positions */
-    font-weight: normal;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.comment {
+    color: #6c757d;
+    font-style: italic;
 }
 
 /* Inline suggestions*/

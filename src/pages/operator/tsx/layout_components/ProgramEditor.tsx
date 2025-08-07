@@ -82,6 +82,13 @@ const parseProgram = (code: string): Program => {
                 content: line,
                 isExecutable: false
             });
+        } else if (trimmedLine.startsWith('//') || trimmedLine.startsWith('#')) {
+            // Comment line - non-executable
+            programLines.push({
+                lineNumber,
+                content: line,
+                isExecutable: false
+            });
         } else {
             // Check for different command types
             const moveEEMatch = trimmedLine.match(/MoveEEToPose\s*\(\s*([^)]*)\s*\)/);
@@ -557,48 +564,68 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
 
     // Syntax highlighting function
     const highlightSyntax = (text: string): string => {
-    let highlightedText = text;
-    
-    // no highlighting in PauseAndConfirm parameters
-    const pauseAndConfirmParams: string[] = [];
-    let paramIndex = 0;
-    highlightedText = highlightedText.replace(/PauseAndConfirm\s*\(\s*([^)]*)\s*\)/g, (match, content) => {
-        const placeholder = `__PAUSE_CONFIRM_PARAM_${paramIndex}__`;
-        pauseAndConfirmParams[paramIndex] = content;
-        paramIndex++;
-        return `PauseAndConfirm(${placeholder})`;
-    });
-    
-    
-    // Highlight robot functions in orange
-    ROBOT_FUNCTIONS.forEach(func => {
-        const regex = new RegExp(`\\b${func}\\b`, 'g');
-        highlightedText = highlightedText.replace(regex, `<span class="robot-function">${func}</span>`);
-    });
-    
-    // Highlight human functions in green (only if not hidden)
-    if (!shouldHideHumanAPI()) {
-        HUMAN_FUNCTIONS.forEach(func => {
-            const regex = new RegExp(`\\b${func}\\b`, 'g');
-            highlightedText = highlightedText.replace(regex, `<span class="human-function">${func}</span>`);
+        let highlightedText = text;
+        
+        // Handle comment lines first - wrap them in comment styling
+        highlightedText = highlightedText.replace(/^(.*?)(\/\/.*|#.*)$/gm, (match, beforeComment, commentPart) => {
+            if (commentPart) {
+                // If there's content before the comment, preserve it with normal highlighting
+                const beforeHighlighted = beforeComment ? highlightContent(beforeComment) : '';
+                return beforeHighlighted + `<span class="comment">${commentPart}</span>`;
+            }
+            return match;
         });
-    }
-    
-    // Highlight saved positions in blue
-    savedPositions.forEach(position => {
-        const regex = new RegExp(`\\b${position}\\b`, 'g');
-        highlightedText = highlightedText.replace(regex, `<span class="saved-position">${position}</span>`);
-    });
-    
-    // Restore PauseAndConfirm parameters without highlighting
-    pauseAndConfirmParams.forEach((param, index) => {
-        const placeholder = `__PAUSE_CONFIRM_PARAM_${index}__`;
-        highlightedText = highlightedText.replace(placeholder, param);
-    });
-    
-    return highlightedText;
-};
+        
+        // If the entire line is a comment (starts with // or #), wrap the whole line
+        highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
+            return whitespace + `<span class="comment">${commentPart}</span>`;
+        });
+        
+        return highlightedText;
+    };
 
+    // Helper function to highlight non-comment content
+    const highlightContent = (text: string): string => {
+        let highlightedText = text;
+        
+        // no highlighting in PauseAndConfirm parameters
+        const pauseAndConfirmParams: string[] = [];
+        let paramIndex = 0;
+        highlightedText = highlightedText.replace(/PauseAndConfirm\s*\(\s*([^)]*)\s*\)/g, (match, content) => {
+            const placeholder = `__PAUSE_CONFIRM_PARAM_${paramIndex}__`;
+            pauseAndConfirmParams[paramIndex] = content;
+            paramIndex++;
+            return `PauseAndConfirm(${placeholder})`;
+        });
+        
+        // Highlight robot functions in orange
+        ROBOT_FUNCTIONS.forEach(func => {
+            const regex = new RegExp(`\\b${func}\\b`, 'g');
+            highlightedText = highlightedText.replace(regex, `<span class="robot-function">${func}</span>`);
+        });
+        
+        // Highlight human functions in green (only if not hidden)
+        if (!shouldHideHumanAPI()) {
+            HUMAN_FUNCTIONS.forEach(func => {
+                const regex = new RegExp(`\\b${func}\\b`, 'g');
+                highlightedText = highlightedText.replace(regex, `<span class="human-function">${func}</span>`);
+            });
+        }
+        
+        // Highlight saved positions in blue
+        savedPositions.forEach(position => {
+            const regex = new RegExp(`\\b${position}\\b`, 'g');
+            highlightedText = highlightedText.replace(regex, `<span class="saved-position">${position}</span>`);
+        });
+        
+        // Restore PauseAndConfirm parameters without highlighting
+        pauseAndConfirmParams.forEach((param, index) => {
+            const placeholder = `__PAUSE_CONFIRM_PARAM_${index}__`;
+            highlightedText = highlightedText.replace(placeholder, param);
+        });
+        
+        return highlightedText;
+    };
 
 
     // Function to insert text at cursor position

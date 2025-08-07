@@ -77,6 +77,13 @@ const parseProgram = (code: string): Program => {
                 content: line,
                 isExecutable: false
             });
+        } else if (trimmedLine.startsWith('//') || trimmedLine.startsWith('#')) {
+            // Comment line - non-executable
+            programLines.push({
+                lineNumber,
+                content: line,
+                isExecutable: false
+            });
         } else {
             // Check for different command types
             const moveEEMatch = trimmedLine.match(/MoveEEToPose\s*\(\s*([^)]*)\s*\)/);
@@ -566,6 +573,12 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             console.log("ExecutionMonitor: Setting isExecuting to true");
             setIsExecuting(true);
             
+            // Set execution state to true using the proper method
+            const buttonFunctionProvider = (window as any).buttonFunctionProvider;
+            if (buttonFunctionProvider) {
+                buttonFunctionProvider.setExecutionState(true);
+            }
+            
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
@@ -610,6 +623,28 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Syntax highlighting function 
     const highlightSyntax = (text: string): string => {
+        let highlightedText = text;
+        
+        // Handle comment lines first 
+        highlightedText = highlightedText.replace(/^(.*?)(\/\/.*|#.*)$/gm, (match, beforeComment, commentPart) => {
+            if (commentPart) {
+                // If there's content before the comment, preserve it with normal highlighting
+                const beforeHighlighted = beforeComment ? highlightContent(beforeComment) : '';
+                return beforeHighlighted + `<span class="comment">${commentPart}</span>`;
+            }
+            return match;
+        });
+        
+        // If the entire line is a comment (starts with // or #), wrap the whole line
+        highlightedText = highlightedText.replace(/^(\s*)(\/\/.*|#.*)$/gm, (match, whitespace, commentPart) => {
+            return whitespace + `<span class="comment">${commentPart}</span>`;
+        });
+        
+        return highlightedText;
+    };
+
+    // Helper function to highlight non-comment content
+    const highlightContent = (text: string): string => {
         let highlightedText = text;
         
         // no highlighting in PauseAndConfirm parameters
@@ -721,18 +756,6 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     )}
                 </div>
                 <div className="execution-monitor-header-right">
-                    {showDoneMessage && (
-                        <div style={{
-                            color: "#2e7d32",
-                            fontWeight: "bold",
-                            fontSize: "17px",
-                            display: "flex",
-                            alignItems: "center",
-                            marginRight: "16px"
-                        }}>
-                            Done Executing!
-                        </div>
-                    )}
                     {waitingForUserConfirmation && handleDoneTeleoperating && (
                         <button 
                             className="execution-monitor-done-button"
@@ -747,26 +770,40 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         </button>
                     )}
                     {!waitingForUserConfirmation && (
-                        <button 
-                            className="run-program-button"
-                            onClick={handleButtonClick}
-                            type="button"
-                            style={{
-                                backgroundColor: isExecuting ? "#dc3545" : undefined
-                            }}
-                        >
-                            {isExecuting ? (
-                                <>
-                                    <CloseIcon style={{ marginRight: "4px" }} />
-                                    Stop
-                                </>
-                            ) : (
-                                <>
-                                    <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                    Run
-                                </>
+                        <>
+                            {showDoneMessage && (
+                                <div style={{
+                                    color: "#2e7d32",
+                                    fontWeight: "bold",
+                                    fontSize: "17px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    marginRight: "16px"
+                                }}>
+                                    Done Executing!
+                                </div>
                             )}
-                        </button>
+                            <button 
+                                className="run-program-button"
+                                onClick={handleButtonClick}
+                                type="button"
+                                style={{
+                                    backgroundColor: isExecuting ? "#dc3545" : undefined
+                                }}
+                            >
+                                {isExecuting ? (
+                                    <>
+                                        <CloseIcon style={{ marginRight: "4px" }} />
+                                        Stop
+                                    </>
+                                ) : (
+                                    <>
+                                        <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                        Run
+                                    </>
+                                )}
+                            </button>
+                        </>
                     )}
                 </div>
             </div>
