@@ -4,7 +4,7 @@ import {
     SharedState,
     isSelected,
 } from "./CustomizableComponent";
-import { className } from "shared/util";
+import { className, RobotPose, HOME_POSE } from "shared/util";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -36,6 +36,153 @@ const DEFAULT_SAVED_POSITIONS = [
     // No default positions for now
 ];
 
+// Define default saved positions
+const POSE_DEFINITIONS: { [key: string]: RobotPose } = {
+    // No default poses for now
+};
+
+// Program data structure for parsing 
+interface ProgramLine {
+    lineNumber: number;
+    content: string;
+    command?: string;  
+    parameters?: any;   
+    isExecutable: boolean; // handling for empty lines or if invalid 
+    error?: {
+        type: 'syntax' | 'invalid_input' | 'unknown_pose';
+        message: string;
+    };
+}
+
+interface Program {
+    lines: ProgramLine[];
+    totalLines: number;
+}
+
+/**
+ * Parse program code into structured format for execution
+ */
+const parseProgram = (code: string): Program => {
+    const lines = code.split('\n');
+    const programLines: ProgramLine[] = [];
+    
+    lines.forEach((line, index) => {
+        const lineNumber = index + 1;
+        const trimmedLine = line.trim();
+        
+        if (trimmedLine === '') {
+            // if there is an empty line
+            programLines.push({
+                lineNumber,
+                content: line,
+                isExecutable: false
+            });
+        } else {
+            // Check for different command types
+            const moveEEMatch = trimmedLine.match(/MoveEEToPose\s*\(\s*([^)]*)\s*\)/);
+            const resetRobotMatch = trimmedLine.match(/ResetRobot\s*\(\s*\)/);
+            const resetRobotWithParamsMatch = trimmedLine.match(/ResetRobot\s*\(\s*[^)]+\s*\)/);
+            const adjustGripperMatch = trimmedLine.match(/AdjustGripperWidth\s*\(\s*([^)]*)\s*\)/);
+            const rotateEEMatch = trimmedLine.match(/RotateEE\s*\(\s*([^)]*)\s*\)/);
+            const takeControlMatch = trimmedLine.match(/TakeControl\s*\(\s*\)/);
+            const takeControlWithParamsMatch = trimmedLine.match(/TakeControl\s*\(\s*[^)]+\s*\)/);
+            const pauseAndConfirmMatch = trimmedLine.match(/PauseAndConfirm\s*\(\s*([^)]*)\s*\)/);
+            
+            if (moveEEMatch) {
+                const parameter = moveEEMatch[1] || null;
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "MoveEEToPose",
+                    parameters: parameter,
+                    isExecutable: true
+                });
+            } else if (resetRobotWithParamsMatch) {
+                // ResetRobot with parameters - invalid input
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    isExecutable: false,
+                    error: {
+                        type: 'invalid_input',
+                        message: `Line ${lineNumber}: Invalid input`
+                    }
+                });
+            } else if (resetRobotMatch) {
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "ResetRobot",
+                    parameters: null,
+                    isExecutable: true
+                });
+            } else if (adjustGripperMatch) {
+                const parameter = adjustGripperMatch[1] || null;
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "AdjustGripperWidth",
+                    parameters: parameter,
+                    isExecutable: true
+                });
+            } else if (rotateEEMatch) {
+                const parameter = rotateEEMatch[1] || null;
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "RotateEE",
+                    parameters: parameter,
+                    isExecutable: true
+                });
+            } else if (takeControlWithParamsMatch) {
+                // TakeControl with parameters - invalid input
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    isExecutable: false,
+                    error: {
+                        type: 'invalid_input',
+                        message: `Line ${lineNumber}: Invalid input`
+                    }
+                });
+            } else if (takeControlMatch) {
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "TakeControl",
+                    parameters: null,
+                    isExecutable: true
+                });
+            } else if (pauseAndConfirmMatch) {
+                const parameter = pauseAndConfirmMatch[1] || null;
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    command: "PauseAndConfirm",
+                    parameters: parameter,
+                    isExecutable: true
+                });
+            } else {
+                // Unknown command or invalid line - syntax error
+                programLines.push({
+                    lineNumber,
+                    content: line,
+                    isExecutable: false,
+                    error: {
+                        type: 'syntax',
+                        message: `Line ${lineNumber}: Syntax error`
+                    }
+                });
+            }
+        }
+    });
+    
+    return {
+        lines: programLines,
+        totalLines: lines.length
+    };
+};
+
 /**
  * A read-only display component that shows the program from the ProgramEditor
  * with syntax highlighting and line numbers
@@ -50,10 +197,28 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const [showDoneMessage, setShowDoneMessage] = useState(false);
     const [isExecuting, setIsExecuting] = useState(false);
     const prevIsExecutingRef = React.useRef(false);
+    const stopExecutionRef = React.useRef<boolean>(false);
     
     const { customizing, currentExecutingLine, isExecutingProgram, isProgramFinished, setIsProgramFinished, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
+    // Load custom poses from session storage
+    const getInitialCustomPoses = (): {[key: string]: RobotPose} => {
+        const sessionPoses = sessionStorage.getItem('programEditorCustomPoses');
+        if (sessionPoses) {
+            try {
+                const parsed = JSON.parse(sessionPoses);
+                return parsed;
+            } catch (error) {
+                console.error("Error parsing custom poses:", error);
+            }
+        }
+        return {};
+    };
+    
+    // Combine default and custom poses
+    const customPoses = getInitialCustomPoses();
+    const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };
   
     // Create dynamic array that updates when savedPositions changes
     const allFunctions = React.useMemo(() => {
@@ -127,34 +292,303 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         prevIsExecutingRef.current = isExecutingProgram;
     }, [isExecutingProgram, isProgramFinished, executionError]);
 
+    // Execute the parsed program line by line
+    const executeProgram = async (program: Program) => {
+        console.log("ExecutionMonitor: Starting program execution...");
+        
+        // Track execution attempt start for study data
+        if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
+            console.log('ExecutionMonitor: Starting execution attempt tracking');
+            (props.sharedState as any).trackExecutionAttemptStart();
+        }
+        
+        // Set execution state to true at the start
+        const buttonFunctionProvider = (window as any).buttonFunctionProvider;
+        if (buttonFunctionProvider) {
+            buttonFunctionProvider.setExecutionState(true);
+        }
+        // Reset stop execution flag at the start
+        stopExecutionRef.current = false;
+        // Function to check if execution should continue
+        const shouldContinue = () => {
+            return !stopExecutionRef.current; 
+        };
+        
+        try {
+            console.log("ExecutionMonitor: Starting program loop, stopExecutionRef.current:", stopExecutionRef.current);
+            for (const line of program.lines) {
+                console.log("ExecutionMonitor: Checking line", line.lineNumber, "stopExecutionRef.current:", stopExecutionRef.current);
+                
+                // Update current executing line
+                if (props.sharedState.updateCurrentExecutingLine) {
+                    props.sharedState.updateCurrentExecutingLine(line.lineNumber);
+                }
+                
+                if (!shouldContinue()) {
+                    console.log("ExecutionMonitor: Program execution stopped by user");
+                    break;
+                }
+                
+                // Check for errors in the line
+                if (line.error) {
+                    console.error(`ExecutionMonitor: Error on line ${line.lineNumber}: ${line.error.message}`);
+                    // Stop execution and display error
+                    if (props.sharedState.updateCurrentExecutingLine) {
+                        props.sharedState.updateCurrentExecutingLine(line.lineNumber);
+                    }
+                    if (props.sharedState.setExecutionError) {
+                        props.sharedState.setExecutionError(line.error);
+                    }
+                    // Set error line number for highlighting
+                    if (props.sharedState.setErrorLineNumber) {
+                        props.sharedState.setErrorLineNumber(line.lineNumber);
+                    }
+                    
+                    if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                        console.log('ExecutionMonitor: Tracking execution failure due to line error');
+                        (props.sharedState as any).trackExecutionAttemptEnd(false);
+                    }
+                    
+                    break;
+                }
+                
+                if (line.isExecutable) {
+                    console.log(`ExecutionMonitor: Executing line ${line.lineNumber}: ${line.command} with parameter: ${line.parameters}`);
+                    
+                    // Executes the command based on what function it is
+                    if (line.command === "MoveEEToPose") {
+                        const poseName = line.parameters;
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
+                        
+                        if (pose) {
+                            // Filter pose to only include joints for MoveEEToPose
+                            const filteredPose: RobotPose = {};
+                            if ('wrist_extension' in pose && pose.wrist_extension !== undefined) filteredPose.wrist_extension = pose.wrist_extension as number;
+                            if ('joint_lift' in pose && pose.joint_lift !== undefined) filteredPose.joint_lift = pose.joint_lift as number;
+                            if ('joint_head_pan' in pose && pose.joint_head_pan !== undefined) filteredPose.joint_head_pan = pose.joint_head_pan as number;
+                            if ('joint_head_tilt' in pose && pose.joint_head_tilt !== undefined) filteredPose.joint_head_tilt = pose.joint_head_tilt as number;
+                            
+                            console.log(`ExecutionMonitor: Sending MoveEEToPose command with pose: ${poseName}`, filteredPose);
+                            // Send command to robot
+                            if ((window as any).remoteRobot) {
+                                (window as any).remoteRobot.setRobotPose(filteredPose);
+                                console.log(`ExecutionMonitor: Command sent to robot!`);
+                                console.log(`ExecutionMonitor: Waiting...`);
+                                await new Promise(resolve => setTimeout(resolve, 5000));
+                                console.log(`ExecutionMonitor: Executing next command...`);
+                            } else {
+                                console.error("ExecutionMonitor: RemoteRobot not available");
+                            }
+                        } else {
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
+                            // Stop execution and display error
+                            if (props.sharedState.setExecutionError) {
+                                props.sharedState.setExecutionError({
+                                    type: 'unknown_pose',
+                                    message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
+                                });
+                            }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
+                            }
+                            break;
+                        }
+                    }
+                    else if (line.command === "AdjustGripperWidth") {
+                        const poseName = line.parameters;
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
+                        
+                        if (pose) {
+                            // Filter pose to only include joints for AdjustGripperWidth
+                            const filteredPose: RobotPose = {};
+                            if ('joint_gripper_finger_left' in pose && pose.joint_gripper_finger_left !== undefined) filteredPose.joint_gripper_finger_left = pose.joint_gripper_finger_left as number;
+                            console.log(`ExecutionMonitor: Sending AdjustGripperWidth command with pose: ${poseName}`, filteredPose);
+                            // Send command to robot
+                            if ((window as any).remoteRobot) {
+                                (window as any).remoteRobot.setRobotPose(filteredPose);
+                                console.log(`ExecutionMonitor: Command sent to robot!`);
+                                console.log(`ExecutionMonitor: Waiting...`);
+                                await new Promise(resolve => setTimeout(resolve, 5000));
+                                console.log(`ExecutionMonitor: Executing next command...`);
+                            } else {
+                                console.error("ExecutionMonitor: RemoteRobot not available");
+                            }
+                        } else {
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
+                            // Stop execution and display error
+                            if (props.sharedState.setExecutionError) {
+                                props.sharedState.setExecutionError({
+                                    type: 'unknown_pose',
+                                    message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
+                                });
+                            }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
+                            }
+                            break;
+                        }
+                    }
+                    else if (line.command === "RotateEE") {
+                        const poseName = line.parameters;
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
+                        
+                        if (pose) {
+                            // Filter pose to only include joints for RotateEE
+                            const filteredPose: RobotPose = {};
+                            if ('joint_wrist_roll' in pose && pose.joint_wrist_roll !== undefined) filteredPose.joint_wrist_roll = pose.joint_wrist_roll as number;
+                            if ('joint_wrist_pitch' in pose && pose.joint_wrist_pitch !== undefined) filteredPose.joint_wrist_pitch = pose.joint_wrist_pitch as number;
+                            if ('joint_wrist_yaw' in pose && pose.joint_wrist_yaw !== undefined) filteredPose.joint_wrist_yaw = pose.joint_wrist_yaw as number;
+                            console.log(`ExecutionMonitor: Sending RotateEE command with pose: ${poseName}`, filteredPose);
+                            // Send command to robot
+                            if ((window as any).remoteRobot) {
+                                (window as any).remoteRobot.setRobotPose(filteredPose);
+                                console.log(`ExecutionMonitor: Command sent to robot!`);
+                                console.log(`ExecutionMonitor: Waiting...`);
+                                await new Promise(resolve => setTimeout(resolve, 5000));
+                                console.log(`ExecutionMonitor: Executing next command...`);
+                            } else {
+                                console.error("ExecutionMonitor: RemoteRobot not available");
+                            }
+                        } else {
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
+                            // Stop execution and display error
+                            if (props.sharedState.setExecutionError) {
+                                props.sharedState.setExecutionError({
+                                    type: 'unknown_pose',
+                                    message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
+                                });
+                            }
+                            if (props.sharedState.setErrorLineNumber) {
+                                props.sharedState.setErrorLineNumber(line.lineNumber);
+                            }
+                            break;
+                        }
+                    }
+                    else if (line.command === "ResetRobot") {
+                        console.log(`ExecutionMonitor: Sending ResetRobot command (setting robot to home pose)`);
+                        // Send setRobotPose command to robot with stow pose
+                        if ((window as any).remoteRobot) {
+                            (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                            console.log(`ExecutionMonitor: Command sent to robot!`);
+                            console.log(`ExecutionMonitor: Waiting...`);
+                            await new Promise(resolve => setTimeout(resolve, 5000));
+                            console.log(`ExecutionMonitor: Executing next command...`);
+                        } else {
+                            console.error("ExecutionMonitor: RemoteRobot not available");
+                        }
+                    }
+                    else if (line.command === "PauseAndConfirm") {
+                        const message = line.parameters || "Ready to continue? Please confirm before the robot proceeds or reset to revise.";
+                        console.log(`ExecutionMonitor: Pausing program execution for user confirmation: ${message}`);
+                        await new Promise<void>((resolve) => {
+                            (window as any).pauseAndConfirmResolve = resolve;
+                            (window as any).pauseAndConfirmMessage = message;
+                        });
+                        console.log(`ExecutionMonitor: Resuming program execution after confirmation`);
+                    }
+                    else if (line.command === "TakeControl") {
+                        console.log(`ExecutionMonitor: Taking control from robot`);
+                        
+                        // Start automatic human API rosbag recording
+                        if (props.sharedState && (props.sharedState as any).startHumanApiRecording) {
+                            (props.sharedState as any).startHumanApiRecording();
+                        }
+                        
+                        if (buttonFunctionProvider) {
+                            buttonFunctionProvider.setExecutionState(false);
+                        }
+                        console.log(`ExecutionMonitor: Control returned to user`);
+                        await new Promise<void>((resolve) => {
+                            (window as any).resumeProgramExecution = resolve;
+                        });
+                        console.log(`ExecutionMonitor: Resuming program execution`);
+                    }
+                } else {
+                    console.log(`ExecutionMonitor: Skipping line ${line.lineNumber}: ${line.content}`);
+                }
+            }
+            
+            console.log("ExecutionMonitor: Program execution complete!");
+            
+            // Set program finished state
+            if (props.sharedState.setIsProgramFinished) {
+                props.sharedState.setIsProgramFinished(true);
+            }
+        } catch (error) {
+            console.error("ExecutionMonitor: Error during program execution:", error);
+        } finally {
+            // Always reset execution state and button state when program completes or stops
+            stopExecutionRef.current = true;
+            if (buttonFunctionProvider) {
+                buttonFunctionProvider.setExecutionState(false);
+            }
+            setIsExecuting(false);
+            
+            // Reset current executing line
+            if (props.sharedState.updateCurrentExecutingLine) {
+                props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+        }
+    };
+
+    // Function to read the program code 
+    const readProgramCode = (): string => {
+        return code;
+    };
+
     // Function to handle Run/Stop Program button click
     const handleRunProgram = async () => {
         console.log("ExecutionMonitor: handleRunProgram called, current isExecuting:", isExecuting);
-        console.log("ExecutionMonitor: window.programEditorRunFunction exists:", !!(window as any).programEditorRunFunction);
-        console.log("ExecutionMonitor: Available window functions:", Object.keys(window).filter(key => key.includes('program')));
         
-        // Try multiple ways to call the ProgramEditor's run function
-        const programEditorRunFunction = (window as any).programEditorRunFunction;
-        if (programEditorRunFunction) {
-            console.log("ExecutionMonitor: Calling programEditorRunFunction");
-            programEditorRunFunction();
-        } else {
-            console.log("ExecutionMonitor: ProgramEditor function not found, trying alternative approach");
+        if (isExecuting) {
+            // Stop execution
+            console.log("ExecutionMonitor: Stop Program button clicked!");
             
-            // Try to find the ProgramEditor component in the current layout and call its function
-            const programEditorElement = document.querySelector('.program-editor-root');
-            if (programEditorElement) {
-                console.log("ExecutionMonitor: Found ProgramEditor element, trying to trigger its run button");
-                const runButton = programEditorElement.querySelector('.run-program-button');
-                if (runButton) {
-                    console.log("ExecutionMonitor: Found run button, clicking it");
-                    (runButton as HTMLElement).click();
-                } else {
-                    console.error("ExecutionMonitor: Run button not found in ProgramEditor");
-                }
-            } else {
-                console.error("ExecutionMonitor: ProgramEditor element not found in DOM");
+            setIsExecuting(false);
+            stopExecutionRef.current = true;
+            
+            // Set execution state to false
+            const buttonFunctionProvider = (window as any).buttonFunctionProvider;
+            if (buttonFunctionProvider) {
+                buttonFunctionProvider.setExecutionState(false);
             }
+            
+            // Reset current executing line
+            if (props.sharedState.updateCurrentExecutingLine) {
+                props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+        } else {
+            // Start execution
+            console.log("ExecutionMonitor: Run Program button clicked!");
+            
+            console.log("ExecutionMonitor: Setting isExecuting to true");
+            setIsExecuting(true);
+            
+            // Reset current executing line at start
+            if (props.sharedState.updateCurrentExecutingLine) {
+                props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+            const programText = readProgramCode();
+            console.log("ExecutionMonitor: Program text:", programText);
+            
+            // Parse the program 
+            const program = parseProgram(programText);
+            console.log("ExecutionMonitor: Parsed program:", program);
+            
+            // Log lines for debugging
+            program.lines.forEach(line => {
+                if (line.isExecutable) {
+                    console.log(`ExecutionMonitor: Line ${line.lineNumber}: Executable command "${line.command}"`);
+                } else {
+                    console.log(`ExecutionMonitor: Line ${line.lineNumber}: Non-executable (${line.content})`);
+                }
+            });
+            
+            // Execute the program line by line
+            executeProgram(program);
         }
     };
 
