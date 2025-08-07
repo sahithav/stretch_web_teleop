@@ -265,6 +265,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         setCustomPoses(getInitialCustomPoses());
     }, [props.sharedState.taskKey]);
     
+    // Sync local execution state with shared state
+    React.useEffect(() => {
+        setIsExecuting(props.sharedState.isExecutingProgram);
+    }, [props.sharedState.isExecutingProgram]);
+    
     // Combine default and custom poses
     const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };
     const { customizing, executionError, currentExecutingLine, clearExecutionError, errorLineNumber } = props.sharedState;

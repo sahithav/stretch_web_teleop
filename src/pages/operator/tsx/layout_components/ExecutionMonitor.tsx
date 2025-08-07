@@ -472,16 +472,22 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         }
                     }
                     else if (line.command === "ResetRobot") {
-                        console.log(`ExecutionMonitor: Sending ResetRobot command (setting robot to home pose)`);
+                        console.log(`Sending ResetRobot command (setting robot to home pose)`);
                         // Send setRobotPose command to robot with stow pose
                         if ((window as any).remoteRobot) {
+                            const retractedPose = { wrist_extension: 0.00211174 };
+                            (window as any).remoteRobot.setRobotPose(retractedPose);
+                            console.log(`Arm retraction command sent to robot!`);
+                            console.log(`Waiting for arm retraction...`);
+                            await new Promise(resolve => setTimeout(resolve, 2000));
                             (window as any).remoteRobot.setRobotPose(HOME_POSE);
-                            console.log(`ExecutionMonitor: Command sent to robot!`);
-                            console.log(`ExecutionMonitor: Waiting...`);
+                            console.log(`Command sent to robot!`);
+                            console.log(`Waiting...`);
                             await new Promise(resolve => setTimeout(resolve, 5000));
-                            console.log(`ExecutionMonitor: Executing next command...`);
+                            console.log(`Executing next command...`);
                         } else {
-                            console.error("ExecutionMonitor: RemoteRobot not available");
+                            console.error("RemoteRobot not available");
+                        }
                         }
                     }
                     else if (line.command === "PauseAndConfirm") {
@@ -791,26 +797,50 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         </button>
                     )}
                     {!waitingForUserConfirmation && (
-                        <button 
-                            className="run-program-button"
-                            onClick={handleButtonClick}
-                            type="button"
-                            style={{
-                                backgroundColor: isExecuting ? "#dc3545" : undefined
-                            }}
-                        >
-                            {isExecuting ? (
-                                <>
-                                    <CloseIcon style={{ marginRight: "4px" }} />
-                                    Stop
-                                </>
-                            ) : (
-                                <>
-                                    <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                    Run
-                                </>
-                            )}
-                        </button>
+                        <>
+                            <button 
+                                className="clear-program-button"
+                                onClick={() => {
+                                    if ((window as any).remoteRobot) {
+                                        const retractedPose = { wrist_extension: 0.00211174 };
+                                        (window as any).remoteRobot.setRobotPose(retractedPose);
+                                        // Wait for the arm to retract, then set to home pose
+                                        setTimeout(() => {
+                                            if ((window as any).remoteRobot) {
+                                                (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                                            }
+                                        }, 2000);
+                                    }
+                                }}
+                                type="button"
+                                style={{
+                                    marginRight: "8px"
+                                }}
+                                title="Reset robot to home position"
+                            >
+                                Reset Robot
+                            </button>
+                            <button 
+                                className="run-program-button"
+                                onClick={handleButtonClick}
+                                type="button"
+                                style={{
+                                    backgroundColor: isExecuting ? "#dc3545" : undefined
+                                }}
+                            >
+                                {isExecuting ? (
+                                    <>
+                                        <CloseIcon style={{ marginRight: "4px" }} />
+                                        Stop
+                                    </>
+                                ) : (
+                                    <>
+                                        <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                        Run
+                                    </>
+                                )}
+                            </button>
+                        </>
                     )}
                 </div>
             </div>
