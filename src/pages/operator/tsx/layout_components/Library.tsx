@@ -209,7 +209,7 @@ export const Library = (props: CustomizableComponentProps) => {
                 <div className="library-sections-container">
                     {/* Functions Section */}
                     <div className="library-section">
-                        <h3 className="library-section-title">Functions</h3>
+                        <h3 className="library-section-title" style={{ fontWeight: "600" }}>Robot Functions</h3>
                         
                         <div className="library-subsection">
                             <h4 className="library-subsection-title robot-heading">Robot</h4>
@@ -233,7 +233,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>width</span>)
+                                        <span style={{ fontWeight: "600" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the width of the robot's gripper. {'\n'}
@@ -271,7 +271,7 @@ export const Library = (props: CustomizableComponentProps) => {
                         
                         {!shouldHideHumanAPI() && (
                             <div className="library-subsection">
-                                <h4 className="library-subsection-title human-heading">Human</h4>
+                                <h3 className="library-section-title" style={{ fontWeight: "600", marginTop: "24px" }}>Human Functions</h3>
                                 <div className="library-text">
                                     <div className="function-group">
                                         <div 
@@ -328,7 +328,10 @@ export const Library = (props: CustomizableComponentProps) => {
                                     onClick={() => setShowModal(true)}
                                     style={{
                                         width: "100%",
-                                        textAlign: "center"
+                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center"
                                     }}
                                 >
                                     + Add Configuration
