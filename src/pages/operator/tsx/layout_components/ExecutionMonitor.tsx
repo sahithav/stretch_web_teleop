@@ -674,6 +674,11 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         
         // Set local execution state to false
         setIsExecuting(false);
+        
+        // Track execution attempt end as failed when stopped
+        if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+            (props.sharedState as any).trackExecutionAttemptEnd(false);
+        }
     };
 
     // In customizing state add onClick callback

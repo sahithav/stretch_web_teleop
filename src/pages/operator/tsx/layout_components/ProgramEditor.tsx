@@ -364,7 +364,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     }
                     
                     if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-                        console.log('ProgramEditor: Tracking execution failure due to line error');
                         (props.sharedState as any).trackExecutionAttemptEnd(false);
                     }
                     
@@ -850,6 +849,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Reset current executing line
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+            // Track execution attempt end as failed when stopped
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(false);
             }
             
         } else {

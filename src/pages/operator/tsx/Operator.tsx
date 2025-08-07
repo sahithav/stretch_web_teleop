@@ -165,12 +165,19 @@ export const Operator = (props: {
     // Function to track execution attempt start
     const trackExecutionAttemptStart = () => {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
-            console.log('=== Starting new execution attempt ===');
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
                 pause_and_confirm_resets: 0,
                 execution_start: new Date().toISOString()
+            });
+        }
+        
+        // Start a new program editor session if one doesn't exist and not currently executing
+        if (!currentProgramSession.session_start && !isExecutingProgram) {
+            setCurrentProgramSession({
+                session_start: new Date().toISOString(),
+                saved_positions_added: 0
             });
         }
         
@@ -205,7 +212,6 @@ export const Operator = (props: {
                     
                     studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                    console.log('Program editor session ended due to program execution:', sessionData);
                     
                     // Reset the current session
                     setCurrentProgramSession({
@@ -219,15 +225,8 @@ export const Operator = (props: {
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
-        console.log('=== trackExecutionAttemptEnd called ===');
-        console.log('Success:', success);
-        console.log('Already tracked:', hasTrackedExecutionEndRef.current);
-        console.log('Execution start:', currentExecutionAttempt.execution_start);
-        console.log('Pause and confirm resets:', currentExecutionAttempt.pause_and_confirm_resets);
-        
         // Prevent duplicate tracking
         if (hasTrackedExecutionEndRef.current) {
-            console.log('Execution already tracked, skipping duplicate');
             return;
         }
 
@@ -264,10 +263,6 @@ export const Operator = (props: {
                     
                     // Mark as tracked to prevent duplicates
                     hasTrackedExecutionEndRef.current = true;
-                    
-                    console.log('=== Execution attempt tracked successfully ===');
-                    console.log('Execution data:', executionData);
-                    console.log('Total execution attempts:', studyData.tasks[taskLetter].execution_attempts.length);
                 }
             }
         }
@@ -280,8 +275,6 @@ export const Operator = (props: {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
-            
-            console.log('User ID:', userId, 'Current Task:', currentTask);
             
             if (userId && currentTask && taskOrder) {
                 const taskLetter = taskOrder[currentTask - 1];
@@ -320,8 +313,6 @@ export const Operator = (props: {
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
-            
-            console.log('User ID:', userId, 'Current Task:', currentTask);
             
             if (userId && currentTask && taskOrder) {
                 const taskLetter = taskOrder[currentTask - 1];
@@ -413,9 +404,7 @@ export const Operator = (props: {
         
         // Track pause and confirm reset for study data
         if (props.studyMode && (window as any).pauseAndConfirmResolve) {
-            console.log('=== Tracking pause and confirm reset ===');
             const newPauseAndConfirmResets = currentExecutionAttempt.pause_and_confirm_resets + 1;
-            console.log('Updated pause_and_confirm_resets to:', newPauseAndConfirmResets);
             
             setCurrentExecutionAttempt(prev => ({
                 ...prev,
@@ -424,9 +413,6 @@ export const Operator = (props: {
             
             // Also update the current execution attempt immediately for tracking
             currentExecutionAttempt.pause_and_confirm_resets = newPauseAndConfirmResets;
-        } else {
-            console.log('=== NOT tracking pause and confirm reset ===');
-            console.log('Reason: studyMode:', !!props.studyMode, 'pauseAndConfirmResolve:', !!(window as any).pauseAndConfirmResolve);
         }
         
         // Home the robot
@@ -443,7 +429,6 @@ export const Operator = (props: {
         
         // Stop program execution
         if ((window as any).stopExecutionRef) {
-            console.log('=== Stopping program execution ===');
             (window as any).stopExecutionRef.current = true;
         }
         
