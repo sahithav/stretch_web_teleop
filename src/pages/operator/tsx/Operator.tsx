@@ -1064,45 +1064,64 @@ export const Operator = (props: {
                 }}>
                     {/* Left side controls */}
                     <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
-                        {/* Mode switch buttons - only show when in Program Editor or Execution Monitor */}
-                        {programMode === "Program Editor" && (
-                            <button
-                                onClick={() => {
-                                    setProgramMode("Execution Monitor");
-                                    switchToModeLayout("Execution Monitor");
-                                }}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    height: "40px",
-                                    padding: "8px 16px"
-                                }}
-                                title="Switch to Execution Monitor"
-                            >
-                                <span>Execution Monitor</span>
-                            </button>
-                        )}
-                        
-                        {programMode === "Execution Monitor" && (
-                            <button
-                                onClick={() => {
-                                    setProgramMode("Program Editor");
-                                    switchToModeLayout("Program Editor");
-                                }}
-                                className="btn-turquoise font-white"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                    height: "40px",
-                                    padding: "8px 16px"
-                                }}
-                                title="Switch to Program Editor"
-                            >
-                                <span>Program Editor</span>
-                            </button>
+                        {/* Mode switch toggle - only show when in Program Editor or Execution Monitor */}
+                        {(programMode === "Program Editor" || programMode === "Execution Monitor") && (
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                backgroundColor: "#f8f9fa",
+                                borderRadius: "20px",
+                                padding: "2px",
+                                border: "1px solid #dee2e6",
+                                height: "40px"
+                            }}>
+                                <button
+                                    onClick={() => {
+                                        setProgramMode("Program Editor");
+                                        switchToModeLayout("Program Editor");
+                                    }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        height: "36px",
+                                        padding: "8px 16px",
+                                        borderRadius: "18px",
+                                        border: "none",
+                                        backgroundColor: programMode === "Program Editor" ? "#007bff" : "transparent",
+                                        color: programMode === "Program Editor" ? "white" : "#6c757d",
+                                        fontWeight: programMode === "Program Editor" ? "600" : "400",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                    title="Switch to Program Editor"
+                                >
+                                    <span>Program Editor</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setProgramMode("Execution Monitor");
+                                        switchToModeLayout("Execution Monitor");
+                                    }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        height: "36px",
+                                        padding: "8px 16px",
+                                        borderRadius: "18px",
+                                        border: "none",
+                                        backgroundColor: programMode === "Execution Monitor" ? "#007bff" : "transparent",
+                                        color: programMode === "Execution Monitor" ? "white" : "#6c757d",
+                                        fontWeight: programMode === "Execution Monitor" ? "600" : "400",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                    title="Switch to Execution Monitor"
+                                >
+                                    <span>Execution Monitor</span>
+                                </button>
+                            </div>
                         )}
                     </div>
                     
@@ -1118,6 +1137,17 @@ export const Operator = (props: {
                         {/* Action mode dropdown and SpeedControl centered for Demonstrate and Execution Monitor modes */}
                         {programMode !== "Program Editor" && (
                             <>
+                                <style>
+                                    {`
+                                        .header-dropdown .dropdown-button {
+                                            padding-top: 0.5rem !important;
+                                            padding-bottom: 0.5rem !important;
+                                            height: 40px !important;
+                                            display: flex !important;
+                                            align-items: center !important;
+                                        }
+                                    `}
+                                </style>
                                 <div className="header-dropdown">
                                     <Dropdown
                                         onChange={(idx) => setActionMode(actionModes[idx])}
@@ -1180,7 +1210,7 @@ export const Operator = (props: {
                         {/* Study Proceed Button - different text and behavior based on mode */}
                         {props.studyMode && (
                             <>
-                                {/* In Demonstrate mode - show "Edit Program Instead" or "Go to Program Editor" */}
+                                {/* In Demonstrate mode - show "Done Teleoperating" or "Go to Program Editor" */}
                                 {programMode === "Demonstrate" && (
                                     <button
                                         onClick={() => {
@@ -1192,14 +1222,14 @@ export const Operator = (props: {
                                             display: "flex",
                                             alignItems: "center",
                                             gap: "4px",
-                                            backgroundColor: "#ff8c00",
-                                            borderColor: "#ff8c00",
+                                            backgroundColor: "#28a745",
+                                            borderColor: "#28a745",
                                             height: "40px",
                                             padding: "8px 16px"
                                         }}
                                         title="Switch to Program Editor"
                                     >
-                                        <span>{props.studyMode?.isPracticeRound ? "Edit Program Instead" : "Go to Program Editor"}</span>
+                                        <span>Done Demonstrating</span>
                                     </button>
                                 )}
                                 

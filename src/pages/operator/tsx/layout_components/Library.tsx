@@ -219,7 +219,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Move_Arm_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the lift and extension of the robot's arm.{'\n'}
@@ -232,7 +232,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the width of the robot's gripper. {'\n'}
@@ -245,7 +245,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Rotate_Wrist_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description">
                                         Adjust the angle of the robot's wrist.{'\n'}
