@@ -1070,7 +1070,7 @@ export const Operator = (props: {
                                 display: "flex",
                                 alignItems: "center",
                                 backgroundColor: "#f8f9fa",
-                                borderRadius: "4px",
+                                borderRadius: "0.4rem",
                                 padding: "2px",
                                 border: "1px solid #dee2e6",
                                 height: "40px"
@@ -1086,13 +1086,13 @@ export const Operator = (props: {
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
-                                        borderRadius: "2px",
+                                        borderRadius: "0.3rem",
                                         border: "none",
-                                        backgroundColor: programMode === "Program Editor" ? "#0d6efd" : "transparent",
+                                        backgroundColor: programMode === "Program Editor" ? "hsl(200deg 83.23% 22.29%)" : "transparent",
                                         color: programMode === "Program Editor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Program Editor" ? "600" : "400",
                                         cursor: "pointer",
-                                        transition: "all 0.2s ease"
+                                        transition: "background-color 0.15s ease, color 0.15s ease, font-weight 0.15s ease"
                                     }}
                                     title="Switch to Program Editor"
                                 >
@@ -1109,13 +1109,13 @@ export const Operator = (props: {
                                         gap: "4px",
                                         height: "36px",
                                         padding: "8px 16px",
-                                        borderRadius: "2px",
+                                        borderRadius: "0.3rem",
                                         border: "none",
-                                        backgroundColor: programMode === "Execution Monitor" ? "#0d6efd" : "transparent",
+                                        backgroundColor: programMode === "Execution Monitor" ? "hsl(200deg 83.23% 22.29%)" : "transparent",
                                         color: programMode === "Execution Monitor" ? "white" : "#6c757d",
                                         fontWeight: programMode === "Execution Monitor" ? "600" : "400",
                                         cursor: "pointer",
-                                        transition: "all 0.2s ease"
+                                        transition: "background-color 0.15s ease, color 0.15s ease, font-weight 0.15s ease"
                                     }}
                                     title="Switch to Execution Monitor"
                                 >
