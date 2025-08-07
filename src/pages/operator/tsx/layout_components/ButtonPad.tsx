@@ -190,12 +190,17 @@ const SingleButton = (props: SingleButtonProps) => {
             />
             <text
                 x={props.iconPosition.x}
-                y={props.iconPosition.y + height/2 + 15}
+                y={props.iconPosition.y + height/2 + 20}
                 textAnchor="middle"
-                fontSize="12"
+                fontSize="11"
                 fill={isDisabled ? "#999" : "#333"}
-                fontWeight="500"
+                fontWeight="600"
                 pointerEvents="none"
+                style={{
+                    fontFamily: "Arial, sans-serif",
+                    textRendering: "optimizeLegibility",
+                    letterSpacing: "0.5px"
+                }}
             >
                 {title}
             </text>
