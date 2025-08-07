@@ -763,6 +763,18 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     {props.language && (
                         <span className="execution-monitor-language">{props.language}</span>
                     )}
+                    {showDoneMessage && (
+                        <div style={{
+                            color: "#2e7d32",
+                            fontWeight: "bold",
+                            fontSize: "17px",
+                            display: "flex",
+                            alignItems: "center",
+                            marginLeft: "16px"
+                        }}>
+                            Done Executing!
+                        </div>
+                    )}
                 </div>
                 <div className="execution-monitor-header-right">
                     {waitingForUserConfirmation && handleDoneTeleoperating && (
@@ -779,40 +791,26 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         </button>
                     )}
                     {!waitingForUserConfirmation && (
-                        <>
-                            {showDoneMessage && (
-                                <div style={{
-                                    color: "#2e7d32",
-                                    fontWeight: "bold",
-                                    fontSize: "17px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    marginRight: "16px"
-                                }}>
-                                    Done Executing!
-                                </div>
+                        <button 
+                            className="run-program-button"
+                            onClick={handleButtonClick}
+                            type="button"
+                            style={{
+                                backgroundColor: isExecuting ? "#dc3545" : undefined
+                            }}
+                        >
+                            {isExecuting ? (
+                                <>
+                                    <CloseIcon style={{ marginRight: "4px" }} />
+                                    Stop
+                                </>
+                            ) : (
+                                <>
+                                    <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                    Run
+                                </>
                             )}
-                            <button 
-                                className="run-program-button"
-                                onClick={handleButtonClick}
-                                type="button"
-                                style={{
-                                    backgroundColor: isExecuting ? "#dc3545" : undefined
-                                }}
-                            >
-                                {isExecuting ? (
-                                    <>
-                                        <CloseIcon style={{ marginRight: "4px" }} />
-                                        Stop
-                                    </>
-                                ) : (
-                                    <>
-                                        <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                        Run
-                                    </>
-                                )}
-                            </button>
-                        </>
+                        </button>
                     )}
                 </div>
             </div>
