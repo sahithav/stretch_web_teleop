@@ -1074,7 +1074,7 @@ export const Operator = (props: {
                                 padding: "2px",
                                 border: "1px solid #dee2e6",
                                 height: "40px",
-                                minWidth: "320px"
+                                minWidth: "340px"
                             }}>
                                 <button
                                     onClick={() => {
