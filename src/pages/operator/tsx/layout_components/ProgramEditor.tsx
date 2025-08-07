@@ -484,11 +484,18 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                         }
                     }
                     else if (line.command === "ResetRobot") {
-                        console.log(`Sending ResetRobot command (setting robot to home pose)`);
-                        // Send setRobotPose command to robot with stow pose
+                        console.log(`Sending ResetRobot command (first retracting arm, then setting robot to home pose)`);
+                        // First retract the robot's arm
                         if ((window as any).remoteRobot) {
+                            const retractedPose = { wrist_extension: 0.00211174 };
+                            (window as any).remoteRobot.setRobotPose(retractedPose);
+                            console.log(`Arm retraction command sent to robot!`);
+                            console.log(`Waiting for arm retraction...`);
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            
+                            // Then set robot to home pose
                             (window as any).remoteRobot.setRobotPose(HOME_POSE);
-                            console.log(`Command sent to robot!`);
+                            console.log(`Home pose command sent to robot!`);
                             console.log(`Waiting...`);
                             await new Promise(resolve => setTimeout(resolve, 5000));
                             console.log(`Executing next command...`);
@@ -1001,7 +1008,16 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                 }}
                                 onClick={() => {
                                     if ((window as any).remoteRobot) {
-                                        (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                                        // First retract the robot's arm
+                                        const retractedPose = { wrist_extension: 0.00211174 };
+                                        (window as any).remoteRobot.setRobotPose(retractedPose);
+                                        
+                                        // Wait for the arm to retract, then set to home pose
+                                        setTimeout(() => {
+                                            if ((window as any).remoteRobot) {
+                                                (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                                            }
+                                        }, 2000);
                                     }
                                 }}
                                 title="Reset robot to home position"

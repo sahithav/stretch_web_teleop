@@ -54,7 +54,14 @@ export class HomeTheRobotFunctionProvider extends FunctionProvider {
         switch (homeTheRobotFunction) {
             case HomeTheRobotFunction.Home:
                 return () => {
-                    FunctionProvider.remoteRobot?.homeTheRobot();
+                    // retract the robot's arm before homing
+                    const retractedPose = { wrist_extension: 0.00211174 };
+                    FunctionProvider.remoteRobot?.setRobotPose(retractedPose);
+                    
+                    // Wait a moment for the arm to retract
+                    setTimeout(() => {
+                        FunctionProvider.remoteRobot?.homeTheRobot();
+                    }, 2000);
                 };
         }
     }
