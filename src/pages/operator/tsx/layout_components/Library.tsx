@@ -269,37 +269,39 @@ export const Library = (props: CustomizableComponentProps) => {
                         </div>
                         
                         {!shouldHideHumanAPI() && (
-                            <div className="library-subsection">
+                            <>
                                 <h3 className="library-section-title" style={{ fontWeight: "600", marginTop: "16px", color: "#28a745" }}>Human Functions</h3>
-                                <div className="library-text">
-                                    <div className="function-group">
-                                        <div 
-                                            className="library-function-item"
-                                            onClick={() => props.sharedState.insertTextAtCursor?.("Pause_And_Confirm()\n")}
-                                            style={{ marginBottom: "12px" }}
-                                        >
-                                            <span style={{ fontWeight: "600" }}>Pause_And_Confirm</span>()
+                                <div className="library-subsection">
+                                    <div className="library-text">
+                                        <div className="function-group">
+                                            <div 
+                                                className="library-function-item"
+                                                onClick={() => props.sharedState.insertTextAtCursor?.("Pause_And_Confirm()\n")}
+                                                style={{ marginBottom: "12px" }}
+                                            >
+                                                <span style={{ fontWeight: "600" }}>Pause_And_Confirm</span>()
+                                            </div>
+                                            <div className="function-description">
+                                                Pause execution and wait for your confirmation.{'\n'}
+                                                Input(Optional): Message shown while execution is paused.
+                                            </div>
                                         </div>
-                                        <div className="function-description">
-                                            Pause execution and wait for your confirmation.{'\n'}
-                                            Input(Optional): Message shown while execution is paused.
-                                        </div>
-                                    </div>
-                                    <div className="function-group">
-                                        <div 
-                                            className="library-function-item"
-                                            onClick={() => props.sharedState.insertTextAtCursor?.("Take_Control()\n")}
-                                            style={{ marginBottom: "12px" }}
-                                        >
-                                            <span style={{ fontWeight: "600" }}>Take_Control</span>()
-                                        </div>
-                                        <div className="function-description">
-                                            Control the robot by tele-operating it.{'\n'}
-                                            Input: N/A
+                                        <div className="function-group">
+                                            <div 
+                                                className="library-function-item"
+                                                onClick={() => props.sharedState.insertTextAtCursor?.("Take_Control()\n")}
+                                                style={{ marginBottom: "12px" }}
+                                            >
+                                                <span style={{ fontWeight: "600" }}>Take_Control</span>()
+                                            </div>
+                                            <div className="function-description">
+                                                Control the robot by tele-operating it.{'\n'}
+                                                Input: N/A
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                     </div>
                     
