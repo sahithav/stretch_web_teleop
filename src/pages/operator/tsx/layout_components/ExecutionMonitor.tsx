@@ -261,19 +261,6 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                             Done Executing!
                         </div>
                     )}
-                    {isExecutingProgram && !waitingForUserConfirmation && (
-                        <button 
-                            className="execution-monitor-stop-button"
-                            onClick={handleStopProgram}
-                            type="button"
-                            style={{
-                                marginRight: "8px"
-                            }}
-                        >
-                            <CloseIcon style={{ marginRight: "4px" }} />
-                            Stop
-                        </button>
-                    )}
                     {waitingForUserConfirmation && handleDoneTeleoperating && (
                         <button 
                             className="execution-monitor-done-button"
@@ -287,26 +274,28 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                             Done teleoperating
                         </button>
                     )}
-                    <button 
-                        className="run-program-button"
-                        onClick={handleRunProgram}
-                        type="button"
-                        style={{
-                            backgroundColor: isExecuting ? "#dc3545" : undefined
-                        }}
-                    >
-                        {isExecuting ? (
-                            <>
-                                <CloseIcon style={{ marginRight: "4px" }} />
-                                Stop
-                            </>
-                        ) : (
-                            <>
-                                <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                Run
-                            </>
-                        )}
-                    </button>
+                    {!waitingForUserConfirmation && (
+                        <button 
+                            className="run-program-button"
+                            onClick={handleRunProgram}
+                            type="button"
+                            style={{
+                                backgroundColor: isExecuting ? "#dc3545" : undefined
+                            }}
+                        >
+                            {isExecuting ? (
+                                <>
+                                    <CloseIcon style={{ marginRight: "4px" }} />
+                                    Stop
+                                </>
+                            ) : (
+                                <>
+                                    <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                    Run
+                                </>
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
             {executionError && (

@@ -832,7 +832,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const selectProp = customizing ? { onClick: onSelect } : {};
 
     // Function to handle Run/Stop Program button click
-    const handleRunProgram = async () => {
+    const handleRunProgram = React.useCallback(async () => {
         console.log("handleRunProgram called, current isExecuting:", isExecuting);
         if (isExecuting) {
             // Stop execution
@@ -888,7 +888,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                 props.onRunProgram(programText);
             }
         }
-    };
+    }, [isExecuting, code, props.sharedState.updateCurrentExecutingLine, props.onRunProgram]);
 
     // Expose the run function globally 
     React.useEffect(() => {
@@ -896,7 +896,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         return () => {
             delete (window as any).programEditorRunFunction;
         };
-    }, [isExecuting, code]); 
+    }, [handleRunProgram]);
 
     // Create highlighted version of the code with inline suggestion
     const createHighlightedCode = (): string => {
