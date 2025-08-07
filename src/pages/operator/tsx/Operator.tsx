@@ -1064,40 +1064,6 @@ export const Operator = (props: {
                 }}>
                     {/* Left side controls */}
                     <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
-                        {/* Program mode dropdown - only show when not in Demonstrate mode */}
-                        {programMode !== "Demonstrate" && (
-                            <div style={{ 
-                                display: "flex", 
-                                alignItems: "center",
-                                height: "40px"
-                            }}>
-                                <style>
-                                    {`
-                                        .header-dropdown .dropdown-button {
-                                            padding-top: 0.5rem !important;
-                                            padding-bottom: 0.5rem !important;
-                                            height: 40px !important;
-                                            display: flex !important;
-                                            align-items: center !important;
-                                        }
-                                    `}
-                                </style>
-                                <div className="header-dropdown">
-                                    <Dropdown
-                                        onChange={(idx) => {
-                                            const newMode = programModes[idx];
-                                            setProgramMode(newMode);
-                                            switchToModeLayout(newMode);
-                                        }}
-                                        selectedIndex={programModes.indexOf(programMode)}
-                                        possibleOptions={programModes}
-                                        showActive
-                                        placement="bottom"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        
                         {/* Mode switch buttons - only show when in Program Editor or Execution Monitor */}
                         {programMode === "Program Editor" && (
                             <button
@@ -1618,6 +1584,9 @@ export const Operator = (props: {
                                 onClick={() => {
                                     setShowStudyConfirmation(false);
                                     props.studyMode?.onProceedToNextTask();
+                                    // Switch back to Demonstrate mode
+                                    setProgramMode("Demonstrate");
+                                    switchToModeLayout("Demonstrate");
                                     // Show task description for next task (except for Task 4 which goes to conclusion)
                                     if (props.studyMode?.currentTask < 4) {
                                         setTimeout(() => {
@@ -1754,6 +1723,9 @@ export const Operator = (props: {
                                     setShowTaskDescription(false);
                                     if (props.studyMode?.isPracticeRound) {
                                         props.studyMode.onProceedToNextTask();
+                                        // Switch back to Demonstrate mode
+                                        setProgramMode("Demonstrate");
+                                        switchToModeLayout("Demonstrate");
                                     }
                                 }}
                             >
