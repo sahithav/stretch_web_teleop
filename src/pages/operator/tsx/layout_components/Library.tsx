@@ -31,7 +31,7 @@ interface SavedPosition {
 }
 
 /**
- * A library component that displays functions and saved positions
+ * A library component that displays functions and saved configurations
  * 
  * @param props {@link CustomizableComponentProps}
  */
@@ -70,7 +70,7 @@ export const Library = (props: CustomizableComponentProps) => {
         return shouldHide;
     };
     
-    // Load saved positions from session storage or use defaults
+    // Load saved configurations from session storage or use defaults
     const getInitialSavedPositions = (): SavedPosition[] => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
         if (sessionPositions) {
@@ -81,7 +81,7 @@ export const Library = (props: CustomizableComponentProps) => {
                     timestamp: new Date(pos.timestamp)
                 }));
             } catch (error) {
-                console.error("Error parsing saved positions:", error);
+                console.error("Error parsing saved configurations:", error);
             }
         }
         // No default positions - temporary  
@@ -132,67 +132,60 @@ export const Library = (props: CustomizableComponentProps) => {
         return pose;
     };
 
-    // Validate joint states input
+    // Validate joint positions input
     const validateJointStates = (input: string): boolean => {
         try {
-            // Check if it's a valid array format
-            // TODO: add checking to see if its from rosbag recording
-            const trimmed = input.trim();
-            if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+            // Parse the input as JSON array
+            const values = JSON.parse(input);
+            if (!Array.isArray(values) || values.length !== 14) {
+                setValidationError("Invalid joint positions, copy and paste position from demo recording.");
                 return false;
             }
-        
-            const array = JSON.parse(trimmed);
-            if (!Array.isArray(array)) {
-                return false;
-            }
-    
-            return array.every(item => typeof item === 'number');
-        } catch {
+            return true;
+        } catch (error) {
+            setValidationError("Invalid joint positions, copy and paste position from demo recording.");
             return false;
         }
     };
 
     // Handle adding new position
     const handleAddPosition = () => {
-        if (newPositionName.trim() && newJointStates.trim()) {
-            // Validate joint states format
-            if (!validateJointStates(newJointStates)) {
-                setValidationError("Invalid joint states, copy and paste position from demo recording.");
-                return;
+        // Validate joint positions format
+        if (!validateJointStates(newJointStates)) {
+            setValidationError("Invalid joint positions, copy and paste position from demo recording.");
+            return;
+        }
+        
+        try {
+            // Parse the joint values into a proper RobotPose
+            const pose = parseJointValues(newJointStates);
+            
+            const newPosition: SavedPosition = {
+                name: newPositionName.trim(),
+                jointStates: newJointStates.trim(),
+                timestamp: new Date()
+            };
+            const updatedPositions = [...savedPositions, newPosition];
+            setSavedPositions(updatedPositions);
+            
+            // Save to session storage
+            sessionStorage.setItem('librarySavedPositions', JSON.stringify(updatedPositions));
+            
+            // Add to program editor's autocomplete and syntax highlighting
+            props.sharedState.addSavedPosition?.(newPositionName.trim());
+            
+            // Store the pose in the shared state for the program editor to use
+            if ((props.sharedState as any).addCustomPose) {
+                (props.sharedState as any).addCustomPose(newPositionName.trim(), pose);
             }
             
-            try {
-                // Parse the joint values into a proper RobotPose
-                const pose = parseJointValues(newJointStates);
-                
-                const newPosition: SavedPosition = {
-                    name: newPositionName.trim(),
-                    jointStates: newJointStates.trim(),
-                    timestamp: new Date()
-                };
-                const updatedPositions = [...savedPositions, newPosition];
-                setSavedPositions(updatedPositions);
-                
-                // Save to session storage
-                sessionStorage.setItem('librarySavedPositions', JSON.stringify(updatedPositions));
-                
-                // Add to program editor's autocomplete and syntax highlighting
-                props.sharedState.addSavedPosition?.(newPositionName.trim());
-                
-                // Store the pose in the shared state for the program editor to use
-                if ((props.sharedState as any).addCustomPose) {
-                    (props.sharedState as any).addCustomPose(newPositionName.trim(), pose);
-                }
-                
-                setNewPositionName("");
-                setNewJointStates("");
-                setValidationError("");
-                setShowModal(false);
-            } catch (error) {
-                console.error("Error parsing joint values:", error);
-                setValidationError("Invalid joint states, copy and paste position from demo recording.");
-            }
+            setNewPositionName("");
+            setNewJointStates("");
+            setValidationError("");
+            setShowModal(false);
+        } catch (error) {
+            console.error("Error parsing joint values:", error);
+            setValidationError("Invalid joint states, copy and paste position from demo recording.");
         }
     };
 
@@ -224,9 +217,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                 <div className="function-group">
                                     <div 
                                         className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("MoveEEToPose()\n")}
+                                        onClick={() => props.sharedState.insertTextAtCursor?.("Move_Arm_to_Config()\n")}
                                     >
-                                        MoveEEToPose()
+                                        Move_Arm_to_Config()
                                     </div>
                                     <div className="function-description">
                                         Move the robot's end effector to a specific pose.{'\n'}
@@ -236,9 +229,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                 <div className="function-group">
                                     <div 
                                         className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("AdjustGripperWidth()\n")}
+                                        onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                     >
-                                        AdjustGripperWidth()
+                                        Adjust_Gripper_Width()
                                     </div>
                                     <div className="function-description">
                                         Adjust the width of the end effector.{'\n'}
@@ -248,9 +241,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                 <div className="function-group">
                                     <div 
                                         className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("RotateEE()\n")}
+                                        onClick={() => props.sharedState.insertTextAtCursor?.("Rotate_Wrist_to_Config()\n")}
                                     >
-                                        RotateEE()
+                                        Rotate_Wrist_to_Config()
                                     </div>
                                     <div className="function-description">
                                         Adjust the angle of the end effector.{'\n'}
@@ -260,9 +253,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                 <div className="function-group">
                                     <div 
                                         className="library-function-item"
-                                        onClick={() => props.sharedState.insertTextAtCursor?.("ResetRobot()\n")}
+                                        onClick={() => props.sharedState.insertTextAtCursor?.("Reset_Robot()\n")}
                                     >
-                                        ResetRobot()
+                                        Reset_Robot()
                                     </div>
                                     <div className="function-description">
                                         Reset the robot to its home position.{'\n'}
@@ -279,9 +272,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                     <div className="function-group">
                                         <div 
                                             className="library-function-item"
-                                            onClick={() => props.sharedState.insertTextAtCursor?.("PauseAndConfirm()\n")}
+                                            onClick={() => props.sharedState.insertTextAtCursor?.("Pause_And_Confirm()\n")}
                                         >
-                                            PauseAndConfirm()
+                                            Pause_And_Confirm()
                                         </div>
                                         <div className="function-description">
                                             Pause execution and wait for your confirmation.{'\n'}
@@ -291,9 +284,9 @@ export const Library = (props: CustomizableComponentProps) => {
                                     <div className="function-group">
                                         <div 
                                             className="library-function-item"
-                                            onClick={() => props.sharedState.insertTextAtCursor?.("TakeControl()\n")}
+                                            onClick={() => props.sharedState.insertTextAtCursor?.("Take_Control()\n")}
                                         >
-                                            TakeControl()
+                                            Take_Control()
                                         </div>
                                         <div className="function-description">
                                             Control the robot by tele-operating it.{'\n'}
@@ -305,9 +298,9 @@ export const Library = (props: CustomizableComponentProps) => {
                         )}
                     </div>
                     
-                    {/* Saved Positions Section */}
+                    {/* Saved Configurations Section */}
                     <div className="library-section" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                        <h3 className="library-section-title">Saved Positions</h3>
+                        <h3 className="library-section-title">Saved Configurations</h3>
                         <div className="library-subsection" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                             <div className="library-text">
                                 {savedPositions.map((position, index) => (
@@ -331,7 +324,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         width: "100%"
                                     }}
                                 >
-                                    + Add Position
+                                    + Add Configuration
                                 </button>
                             </div>
                             <div style={{ 
@@ -385,7 +378,7 @@ export const Library = (props: CustomizableComponentProps) => {
                         textAlign: "center"
                     }}>
                         <div style={{ fontSize: "1.2em", marginBottom: 24 }}>
-                            Add New Position
+                            Add New Configuration
                         </div>
                         <div style={{ 
                             display: "flex", 
@@ -424,7 +417,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                     fontWeight: "bold",
                                     fontSize: "0.9em"
                                 }}>
-                                    Joint States
+                                    Joint Positions
                                 </label>
                                 <input
                                     type="text"
@@ -445,7 +438,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         fontSize: "0.75em", 
                                         marginTop: "4px"
                                     }}>
-                                        Invalid joint states, copy and paste position from demo recording.
+                                        Invalid joint positions, copy and paste position from demo recording.
                                     </div>
                                 )}
                             </div>
@@ -480,7 +473,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                 onClick={handleAddPosition}
                                 disabled={!newPositionName.trim() || !newJointStates.trim()}
                             >
-                                Save Position
+                                Save Configuration
                             </button>
                         </div>
                     </div>
