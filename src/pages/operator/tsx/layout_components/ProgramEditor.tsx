@@ -890,6 +890,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         }
     };
 
+    // Expose the run function globally 
+    React.useEffect(() => {
+        (window as any).programEditorRunFunction = handleRunProgram;
+        return () => {
+            delete (window as any).programEditorRunFunction;
+        };
+    }, [isExecuting, code]); 
+
     // Create highlighted version of the code with inline suggestion
     const createHighlightedCode = (): string => {
         let highlightedText = highlightSyntax(code);

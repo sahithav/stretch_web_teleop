@@ -8,6 +8,7 @@ import { className } from "shared/util";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import ErrorIcon from "@mui/icons-material/Error";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import "operator/css/ExecutionMonitor.css";
 
 /** Properties for {@link ExecutionMonitor} */
@@ -47,6 +48,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const [lineNumbers, setLineNumbers] = useState<string[]>([]);
     const [savedPositions, setSavedPositions] = useState<string[]>(DEFAULT_SAVED_POSITIONS);
     const [showDoneMessage, setShowDoneMessage] = useState(false);
+    const [isExecuting, setIsExecuting] = useState(false);
     const prevIsExecutingRef = React.useRef(false);
     
     const { customizing, currentExecutingLine, isExecutingProgram, isProgramFinished, setIsProgramFinished, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
@@ -124,6 +126,24 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         }
         prevIsExecutingRef.current = isExecutingProgram;
     }, [isExecutingProgram, isProgramFinished, executionError]);
+
+    // Function to handle Run/Stop Program button click
+    const handleRunProgram = async () => {
+        console.log("ExecutionMonitor: handleRunProgram called, current isExecuting:", isExecuting);
+        
+        // Call the ProgramEditor's run function through the global interface
+        const programEditorRunFunction = (window as any).programEditorRunFunction;
+        if (programEditorRunFunction) {
+            programEditorRunFunction();
+        } else {
+            console.error("ProgramEditor run function not available");
+        }
+    };
+
+    // Update local execution state based on global state
+    useEffect(() => {
+        setIsExecuting(isExecutingProgram);
+    }, [isExecutingProgram]);
 
     // Syntax highlighting function 
     const highlightSyntax = (text: string): string => {
@@ -228,37 +248,66 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                         <span className="execution-monitor-language">{props.language}</span>
                     )}
                 </div>
-                {showDoneMessage && (
-                    <div style={{
-                        color: "#2e7d32",
-                        fontWeight: "bold",
-                        fontSize: "17px",
-                        display: "flex",
-                        alignItems: "center"
-                    }}>
-                        Done Executing!
-                    </div>
-                )}
-                {isExecutingProgram && !waitingForUserConfirmation && (
+                <div className="execution-monitor-header-right">
+                    {showDoneMessage && (
+                        <div style={{
+                            color: "#2e7d32",
+                            fontWeight: "bold",
+                            fontSize: "17px",
+                            display: "flex",
+                            alignItems: "center",
+                            marginRight: "16px"
+                        }}>
+                            Done Executing!
+                        </div>
+                    )}
+                    {isExecutingProgram && !waitingForUserConfirmation && (
+                        <button 
+                            className="execution-monitor-stop-button"
+                            onClick={handleStopProgram}
+                            type="button"
+                            style={{
+                                marginRight: "8px"
+                            }}
+                        >
+                            <CloseIcon style={{ marginRight: "4px" }} />
+                            Stop
+                        </button>
+                    )}
+                    {waitingForUserConfirmation && handleDoneTeleoperating && (
+                        <button 
+                            className="execution-monitor-done-button"
+                            onClick={handleDoneTeleoperating}
+                            type="button"
+                            style={{
+                                marginRight: "8px"
+                            }}
+                        >
+                            <CheckIcon style={{ marginRight: "4px" }} />
+                            Done teleoperating
+                        </button>
+                    )}
                     <button 
-                        className="execution-monitor-stop-button"
-                        onClick={handleStopProgram}
+                        className="run-program-button"
+                        onClick={handleRunProgram}
                         type="button"
+                        style={{
+                            backgroundColor: isExecuting ? "#dc3545" : undefined
+                        }}
                     >
-                        <CloseIcon style={{ marginRight: "4px" }} />
-                        Stop
+                        {isExecuting ? (
+                            <>
+                                <CloseIcon style={{ marginRight: "4px" }} />
+                                Stop
+                            </>
+                        ) : (
+                            <>
+                                <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                Run
+                            </>
+                        )}
                     </button>
-                )}
-                {waitingForUserConfirmation && handleDoneTeleoperating && (
-                    <button 
-                        className="execution-monitor-done-button"
-                        onClick={handleDoneTeleoperating}
-                        type="button"
-                    >
-                        <CheckIcon style={{ marginRight: "4px" }} />
-                        Done teleoperating
-                    </button>
-                )}
+                </div>
             </div>
             {executionError && (
                 <div className="execution-monitor-error-banner">
