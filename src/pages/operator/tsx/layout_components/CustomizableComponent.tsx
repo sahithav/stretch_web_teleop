@@ -5,7 +5,7 @@ import {
 } from "../utils/component_definitions";
 import { DropZoneState } from "./DropZone";
 import { Panel } from "./Panel";
-import { RemoteStream, StretchTool } from "shared/util";
+import { RemoteStream, StretchTool, RobotPose } from "shared/util";
 import { ButtonPad } from "./ButtonPad";
 import { CameraView } from "./CameraView";
 import { PredictiveDisplay } from "./PredictiveDisplay";
@@ -66,7 +66,15 @@ export type SharedState = {
     /** Function to add new saved position to autocomplete and syntax highlighting */
     addSavedPosition?: (positionName: string) => void;
     /** Function to track saved position addition for study data */
-    trackSavedPositionAdded?: () => void;
+    trackSavedPositionAdded?: (positionName: string) => void;
+    /** Function to track custom pose addition for study data */
+    trackCustomPoseAdded?: (poseName: string, pose: RobotPose) => void;
+    /** Function to track positions loaded for study data */
+    trackPositionsLoaded?: (savedPositions: string[], customPoses: {[key: string]: RobotPose}) => void;
+    /** Function to track positions cleared for study data */
+    trackPositionsCleared?: (clearedPositions: any[]) => void;
+    /** Function to track library positions loaded for study data */
+    trackLibraryPositionsLoaded?: (savedPositions: any[]) => void;
     /** Function to track execution attempt start for study data */
     trackExecutionAttemptStart?: () => void;
     /** Function to track execution attempt end for study data */

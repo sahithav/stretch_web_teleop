@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     CustomizableComponentProps,
     isSelected,
@@ -93,6 +93,13 @@ export const Library = (props: CustomizableComponentProps) => {
     const [newPositionName, setNewPositionName] = useState("");
     const [newJointStates, setNewJointStates] = useState("");
     const [validationError, setValidationError] = useState<string>("");
+
+    // Log loaded positions for study data
+    useEffect(() => {
+        if (props.sharedState && (props.sharedState as any).trackLibraryPositionsLoaded) {
+            (props.sharedState as any).trackLibraryPositionsLoaded(savedPositions);
+        }
+    }, [props.sharedState.taskKey, savedPositions]);
 
     /** Callback when component is clicked during customize mode */
     const onSelect = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -348,8 +355,12 @@ export const Library = (props: CustomizableComponentProps) => {
                                     className="clear-positions-btn"
                                     onClick={() => {
                                         // Reset to empty positions
+                                        const clearedPositions = savedPositions;
                                         setSavedPositions([]);
                                         sessionStorage.removeItem('librarySavedPositions');
+                                        if (props.sharedState && (props.sharedState as any).trackPositionsCleared) {
+                                            (props.sharedState as any).trackPositionsCleared(clearedPositions);
+                                        }
                                     }}
                                     style={{
                                         minWidth: "auto",

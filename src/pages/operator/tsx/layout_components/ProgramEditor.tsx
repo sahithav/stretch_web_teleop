@@ -261,8 +261,17 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         console.log('ProgramEditor: taskKey changed to:', props.sharedState.taskKey);
         console.log('ProgramEditor: Reloading data from session storage');
         setCode(getInitialCode());
-        setSavedPositions(getInitialSavedPositions());
-        setCustomPoses(getInitialCustomPoses());
+        
+        const initialSavedPositions = getInitialSavedPositions();
+        const initialCustomPoses = getInitialCustomPoses();
+        
+        setSavedPositions(initialSavedPositions);
+        setCustomPoses(initialCustomPoses);
+        
+        // Log loaded positions for study data
+        if (props.sharedState && (props.sharedState as any).trackPositionsLoaded) {
+            (props.sharedState as any).trackPositionsLoaded(initialSavedPositions, initialCustomPoses);
+        }
     }, [props.sharedState.taskKey]);
     
     // Sync local execution state with shared state
@@ -691,7 +700,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             
             // Track saved position addition for study data
             if (props.sharedState && (props.sharedState as any).trackSavedPositionAdded) {
-                (props.sharedState as any).trackSavedPositionAdded();
+                (props.sharedState as any).trackSavedPositionAdded(positionName);
             }
         }
     };
@@ -705,6 +714,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Save to session storage
             sessionStorage.setItem('programEditorCustomPoses', JSON.stringify(updatedPoses));
             console.log("Saved to session storage:", sessionStorage.getItem('programEditorCustomPoses'));
+            
+            // Track custom pose addition for study data
+            if (props.sharedState && (props.sharedState as any).trackCustomPoseAdded) {
+                (props.sharedState as any).trackCustomPoseAdded(poseName, pose);
+            }
+            
             return updatedPoses;
         });
     };

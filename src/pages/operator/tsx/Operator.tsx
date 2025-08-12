@@ -153,12 +153,213 @@ export const Operator = (props: {
         }
     };
 
-    const trackSavedPositionAdded = () => {
+    const trackSavedPositionAdded = (positionName: string) => {
         if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
             setCurrentProgramSession(prev => ({
                 ...prev,
                 saved_positions_added: prev.saved_positions_added + 1
             }));
+        }
+        
+        // Log detailed position data
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: [],
+                            saved_positions: []
+                        };
+                    }
+                    
+                    if (!studyData.tasks[taskLetter].saved_positions) {
+                        studyData.tasks[taskLetter].saved_positions = [];
+                    }
+                    
+                    const positionData = {
+                        position_name: positionName,
+                        added_at: new Date().toISOString(),
+                        source: "program_editor"
+                    };
+                    
+                    studyData.tasks[taskLetter].saved_positions.push(positionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
+        }
+    };
+    
+    const trackCustomPoseAdded = (poseName: string, pose: any) => {
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: [],
+                            saved_positions: []
+                        };
+                    }
+                    
+                    if (!studyData.tasks[taskLetter].saved_positions) {
+                        studyData.tasks[taskLetter].saved_positions = [];
+                    }
+                    
+                    const positionData = {
+                        position_name: poseName,
+                        joint_states: pose,
+                        added_at: new Date().toISOString(),
+                        source: "custom_pose"
+                    };
+                    
+                    studyData.tasks[taskLetter].saved_positions.push(positionData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
+        }
+    };
+    
+    const trackPositionsLoaded = (savedPositions: string[], customPoses: any) => {
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: [],
+                            saved_positions: []
+                        };
+                    }
+                    
+                    if (!studyData.tasks[taskLetter].saved_positions) {
+                        studyData.tasks[taskLetter].saved_positions = [];
+                    }
+                    
+                    const loadData = {
+                        loaded_at: new Date().toISOString(),
+                        saved_positions: savedPositions,
+                        custom_poses: customPoses,
+                        source: "program_editor_load"
+                    };
+                    
+                    studyData.tasks[taskLetter].saved_positions.push(loadData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
+        }
+    };
+    
+    const trackPositionsCleared = (clearedPositions: any[]) => {
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: [],
+                            saved_positions: []
+                        };
+                    }
+                    
+                    if (!studyData.tasks[taskLetter].saved_positions) {
+                        studyData.tasks[taskLetter].saved_positions = [];
+                    }
+                    
+                    const clearData = {
+                        cleared_at: new Date().toISOString(),
+                        cleared_positions: clearedPositions,
+                        source: "library_clear"
+                    };
+                    
+                    studyData.tasks[taskLetter].saved_positions.push(clearData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
+        }
+    };
+    
+    const trackLibraryPositionsLoaded = (savedPositions: any[]) => {
+        if (props.studyMode && !props.studyMode.isPracticeRound) {
+            const userId = sessionStorage.getItem('studyUserId');
+            const currentTask = props.studyMode.currentTask;
+            const taskOrder = props.studyMode.taskOrder;
+            
+            if (userId && currentTask && taskOrder) {
+                const taskLetter = taskOrder[currentTask - 1];
+                const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                if (existingData) {
+                    const studyData = JSON.parse(existingData);
+                    
+                    if (!studyData.tasks[taskLetter]) {
+                        studyData.tasks[taskLetter] = {
+                            task_start_time: new Date().toISOString(),
+                            task_end_time: null,
+                            program_editor_sessions: [],
+                            demonstration_recordings: [],
+                            execution_attempts: [],
+                            saved_positions: []
+                        };
+                    }
+                    
+                    if (!studyData.tasks[taskLetter].saved_positions) {
+                        studyData.tasks[taskLetter].saved_positions = [];
+                    }
+                    
+                    const loadData = {
+                        loaded_at: new Date().toISOString(),
+                        library_positions: savedPositions,
+                        source: "library_load"
+                    };
+                    
+                    studyData.tasks[taskLetter].saved_positions.push(loadData);
+                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                }
+            }
         }
     };
     
@@ -819,6 +1020,10 @@ export const Operator = (props: {
         errorLineNumber: errorLineNumber,
         // Study data tracking functions
         trackSavedPositionAdded: trackSavedPositionAdded,
+        trackCustomPoseAdded: trackCustomPoseAdded,
+        trackPositionsLoaded: trackPositionsLoaded,
+        trackPositionsCleared: trackPositionsCleared,
+        trackLibraryPositionsLoaded: trackLibraryPositionsLoaded,
         trackExecutionAttemptStart: trackExecutionAttemptStart,
         trackExecutionAttemptEnd: trackExecutionAttemptEnd,
         trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
