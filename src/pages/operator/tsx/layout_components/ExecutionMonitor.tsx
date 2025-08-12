@@ -306,7 +306,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         // Track execution attempt start for study data
         if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
             console.log('ExecutionMonitor: Starting execution attempt tracking');
-            (props.sharedState as any).trackExecutionAttemptStart();
+            const savedPositionData = {
+                count: savedPositions.length,
+                positions: savedPositions.map(positionName => ({
+                    name: positionName,
+                    jointStates: POSE_DEFINITIONS[positionName as keyof typeof POSE_DEFINITIONS] || null
+                }))
+            };
+            (props.sharedState as any).trackExecutionAttemptStart(savedPositionData);
         }
         
         // Set execution state to true at the start

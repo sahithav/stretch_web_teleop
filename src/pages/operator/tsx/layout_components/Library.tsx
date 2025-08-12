@@ -179,6 +179,16 @@ export const Library = (props: CustomizableComponentProps) => {
                 (props.sharedState as any).addCustomPose(newPositionName.trim(), pose);
             }
             
+            // Log the saved position data for tracking
+            if (props.sharedState && (props.sharedState as any).trackSavedPositionAdded) {
+                const savedPositionData = {
+                    name: newPositionName.trim(),
+                    jointStates: pose, 
+                    timestamp: new Date().toISOString()
+                };
+                (props.sharedState as any).trackSavedPositionAdded(savedPositionData);
+            }
+            
             setNewPositionName("");
             setNewJointStates("");
             setValidationError("");

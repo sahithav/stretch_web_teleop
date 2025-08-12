@@ -162,7 +162,7 @@ export const Operator = (props: {
     };
     
     // Function to track execution attempt start
-    const trackExecutionAttemptStart = () => {
+    const trackExecutionAttemptStart = (savedPositionData?: any) => {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
@@ -206,7 +206,8 @@ export const Operator = (props: {
                         session_start: currentProgramSession.session_start,
                         session_end: new Date().toISOString(),
                         program_content: sessionStorage.getItem('programEditorCode') || "",
-                        saved_positions_added: currentProgramSession.saved_positions_added
+                        saved_positions_added: savedPositionData ? savedPositionData.count : currentProgramSession.saved_positions_added,
+                        saved_positions_data: savedPositionData || null
                     };
                     
                     studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
