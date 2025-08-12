@@ -261,17 +261,8 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         console.log('ProgramEditor: taskKey changed to:', props.sharedState.taskKey);
         console.log('ProgramEditor: Reloading data from session storage');
         setCode(getInitialCode());
-        
-        const initialSavedPositions = getInitialSavedPositions();
-        const initialCustomPoses = getInitialCustomPoses();
-        
-        setSavedPositions(initialSavedPositions);
-        setCustomPoses(initialCustomPoses);
-        
-        // Log loaded positions for study data
-        if (props.sharedState && (props.sharedState as any).trackPositionsLoaded) {
-            (props.sharedState as any).trackPositionsLoaded(initialSavedPositions, initialCustomPoses);
-        }
+        setSavedPositions(getInitialSavedPositions());
+        setCustomPoses(getInitialCustomPoses());
     }, [props.sharedState.taskKey]);
     
     // Sync local execution state with shared state
@@ -339,7 +330,17 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         // Track execution attempt start for study data
         if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
             console.log('ProgramEditor: Starting execution attempt tracking');
-            (props.sharedState as any).trackExecutionAttemptStart();
+            
+            // Prepare saved position data for logging
+            const savedPositionData = {
+                count: savedPositions.length,
+                positions: savedPositions.map(positionName => ({
+                    name: positionName,
+                    jointStates: ALL_POSE_DEFINITIONS[positionName as keyof typeof ALL_POSE_DEFINITIONS] || null
+                }))
+            };
+            
+            (props.sharedState as any).trackExecutionAttemptStart(savedPositionData);
         }
         
         // Set execution state to true at the start
@@ -700,7 +701,7 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             
             // Track saved position addition for study data
             if (props.sharedState && (props.sharedState as any).trackSavedPositionAdded) {
-                (props.sharedState as any).trackSavedPositionAdded(positionName);
+                (props.sharedState as any).trackSavedPositionAdded();
             }
         }
     };
@@ -714,12 +715,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Save to session storage
             sessionStorage.setItem('programEditorCustomPoses', JSON.stringify(updatedPoses));
             console.log("Saved to session storage:", sessionStorage.getItem('programEditorCustomPoses'));
-            
-            // Track custom pose addition for study data
-            if (props.sharedState && (props.sharedState as any).trackCustomPoseAdded) {
-                (props.sharedState as any).trackCustomPoseAdded(poseName, pose);
-            }
-            
             return updatedPoses;
         });
     };

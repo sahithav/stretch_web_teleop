@@ -226,7 +226,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     // Combine default and custom poses
     const customPoses = getInitialCustomPoses();
     const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };
-  
+
     // Create dynamic array that updates when savedPositions changes
     const allFunctions = React.useMemo(() => {
         return [...ROBOT_FUNCTIONS, ...HUMAN_FUNCTIONS, ...savedPositions];
@@ -306,7 +306,17 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         // Track execution attempt start for study data
         if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
             console.log('ExecutionMonitor: Starting execution attempt tracking');
-            (props.sharedState as any).trackExecutionAttemptStart();
+            
+            // Prepare saved position data for logging
+            const savedPositionData = {
+                count: savedPositions.length,
+                positions: savedPositions.map(positionName => ({
+                    name: positionName,
+                    jointStates: POSE_DEFINITIONS[positionName as keyof typeof POSE_DEFINITIONS] || null
+                }))
+            };
+            
+            (props.sharedState as any).trackExecutionAttemptStart(savedPositionData);
         }
         
         // Set execution state to true at the start
@@ -773,33 +783,33 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     {props.language && (
                         <span className="execution-monitor-language">{props.language}</span>
                     )}
-                    {showDoneMessage && (
-                        <div style={{
+                {showDoneMessage && (
+                    <div style={{
                             color: "#2e7d32",
-                            fontWeight: "bold",
+                        fontWeight: "bold",
                             fontSize: "17px",
-                            display: "flex",
+                        display: "flex",
                             alignItems: "center",
                             marginLeft: "16px"
-                        }}>
-                            Done Executing!
-                        </div>
-                    )}
+                    }}>
+                        Done Executing!
+                    </div>
+                )}
                 </div>
                 <div className="execution-monitor-header-right">
-                    {waitingForUserConfirmation && handleDoneTeleoperating && (
-                        <button 
-                            className="execution-monitor-done-button"
-                            onClick={handleDoneTeleoperating}
-                            type="button"
+                {waitingForUserConfirmation && handleDoneTeleoperating && (
+                    <button 
+                        className="execution-monitor-done-button"
+                        onClick={handleDoneTeleoperating}
+                        type="button"
                             style={{
                                 marginRight: "8px"
                             }}
-                        >
-                            <CheckIcon style={{ marginRight: "4px" }} />
-                            Done teleoperating
-                        </button>
-                    )}
+                    >
+                        <CheckIcon style={{ marginRight: "4px" }} />
+                        Done teleoperating
+                    </button>
+                )}
                     {!waitingForUserConfirmation && (
                         <>
                             <button 

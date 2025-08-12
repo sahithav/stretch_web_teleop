@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     CustomizableComponentProps,
     isSelected,
@@ -94,13 +94,6 @@ export const Library = (props: CustomizableComponentProps) => {
     const [newJointStates, setNewJointStates] = useState("");
     const [validationError, setValidationError] = useState<string>("");
 
-    // Log loaded positions for study data
-    useEffect(() => {
-        if (props.sharedState && (props.sharedState as any).trackLibraryPositionsLoaded) {
-            (props.sharedState as any).trackLibraryPositionsLoaded(savedPositions);
-        }
-    }, [props.sharedState.taskKey, savedPositions]);
-
     /** Callback when component is clicked during customize mode */
     const onSelect = (event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -184,6 +177,16 @@ export const Library = (props: CustomizableComponentProps) => {
             // Store the pose in the shared state for the program editor to use
             if ((props.sharedState as any).addCustomPose) {
                 (props.sharedState as any).addCustomPose(newPositionName.trim(), pose);
+            }
+            
+            // Log saved position data for study tracking
+            if (props.sharedState && (props.sharedState as any).trackSavedPositionAdded) {
+                const savedPositionData = {
+                    name: newPositionName.trim(),
+                    jointStates: pose,
+                    timestamp: new Date().toISOString()
+                };
+                (props.sharedState as any).trackSavedPositionAdded(savedPositionData);
             }
             
             setNewPositionName("");
@@ -355,12 +358,8 @@ export const Library = (props: CustomizableComponentProps) => {
                                     className="clear-positions-btn"
                                     onClick={() => {
                                         // Reset to empty positions
-                                        const clearedPositions = savedPositions;
                                         setSavedPositions([]);
                                         sessionStorage.removeItem('librarySavedPositions');
-                                        if (props.sharedState && (props.sharedState as any).trackPositionsCleared) {
-                                            (props.sharedState as any).trackPositionsCleared(clearedPositions);
-                                        }
                                     }}
                                     style={{
                                         minWidth: "auto",

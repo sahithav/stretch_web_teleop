@@ -117,7 +117,8 @@ export const Operator = (props: {
     // Track current execution attempt
     const [currentExecutionAttempt, setCurrentExecutionAttempt] = React.useState({
         pause_and_confirm_resets: 0,
-        execution_start: null as string | null
+        execution_start: null as string | null,
+        saved_positions_data: null as any | null
     });
     const hasTrackedExecutionEndRef = React.useRef(false);
     
@@ -153,224 +154,24 @@ export const Operator = (props: {
         }
     };
 
-    const trackSavedPositionAdded = (positionName: string) => {
+    const trackSavedPositionAdded = () => {
         if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
             setCurrentProgramSession(prev => ({
                 ...prev,
                 saved_positions_added: prev.saved_positions_added + 1
             }));
         }
-        
-        // Log detailed position data
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode.currentTask;
-            const taskOrder = props.studyMode.taskOrder;
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: [],
-                            saved_positions: []
-                        };
-                    }
-                    
-                    if (!studyData.tasks[taskLetter].saved_positions) {
-                        studyData.tasks[taskLetter].saved_positions = [];
-                    }
-                    
-                    const positionData = {
-                        position_name: positionName,
-                        added_at: new Date().toISOString(),
-                        source: "program_editor"
-                    };
-                    
-                    studyData.tasks[taskLetter].saved_positions.push(positionData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                }
-            }
-        }
-    };
-    
-    const trackCustomPoseAdded = (poseName: string, pose: any) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode.currentTask;
-            const taskOrder = props.studyMode.taskOrder;
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: [],
-                            saved_positions: []
-                        };
-                    }
-                    
-                    if (!studyData.tasks[taskLetter].saved_positions) {
-                        studyData.tasks[taskLetter].saved_positions = [];
-                    }
-                    
-                    const positionData = {
-                        position_name: poseName,
-                        joint_states: pose,
-                        added_at: new Date().toISOString(),
-                        source: "custom_pose"
-                    };
-                    
-                    studyData.tasks[taskLetter].saved_positions.push(positionData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                }
-            }
-        }
-    };
-    
-    const trackPositionsLoaded = (savedPositions: string[], customPoses: any) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode.currentTask;
-            const taskOrder = props.studyMode.taskOrder;
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: [],
-                            saved_positions: []
-                        };
-                    }
-                    
-                    if (!studyData.tasks[taskLetter].saved_positions) {
-                        studyData.tasks[taskLetter].saved_positions = [];
-                    }
-                    
-                    const loadData = {
-                        loaded_at: new Date().toISOString(),
-                        saved_positions: savedPositions,
-                        custom_poses: customPoses,
-                        source: "program_editor_load"
-                    };
-                    
-                    studyData.tasks[taskLetter].saved_positions.push(loadData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                }
-            }
-        }
-    };
-    
-    const trackPositionsCleared = (clearedPositions: any[]) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode.currentTask;
-            const taskOrder = props.studyMode.taskOrder;
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: [],
-                            saved_positions: []
-                        };
-                    }
-                    
-                    if (!studyData.tasks[taskLetter].saved_positions) {
-                        studyData.tasks[taskLetter].saved_positions = [];
-                    }
-                    
-                    const clearData = {
-                        cleared_at: new Date().toISOString(),
-                        cleared_positions: clearedPositions,
-                        source: "library_clear"
-                    };
-                    
-                    studyData.tasks[taskLetter].saved_positions.push(clearData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                }
-            }
-        }
-    };
-    
-    const trackLibraryPositionsLoaded = (savedPositions: any[]) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
-            const userId = sessionStorage.getItem('studyUserId');
-            const currentTask = props.studyMode.currentTask;
-            const taskOrder = props.studyMode.taskOrder;
-            
-            if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
-                const existingData = sessionStorage.getItem(`studyData_${userId}`);
-                if (existingData) {
-                    const studyData = JSON.parse(existingData);
-                    
-                    if (!studyData.tasks[taskLetter]) {
-                        studyData.tasks[taskLetter] = {
-                            task_start_time: new Date().toISOString(),
-                            task_end_time: null,
-                            program_editor_sessions: [],
-                            demonstration_recordings: [],
-                            execution_attempts: [],
-                            saved_positions: []
-                        };
-                    }
-                    
-                    if (!studyData.tasks[taskLetter].saved_positions) {
-                        studyData.tasks[taskLetter].saved_positions = [];
-                    }
-                    
-                    const loadData = {
-                        loaded_at: new Date().toISOString(),
-                        library_positions: savedPositions,
-                        source: "library_load"
-                    };
-                    
-                    studyData.tasks[taskLetter].saved_positions.push(loadData);
-                    sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
-                }
-            }
-        }
     };
     
     // Function to track execution attempt start
-    const trackExecutionAttemptStart = () => {
+    const trackExecutionAttemptStart = (savedPositionData?: any) => {
         if (props.studyMode && !props.studyMode.isPracticeRound) {
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
                 pause_and_confirm_resets: 0,
-                execution_start: new Date().toISOString()
+                execution_start: new Date().toISOString(),
+                saved_positions_data: savedPositionData || null
             });
         }
         
@@ -408,7 +209,8 @@ export const Operator = (props: {
                         session_start: currentProgramSession.session_start,
                         session_end: new Date().toISOString(),
                         program_content: sessionStorage.getItem('programEditorCode') || "",
-                        saved_positions_added: currentProgramSession.saved_positions_added
+                        saved_positions_added: currentProgramSession.saved_positions_added,
+                        saved_positions_data: savedPositionData || null
                     };
                     
                     studyData.tasks[taskLetter].program_editor_sessions.push(sessionData);
@@ -1020,10 +822,6 @@ export const Operator = (props: {
         errorLineNumber: errorLineNumber,
         // Study data tracking functions
         trackSavedPositionAdded: trackSavedPositionAdded,
-        trackCustomPoseAdded: trackCustomPoseAdded,
-        trackPositionsLoaded: trackPositionsLoaded,
-        trackPositionsCleared: trackPositionsCleared,
-        trackLibraryPositionsLoaded: trackLibraryPositionsLoaded,
         trackExecutionAttemptStart: trackExecutionAttemptStart,
         trackExecutionAttemptEnd: trackExecutionAttemptEnd,
         trackDemonstrationRecordingStart: trackDemonstrationRecordingStart,
