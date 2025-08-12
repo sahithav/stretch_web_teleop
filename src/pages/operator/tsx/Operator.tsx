@@ -129,9 +129,9 @@ export const Operator = (props: {
             case 'B':
                 return 'https://docs.google.com/forms/d/e/1FAIpQLSdBPedZJWU3br5EZbC0__HmJ5GvwhwjJP0NRxW1Lm4KbOIk6g/viewform?usp=preview';
             case 'C':
-                return 'https://docs.google.com/forms/d/e/1FAIpQLSc_Vq7SfH3gEThPPsEcK2vBpNh0CptfTkMKkwVqNOJzE4vWiw/viewform?usp=preview';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLScJ2xAqLuyp8bOCs-Ycf_GMAfKnNVyoPJ_xxu1RtvxDBKsaOQ/viewform?usp=dialog';
             case 'L':
-                return 'https://docs.google.com/forms/d/e/1FAIpQLSePpvjDoGOfD3lmMFZYQBAyaw2SkVMay-5RivF6N6MbZ_tiBA/viewform?usp=preview';
+                return 'https://docs.google.com/forms/d/e/1FAIpQLSdohF_CLZ-CWvcK1xfT-IQK-Rt1hfzrx4tLwUozhdlz1fG3rA/viewform?usp=header';
             default:
                 return '';
         }
