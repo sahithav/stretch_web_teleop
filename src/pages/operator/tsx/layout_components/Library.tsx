@@ -39,7 +39,7 @@ export const Library = (props: CustomizableComponentProps) => {
     const { customizing } = props.sharedState;
     const selected = isSelected(props);
     
-    // Check if human API functions should be hidden (tasks R and O)
+            // Check if human API functions should be hidden (tasks R and C)
     const shouldHideHumanAPI = () => {
         // Get the current task and task order from sharedState
         const currentTask = props.sharedState.studyMode?.currentTask;
@@ -64,8 +64,8 @@ export const Library = (props: CustomizableComponentProps) => {
         const taskLetter = taskOrder[currentTask - 1];
         console.log('Library: Current task letter:', taskLetter);
         
-        // Hide human API for task O, show for task M 
-        const shouldHide = taskLetter === 'O';
+        // Hide human API for task C, show for task L 
+        const shouldHide = taskLetter === 'C';
         console.log('Library: Should hide human API functions:', shouldHide);
         return shouldHide;
     };

@@ -128,9 +128,9 @@ export const Operator = (props: {
                 return 'https://docs.google.com/forms/d/e/1FAIpQLSdoTmoCgTXAtpBBrVoUR8Q5Gu-lNwlQbIpdOrt_vzVH1zCT3Q/viewform?usp=preview';
             case 'B':
                 return 'https://docs.google.com/forms/d/e/1FAIpQLSdBPedZJWU3br5EZbC0__HmJ5GvwhwjJP0NRxW1Lm4KbOIk6g/viewform?usp=preview';
-            case 'O':
+            case 'C':
                 return 'https://docs.google.com/forms/d/e/1FAIpQLSc_Vq7SfH3gEThPPsEcK2vBpNh0CptfTkMKkwVqNOJzE4vWiw/viewform?usp=preview';
-            case 'M':
+            case 'L':
                 return 'https://docs.google.com/forms/d/e/1FAIpQLSePpvjDoGOfD3lmMFZYQBAyaw2SkVMay-5RivF6N6MbZ_tiBA/viewform?usp=preview';
             default:
                 return '';
@@ -144,9 +144,8 @@ export const Operator = (props: {
         
         const taskLetter = props.studyMode.taskOrder[props.studyMode.currentTask - 1];
         
-        // Tasks O and M only have Robot API
-        // Task O only has Robot API, task M has both (R and B removed for this branch)
-        if (taskLetter === 'O') {
+        // Task C only has Robot API, task L has both Robot and Human API
+        if (taskLetter === 'C') {
             return "the Robot API only";
         } else {
             return "both the Robot API and Human API";

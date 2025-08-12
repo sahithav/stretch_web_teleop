@@ -332,15 +332,13 @@ function renderOperator(storageHandler: StorageHandler) {
         
         // Task definitions with their descriptions
         const taskDefinitions = {
-            'R': 'Pick up the pill bottle and place on the box',
-            'B': 'Pick up the pill bottle and place on the table', 
-            'O': 'Pour the substance in cup A into cup B',
-            'M': 'Pour the substance in cup A into cup B'
+            'C': 'Place the towel into the basket.',
+            'L': 'Place the towel into the basket.'
         };
         
-        // Function to generate random task order - only O and M for this branch
+        // Function to generate random task order - only C and L for this branch
         const generateRandomTaskOrder = () => {
-            const tasks = ['O', 'M'];
+            const tasks = ['C', 'L'];
             const shuffled = [...tasks].sort(() => Math.random() - 0.5);
             return shuffled;
         };
@@ -617,8 +615,8 @@ function renderOperator(storageHandler: StorageHandler) {
                             isPracticeRound,
                             taskOrder,
                             taskDefinitions: {
-                                'O': 'Pour the pasta in the bowl into the pan.',
-                                'M': 'Pour the pasta in the bowl into the pan.'
+                                'C': 'Place the towel into the basket.',
+                                'L': 'Place the towel into the basket.'
                             }
                         }}
                     />
