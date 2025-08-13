@@ -562,7 +562,12 @@ def generate_launch_description():
         executable="detect_aruco_markers",
         name="detect_aruco_markers",
         output="screen",
-        parameters=[{'aruco_tag_name': 'base_right'}],
+        parameters=[
+            {'aruco_marker_info.1.length_mm': 80},
+            {'aruco_marker_info.1.use_rgb_only': False},
+            {'aruco_marker_info.1.name': 'test_marker_1'},
+            {'aruco_marker_info.1.link': None},
+        ],
     )
     ld.add_action(aruco_detection_node)
 

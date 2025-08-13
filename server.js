@@ -162,8 +162,6 @@ app.post('/start_rosbag', (req, res) => {
     rosbagProcess = spawn('ros2', [
         'bag', 'record',
         '-a',
-        //'/aruco/marker_array',
-        //'/aruco/axes',
         '-s', 'mcap',
         '-o', outputDir
     ], {
