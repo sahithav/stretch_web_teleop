@@ -557,16 +557,13 @@ def generate_launch_description():
     ld.add_action(text_to_speech_node)
 
     # ArUco Marker Detection
+    dict_file_path = os.path.join(get_package_share_directory('stretch_core'), 'config', 'stretch_marker_dict.yaml')
     aruco_detection_node = Node(
         package="stretch_core",
         executable="detect_aruco_markers",
         name="detect_aruco_markers",
         output="screen",
-        parameters=[
-            PathJoinSubstitution(
-                [core_package, "config", "stretch_marker_dict.yaml"]
-            )
-        ],
+        parameters=[dict_file_path],
     )
     ld.add_action(aruco_detection_node)
 
