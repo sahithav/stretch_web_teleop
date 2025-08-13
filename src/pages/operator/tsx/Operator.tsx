@@ -481,6 +481,9 @@ export const Operator = (props: {
 
     const layout = React.useRef<LayoutDefinition>(props.layout);
     
+    // Add state to track current layout for re-rendering
+    const [currentLayout, setCurrentLayout] = React.useState<LayoutDefinition>(props.layout);
+    
     // Mode-specific layouts
     const [modeLayouts, setModeLayouts] = React.useState<{ [mode: string]: LayoutDefinition }>({
         "Demonstrate": props.layout,
