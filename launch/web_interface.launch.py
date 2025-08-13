@@ -556,6 +556,20 @@ def generate_launch_description():
     )
     ld.add_action(text_to_speech_node)
 
+    # ArUco Marker Detection
+    aruco_detection_node = Node(
+        package="stretch_web_teleop",
+        executable="detect_aruco_markers.py",
+        name="detect_aruco_markers",
+        output="screen",
+        parameters=[
+            PathJoinSubstitution(
+                [teleop_interface_package, "config", "stretch_marker_dict.yaml"]
+            )
+        ],
+    )
+    ld.add_action(aruco_detection_node)
+
     if stretch_tool == "eoa_wrist_dw3_tool_tablet_12in":
         detect_body_landmarks_node = Node(
             package="stretch_show_tablet",

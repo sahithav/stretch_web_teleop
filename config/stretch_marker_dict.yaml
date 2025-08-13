@@ -1,0 +1,20 @@
+# ArUco Marker Dictionary Configuration
+
+/**:
+  ros__parameters:
+    aruco_marker_info:
+      '1':
+        length_mm: 80
+        use_rgb_only: False
+        name: 'marker_1'
+        link: None
+      '2':
+        length_mm: 80
+        use_rgb_only: False
+        name: 'marker_2'
+        link: None
+      'default':
+        length_mm: 24
+        use_rgb_only: False
+        name: 'unknown'
+        link: None
