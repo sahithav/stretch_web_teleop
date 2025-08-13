@@ -563,10 +563,9 @@ def generate_launch_description():
         name="detect_aruco_markers",
         output="screen",
         parameters=[
-            {'aruco_marker_info.1.length_mm': 80},
-            {'aruco_marker_info.1.use_rgb_only': False},
-            {'aruco_marker_info.1.name': 'test_marker_1'},
-            {'aruco_marker_info.1.link': None},
+            PathJoinSubstitution(
+                [core_package, "config", "stretch_marker_dict.yaml"]
+            )
         ],
     )
     ld.add_action(aruco_detection_node)
