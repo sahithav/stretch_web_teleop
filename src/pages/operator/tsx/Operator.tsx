@@ -512,6 +512,7 @@ export const Operator = (props: {
             setModeLayouts(initialLayouts);
             // Set current layout to the current mode
             layout.current = initialLayouts[programMode];
+            setCurrentLayout(layout.current);
         };
         
         initializeModeLayouts();
@@ -601,6 +602,7 @@ export const Operator = (props: {
     /** Rerenders the operator */
     function updateLayout() {
         console.log("update layout");
+        setCurrentLayout(layout.current);
         setButtonStateMapRerender(!buttonStateMapRerender);
         setTabletOrientationRerender(!tabletOrientationRerender);
     }
@@ -897,6 +899,9 @@ export const Operator = (props: {
             }
         }
         
+        // Update currentLayout state to trigger re-render
+        setCurrentLayout(layout.current);
+        
         // Update program mode
         setProgramMode(newMode);
         
@@ -1168,7 +1173,7 @@ export const Operator = (props: {
                                     <Dropdown
                                         onChange={(idx) => setActionMode(actionModes[idx])}
                                         selectedIndex={actionModes.indexOf(
-                                            layout.current.actionMode
+                                            currentLayout.actionMode
                                         )}
                                         possibleOptions={actionModes}
                                         showActive
@@ -1291,7 +1296,7 @@ export const Operator = (props: {
                         })}
                     >
                         <HomeTheRobot
-                            hideLabels={!layout.current.displayLabels}
+                            hideLabels={!currentLayout.displayLabels}
                         />
                     </div>
                 </div>
@@ -1785,7 +1790,7 @@ export const Operator = (props: {
             )}
             
             <div id="operator-body">
-                <LayoutArea layout={layout.current} sharedState={sharedState} />
+                <LayoutArea layout={currentLayout} sharedState={sharedState} />
             </div>
 
             <Sidebar
