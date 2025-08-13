@@ -164,9 +164,6 @@ app.post('/start_rosbag', (req, res) => {
         '-a',
         '/aruco/marker_array',
         '/aruco/axes',
-        '/aruco/point_cloud2',
-        '/aruco/wrist_top',
-        '/aruco/wrist_inside',
         '-s', 'mcap',
         '-o', outputDir
     ], {
