@@ -33,18 +33,18 @@ const HUMAN_FUNCTIONS = [
 
 // Default saved configurations 
 const DEFAULT_SAVED_POSITIONS = [
-    'stowGripper',
-    'centerWrist'
+    'stow_gripper',
+    'center_wrist'
 ];
 
 // Define default saved positions
 const POSE_DEFINITIONS = {
-    stowGripper: {
+    stow_gripper: {
         joint_wrist_roll: 0.0,
         joint_wrist_pitch: -0.497,
         joint_wrist_yaw: 3.19579,
     },
-    centerWrist: {
+    center_wrist: {
         joint_wrist_roll: 0.0,
         joint_wrist_pitch: 0.0,
         joint_wrist_yaw: 0.0,

@@ -68,8 +68,8 @@ export const Library = (props: CustomizableComponentProps) => {
         }
         // Default positions if no session data
         return [
-            { name: "stowGripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
-            { name: "centerWrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() },
+            { name: "stow_gripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
+            { name: "center_wrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() },
         ];
     };
     
@@ -227,7 +227,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Move_Arm_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Move_Arm_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description" style={{ color: '#495057', fontSize: '1em', lineHeight: '1.5' }}>
                                         Adjust the lift and extension of the robot's arm.{'\n'}
@@ -240,7 +240,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Adjust_Gripper_Width()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Adjust_Gripper_Width</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description" style={{ color: '#495057', fontSize: '1em', lineHeight: '1.5' }}>
                                         Adjust the width of the robot's gripper. {'\n'}
@@ -253,7 +253,7 @@ export const Library = (props: CustomizableComponentProps) => {
                                         onClick={() => props.sharedState.insertTextAtCursor?.("Rotate_Wrist_to_Config()\n")}
                                         style={{ marginBottom: "12px" }}
                                     >
-                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration name</span>)
+                                        <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Rotate_Wrist_to_Config</span>(<span style={{ color: '#6c757d' }}>configuration_name</span>)
                                     </div>
                                     <div className="function-description" style={{ color: '#495057', fontSize: '1em', lineHeight: '1.5' }}>
                                         Adjust the angle of the robot's wrist.{'\n'}
