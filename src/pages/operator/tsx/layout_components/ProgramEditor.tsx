@@ -327,6 +327,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     const executeProgram = async (program: Program) => {
         console.log("Starting program execution...");
         
+        // Clear any previous execution errors when starting new execution
+        if (props.sharedState.clearExecutionError) {
+            props.sharedState.clearExecutionError();
+        }
+        if (props.sharedState.setErrorLineNumber) {
+            props.sharedState.setErrorLineNumber(null);
+        }
+        
         // Track execution attempt start for study data
         if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
             console.log('ProgramEditor: Starting execution attempt tracking');
@@ -569,6 +577,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Reset current executing line
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+            // Clear execution errors when program completes successfully
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
         }
@@ -897,6 +913,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Reset current executing line
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+            // Clear execution errors when stopping
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
             // Track execution attempt end as failed when stopped

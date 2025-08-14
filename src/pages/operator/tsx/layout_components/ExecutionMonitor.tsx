@@ -578,6 +578,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 props.sharedState.updateCurrentExecutingLine(undefined);
             }
             
+            // Clear execution errors when stopping
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
+            }
+            
             // Track execution attempt end as failed when stopped
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
                 (props.sharedState as any).trackExecutionAttemptEnd(false);
@@ -599,6 +607,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+            
+            // Clear any previous execution errors when starting new execution
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
             const programText = readProgramCode();
