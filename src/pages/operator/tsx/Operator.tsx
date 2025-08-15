@@ -348,6 +348,8 @@ export const Operator = (props: {
         "Execution Monitor": props.layout,
     });
 
+    const [layoutVersion, setLayoutVersion] = React.useState<number>(0);
+
     // Initialize mode-specific layouts
     React.useEffect(() => {
         const initializeModeLayouts = () => {
@@ -690,6 +692,8 @@ export const Operator = (props: {
             }
         }
         
+        // Force a re-render by incrementing the layout version
+        setLayoutVersion(prev => prev + 1);
         updateLayout();
     };
 
@@ -1349,7 +1353,11 @@ export const Operator = (props: {
             )}
             
             <div id="operator-body">
-                <LayoutArea layout={layout.current} sharedState={sharedState} />
+                <LayoutArea 
+                    key={`layout-${layoutVersion}`}
+                    layout={layout.current} 
+                    sharedState={sharedState} 
+                />
             </div>
 
             <Sidebar
