@@ -961,7 +961,7 @@ export const Operator = (props: {
                                                         borderRadius: "2px",
                                                         display: "flex",
                                                         alignItems: "center",
-                                                        filter: "none"
+                                                        boxShadow: "none"
                                                     }}
                                                     title="Delete program"
                                                 >
@@ -1301,12 +1301,13 @@ export const Operator = (props: {
                                     setProgramDescription("");
                                 }}
                                 style={{
-                                    backgroundColor: "#f44336",
-                                    color: "white",
+                                    background: "var(--btn-gray)",
+                                    color: "var(--text-color)",
                                     border: "none",
-                                    padding: "10px 20px",
-                                    fontWeight: "bold",
-                                    borderRadius: "5px",
+                                    borderRadius: 4,
+                                    padding: "8px 20px",
+                                    fontWeight: "normal",
+                                    fontSize: "1em",
                                     cursor: "pointer"
                                 }}
                             >
