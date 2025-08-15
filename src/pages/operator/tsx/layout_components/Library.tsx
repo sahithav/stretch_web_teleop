@@ -310,7 +310,13 @@ export const Library = (props: CustomizableComponentProps) => {
                                                                                 <div 
                                                 className="library-function-item"
                                                 onClick={() => props.sharedState.insertTextAtCursor?.("Pause_And_Confirm()\n")}
-                                                style={{ marginBottom: "12px" }}
+                                                style={{ 
+                                                    marginBottom: "12px",
+                                                    wordWrap: "break-word",
+                                                    wordBreak: "break-word",
+                                                    overflowWrap: "break-word",
+                                                    whiteSpace: "normal"
+                                                }}
                                             >
                                                 <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Pause_And_Confirm</span>()
                                             </div>
@@ -323,7 +329,13 @@ export const Library = (props: CustomizableComponentProps) => {
                                             <div 
                                                 className="library-function-item"
                                                 onClick={() => props.sharedState.insertTextAtCursor?.("Take_Control()\n")}
-                                                style={{ marginBottom: "12px" }}
+                                                style={{ 
+                                                    marginBottom: "12px",
+                                                    wordWrap: "break-word",
+                                                    wordBreak: "break-word",
+                                                    overflowWrap: "break-word",
+                                                    whiteSpace: "normal"
+                                                }}
                                             >
                                                 <span style={{ fontWeight: "600", fontSize: "1.1em" }}>Take_Control</span>()
                                             </div>
@@ -346,7 +358,13 @@ export const Library = (props: CustomizableComponentProps) => {
                                         key={index}
                                         className="library-function-item"
                                         onClick={() => props.sharedState.insertTextAtCursor?.(position.name)}
-                                        style={{ fontSize: "1em" }}
+                                        style={{ 
+                                            fontSize: "1em",
+                                            wordWrap: "break-word",
+                                            wordBreak: "break-word",
+                                            overflowWrap: "break-word",
+                                            whiteSpace: "normal"
+                                        }}
                                     >
                                         {position.name}
                                     </div>
