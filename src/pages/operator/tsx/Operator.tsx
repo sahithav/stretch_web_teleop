@@ -856,9 +856,8 @@ export const Operator = (props: {
                                 </button>
                                 
                                 {/* Load Program Dropdown with Delete Functionality */}
-                                <div className="dropdown" style={{ position: "relative" }}>
+                                <div className="header-dropdown" style={{ position: "relative" }}>
                                     <button
-                                        className="dropdown-button"
                                         onClick={() => {
                                             const currentShow = document.getElementById('load-program-dropdown')?.style.display !== 'none';
                                             const dropdown = document.getElementById('load-program-dropdown');
@@ -867,50 +866,45 @@ export const Operator = (props: {
                                             }
                                         }}
                                         style={{
+                                            background: "white",
+                                            color: "#333",
+                                            border: "1px solid #ccc",
+                                            borderRadius: 4,
+                                            padding: "8px 16px",
+                                            fontSize: "14px",
+                                            fontWeight: "600",
+                                            cursor: "pointer",
                                             display: "flex",
                                             alignItems: "center",
-                                            justifyContent: "space-between",
-                                            paddingTop: "1rem",
-                                            paddingBottom: "1rem",
-                                            width: "100%",
-                                            position: "relative",
-                                            color: "black",
-                                            background: "white",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "4px",
-                                            cursor: "pointer",
+                                            height: "40px",
                                             minWidth: "120px"
                                         }}
                                         title="Load a saved program"
                                     >
-                                        <span>Load Program</span>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M7 10l5 5 5-5z"/>
-                                        </svg>
+                                        Load Program
                                     </button>
                                     
                                     <div
                                         id="load-program-dropdown"
-                                        className="dropdown-popup"
                                         style={{
                                             position: "absolute",
-                                            minWidth: "100%",
-                                            zIndex: 3,
-                                            boxShadow: "var(--shadow)",
-                                            borderRadius: "0 0 4px 4px",
                                             top: "100%",
-                                            bottom: "auto",
-                                            overflowY: "auto",
+                                            left: 0,
+                                            right: 0,
                                             background: "white",
                                             border: "1px solid #ccc",
-                                            borderTop: "none",
+                                            borderRadius: 4,
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                            zIndex: 1000,
+                                            maxHeight: "200px",
+                                            overflowY: "auto",
+                                            marginTop: "4px",
                                             display: "none"
                                         }}
                                     >
                                         {props.storageHandler.getSavedProgramNames().map((programName, index) => (
                                             <div
                                                 key={index}
-                                                className="dropdown-option"
                                                 onClick={() => {
                                                     try {
                                                         const program = props.storageHandler.getSavedProgram(programName);
@@ -922,18 +916,19 @@ export const Operator = (props: {
                                                     }
                                                 }}
                                                 style={{
-                                                    paddingTop: "1rem",
-                                                    paddingBottom: "1rem",
+                                                    padding: "10px 16px",
                                                     cursor: "pointer",
-                                                    width: "100%",
+                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none",
                                                     display: "flex",
                                                     justifyContent: "space-between",
                                                     alignItems: "center",
-                                                    borderRadius: index === props.storageHandler.getSavedProgramNames().length - 1 ? "0 0 4px 4px" : "0",
-                                                    textAlign: "left",
-                                                    margin: "0",
-                                                    color: "black",
-                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none"
+                                                    fontSize: "14px"
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = "white";
                                                 }}
                                             >
                                                 <span style={{ flex: 1 }}>{programName}</span>
@@ -1306,13 +1301,12 @@ export const Operator = (props: {
                                     setProgramDescription("");
                                 }}
                                 style={{
-                                    background: "#6c757d",
+                                    backgroundColor: "#f44336",
                                     color: "white",
                                     border: "none",
-                                    borderRadius: 4,
-                                    padding: "8px 16px",
-                                    fontSize: "14px",
-                                    fontWeight: "600",
+                                    padding: "10px 20px",
+                                    fontWeight: "bold",
+                                    borderRadius: "5px",
                                     cursor: "pointer"
                                 }}
                             >
