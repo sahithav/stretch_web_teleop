@@ -283,8 +283,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         const isPracticeRound = props.sharedState.studyMode?.isPracticeRound;
         
         console.log('ProgramEditor: Current task from sharedState:', currentTask);
-        console.log('ProgramEditor: Task order from sharedState:', taskOrder);
-        console.log('ProgramEditor: Is practice round:', isPracticeRound);
         
         // In practice round, always show human API functions
         if (isPracticeRound) {

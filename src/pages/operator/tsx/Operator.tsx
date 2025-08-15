@@ -228,8 +228,14 @@ export const Operator = (props: {
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
+        console.log('=== trackExecutionAttemptEnd called ===');
+        console.log('Success parameter:', success);
+        console.log('hasTrackedExecutionEndRef.current:', hasTrackedExecutionEndRef.current);
+        console.log('Call stack:', new Error().stack);
+        
         // Prevent duplicate tracking
         if (hasTrackedExecutionEndRef.current) {
+            console.log('Already tracked execution end, returning early');
             return;
         }
 
