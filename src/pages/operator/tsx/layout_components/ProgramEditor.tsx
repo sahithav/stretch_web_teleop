@@ -1214,9 +1214,14 @@ const highlightContent = (text: string): string => {
                                     color: "#1e7e34"
                                 }}
                                 onClick={() => {
-                                    // Only switch the program mode, keep the current layout
-                                    if ((window as any).setProgramMode) {
-                                        (window as any).setProgramMode("Execution Monitor");
+                                    // Switch to Execution Monitor mode (both mode and layout)
+                                    const switchToModeLayout = (window as any).switchToModeLayout;
+                                    if (switchToModeLayout) {
+                                        // Update the program mode state as well
+                                        if ((window as any).setProgramMode) {
+                                            (window as any).setProgramMode("Execution Monitor");
+                                        }
+                                        switchToModeLayout("Execution Monitor");
                                     }
                                 }}
                                 title="Click to switch to Execution Monitor"

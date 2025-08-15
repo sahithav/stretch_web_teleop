@@ -665,32 +665,33 @@ export const Operator = (props: {
 
     // Function to switch layouts when program mode changes
     const switchToModeLayout = (newMode: string) => {
-        // Save current layout for current mode
-        if (modeLayouts[programMode]) {
+        // Save current layout for current mode (but don't save if we're in execution state)
+        if (modeLayouts[programMode] && !isExecutingProgram) {
             const updatedLayouts = { ...modeLayouts };
             updatedLayouts[programMode] = layout.current;
             setModeLayouts(updatedLayouts);
             props.storageHandler.saveCurrentLayout(layout.current, programMode);
         }
         
-        // Load layout for new mode from our initialized modeLayouts
-        if (modeLayouts[newMode]) {
-            layout.current = modeLayouts[newMode];
+        // Always load fresh default layouts to avoid any corrupted saved layouts
+        let newLayout: LayoutDefinition;
+        if (newMode === "Demonstrate") {
+            newLayout = props.storageHandler.loadDefaultLayout("Basic Layout" as any);
+        } else if (newMode === "Program Editor") {
+            newLayout = props.storageHandler.loadDefaultLayout("Program Editor Layout" as any);
+        } else if (newMode === "Execution Monitor") {
+            newLayout = props.storageHandler.loadDefaultLayout("Execution Monitor Layout" as any);
         } else {
-            const newModeLayout = props.storageHandler.loadCurrentLayout(newMode);
-            if (newModeLayout) {
-                layout.current = newModeLayout;
-            } else {
-                // Load default layouts for each mode
-                if (newMode === "Demonstrate") {
-                    layout.current = props.storageHandler.loadDefaultLayout("Basic Layout" as any);
-                } else if (newMode === "Program Editor") {
-                    layout.current = props.storageHandler.loadDefaultLayout("Program Editor Layout" as any);
-                } else if (newMode === "Execution Monitor") {
-                    layout.current = props.storageHandler.loadDefaultLayout("Execution Monitor Layout" as any);
-                }
-            }
+            throw new Error(`Unknown mode: ${newMode}`);
         }
+        
+        // Update the layout
+        layout.current = newLayout;
+        
+        // Update the mode layouts cache with the fresh layout
+        const updatedLayouts = { ...modeLayouts };
+        updatedLayouts[newMode] = newLayout;
+        setModeLayouts(updatedLayouts);
         
         // Force a re-render by incrementing the layout version
         setLayoutVersion(prev => prev + 1);
@@ -704,8 +705,8 @@ export const Operator = (props: {
 
     return (
         <div id="operator">
-            {/* Persistent banner for control mode - show when program is executing or waiting for user confirmation */}
-            {(programMode === "Execution Monitor" || programMode === "Program Editor") && (isExecutingProgram || waitingForUserConfirmation) && (
+            {/* Persistent banner for control mode - show only in Execution Monitor when program is executing or waiting for user confirmation */}
+            {programMode === "Execution Monitor" && (isExecutingProgram || waitingForUserConfirmation) && (
                 <div
                     style={{
                         width: "100%",
