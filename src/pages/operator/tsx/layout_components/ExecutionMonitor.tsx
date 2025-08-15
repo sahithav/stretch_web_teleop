@@ -244,14 +244,22 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     // Load saved positions and custom poses from session storage (from Library component)
     useEffect(() => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        console.log("ExecutionMonitor loading saved positions from session storage:", sessionPositions);
         if (sessionPositions) {
             try {
                 const parsed = JSON.parse(sessionPositions);
+                console.log("ExecutionMonitor parsed saved positions:", parsed);
                 const positionNames = parsed.map((pos: any) => pos.name);
                 const newCustomPoses: {[key: string]: RobotPose} = {};
                 parsed.forEach((pos: any) => {
-                    newCustomPoses[pos.name] = pos.pose;
+                    if (pos.pose) {
+                        newCustomPoses[pos.name] = pos.pose;
+                        console.log(`ExecutionMonitor added pose for ${pos.name}:`, pos.pose);
+                    } else {
+                        console.warn(`ExecutionMonitor: No pose data for ${pos.name}`);
+                    }
                 });
+                console.log("ExecutionMonitor final custom poses:", newCustomPoses);
                 setSavedPositions(positionNames);
                 setCustomPoses(newCustomPoses);
             } catch (error) {

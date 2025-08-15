@@ -27,6 +27,7 @@ const JOINT_MAPPING = [
 interface SavedPosition {
     name: string;
     jointStates: string;
+    pose: RobotPose;
     timestamp: Date;
 }
 
@@ -72,8 +73,18 @@ export const Library = (props: CustomizableComponentProps) => {
         // Default positions if no session data
         console.log("Library using default saved positions");
         return [
-            { name: "stow_gripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
-            { name: "center_wrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() },
+            { 
+                name: "stow_gripper", 
+                jointStates: "[0.0, -0.497, 3.19579]", 
+                pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: -0.497, joint_wrist_yaw: 3.19579 },
+                timestamp: new Date() 
+            },
+            { 
+                name: "center_wrist", 
+                jointStates: "[0.0, 0.0, 0.0]", 
+                pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: 0.0, joint_wrist_yaw: 0.0 },
+                timestamp: new Date() 
+            },
         ];
     };
     
@@ -175,6 +186,7 @@ export const Library = (props: CustomizableComponentProps) => {
                 const newPosition: SavedPosition = {
                     name: newPositionName.trim(),
                     jointStates: newJointStates.trim(),
+                    pose: pose,
                     timestamp: new Date()
                 };
                 const updatedPositions = [...savedPositions, newPosition];

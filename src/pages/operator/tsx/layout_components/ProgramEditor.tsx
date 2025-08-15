@@ -235,13 +235,21 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     // Load custom poses from session storage (from Library component)
     const getInitialCustomPoses = (): {[key: string]: RobotPose} => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        console.log("ProgramEditor loading saved positions from session storage:", sessionPositions);
         if (sessionPositions) {
             try {
                 const parsed = JSON.parse(sessionPositions);
+                console.log("ProgramEditor parsed saved positions:", parsed);
                 const customPoses: {[key: string]: RobotPose} = {};
                 parsed.forEach((pos: any) => {
-                    customPoses[pos.name] = pos.pose;
+                    if (pos.pose) {
+                        customPoses[pos.name] = pos.pose;
+                        console.log(`ProgramEditor added pose for ${pos.name}:`, pos.pose);
+                    } else {
+                        console.warn(`ProgramEditor: No pose data for ${pos.name}`);
+                    }
                 });
+                console.log("ProgramEditor final custom poses:", customPoses);
                 return customPoses;
             } catch (error) {
                 console.error("Error parsing custom poses:", error);
