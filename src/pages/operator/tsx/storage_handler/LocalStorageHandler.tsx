@@ -13,6 +13,7 @@ export class LocalStorageHandler extends StorageHandler {
     public static POSE_RECORDING_NAMES_KEY = "user_pose_recording_names";
     public static TEXT_TO_SPEECH_KEY = "text_to_speech";
     public static SAVED_PROGRAM_NAMES_KEY = "user_saved_program_names";
+    public static SAVED_POSITION_NAMES_KEY = "user_saved_position_names";
 
     constructor(onStorageHandlerReadyCallback: () => void) {
         super(onStorageHandlerReadyCallback);
@@ -255,6 +256,58 @@ export class LocalStorageHandler extends StorageHandler {
         localStorage.setItem(
             LocalStorageHandler.SAVED_PROGRAM_NAMES_KEY,
             JSON.stringify(programNames),
+        );
+    }
+
+    public getSavedPositionNames(): string[] {
+        const storedJson = localStorage.getItem(
+            LocalStorageHandler.SAVED_POSITION_NAMES_KEY,
+        );
+        if (!storedJson) return [];
+        return JSON.parse(storedJson);
+    }
+
+    public getSavedPosition(positionName: string): {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    } {
+        const storedJson = localStorage.getItem("position_" + positionName);
+        if (!storedJson)
+            throw Error(`Could not load position ${positionName}`);
+        const position = JSON.parse(storedJson);
+        // Convert timestamp back to Date object
+        position.timestamp = new Date(position.timestamp);
+        return position;
+    }
+
+    public savePosition(positionName: string, position: {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    }): void {
+        const positionNames = this.getSavedPositionNames();
+        if (!positionNames.includes(positionName))
+            positionNames.push(positionName);
+        localStorage.setItem(
+            LocalStorageHandler.SAVED_POSITION_NAMES_KEY,
+            JSON.stringify(positionNames),
+        );
+        localStorage.setItem(
+            "position_" + positionName,
+            JSON.stringify(position),
+        );
+    }
+
+    public deletePosition(positionName: string): void {
+        const positionNames = this.getSavedPositionNames();
+        if (!positionNames.includes(positionName)) return;
+        localStorage.removeItem("position_" + positionName);
+        const index = positionNames.indexOf(positionName);
+        positionNames.splice(index, 1);
+        localStorage.setItem(
+            LocalStorageHandler.SAVED_POSITION_NAMES_KEY,
+            JSON.stringify(positionNames),
         );
     }
 }

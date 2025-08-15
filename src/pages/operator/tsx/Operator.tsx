@@ -109,17 +109,21 @@ export const Operator = (props: {
     // Function to get current saved positions
     const getCurrentSavedPositions = () => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        console.log("Getting saved positions from session storage:", sessionPositions);
         if (sessionPositions) {
             try {
                 const parsed = JSON.parse(sessionPositions);
-                return parsed.map((pos: any) => ({
+                const result = parsed.map((pos: any) => ({
                     ...pos,
                     timestamp: new Date(pos.timestamp)
                 }));
+                console.log("Parsed saved positions from session storage:", result);
+                return result;
             } catch (error) {
-                console.error("Error parsing saved positions:", error);
+                console.error("Error parsing saved positions from session storage:", error);
             }
         }
+        console.log("No saved positions found, returning empty array");
         return [];
     };
     
@@ -165,6 +169,19 @@ export const Operator = (props: {
         return () => {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('programCodeChanged', handleCodeChange);
+        };
+    }, []);
+    
+    // Effect to listen for saved positions updates
+    React.useEffect(() => {
+        const handleSavedPositionsUpdated = () => {
+            // Force a re-render to update the saved positions
+        };
+        
+        window.addEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        
+        return () => {
+            window.removeEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
         };
     }, []);
     
@@ -699,7 +716,7 @@ export const Operator = (props: {
                     gap: window.innerWidth < 1000 ? "8px" : "0"
                 }}>
                     {/* Left side controls */}
-                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
+                    <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto", gap: window.innerWidth < 1200 ? 8 : 16 }}>
                         {/* Program mode dropdown */}
                         <div style={{ 
                             display: "flex", 
@@ -731,10 +748,67 @@ export const Operator = (props: {
                                 />
                             </div>
                         </div>
+                        
+                        {/* Program Save/Load - only show in Program Editor mode */}
+                        {programMode === "Program Editor" && (
+                            <>
+                                {/* Save Program Button */}
+                                <button
+                                    className="save-program-button"
+                                    onClick={() => {
+                                        // Trigger save modal from ProgramSaveLoad component
+                                        window.dispatchEvent(new CustomEvent('triggerSaveProgram'));
+                                    }}
+                                    style={{
+                                        background: "#28a745",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: 4,
+                                        padding: "8px 16px",
+                                        fontSize: "14px",
+                                        fontWeight: "600",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        height: "40px",
+                                        transition: "background-color 0.2s ease"
+                                    }}
+                                    title="Save current program and saved positions"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                    </svg>
+                                    Save
+                                </button>
+                                
+                                {/* Load Program Dropdown */}
+                                <div className="header-dropdown">
+                                    <Dropdown
+                                        onChange={(idx) => {
+                                            const savedProgramNames = props.storageHandler.getSavedProgramNames();
+                                            if (idx < savedProgramNames.length) {
+                                                const programName = savedProgramNames[idx];
+                                                try {
+                                                    const program = props.storageHandler.getSavedProgram(programName);
+                                                    handleProgramLoad(program);
+                                                } catch (error) {
+                                                    console.error("Error loading program:", error);
+                                                }
+                                            }
+                                        }}
+                                        selectedIndex={-1}
+                                        possibleOptions={["Load Program", ...props.storageHandler.getSavedProgramNames()]}
+                                        showActive
+                                        placement="bottom"
+                                    />
+                                </div>
+                            </>
+                        )}
+                        
                         {/* Action mode dropdown - hide in Program Editor mode */}
                         {programMode !== "Program Editor" && (
                             <div style={{ 
-                                marginLeft: window.innerWidth < 1200 ? 8 : 16, 
                                 height: window.innerWidth < 1200 ? "32px" : "40px" 
                             }}>
                                 <div className="header-dropdown">
@@ -780,16 +854,6 @@ export const Operator = (props: {
                         flex: "0 0 auto",
                         gap: "8px"
                     }}>
-                        {/* Program Save/Load - only show in Program Editor mode */}
-                        {programMode === "Program Editor" && (
-                            <ProgramSaveLoad
-                                code={currentProgramCode}
-                                storageHandler={props.storageHandler}
-                                onProgramLoad={handleProgramLoad}
-                                getCurrentSavedPositions={getCurrentSavedPositions}
-                            />
-                        )}
-                        
                         <CustomizeButton
                             customizing={customizing}
                             onClick={handleToggleCustomize}
@@ -971,6 +1035,18 @@ export const Operator = (props: {
                     </div>
                 </div>
             )}
+            {/* Hidden ProgramSaveLoad component for modal functionality */}
+            {programMode === "Program Editor" && (
+                <div style={{ display: "none" }}>
+                    <ProgramSaveLoad
+                        code={currentProgramCode}
+                        storageHandler={props.storageHandler}
+                        onProgramLoad={handleProgramLoad}
+                        getCurrentSavedPositions={getCurrentSavedPositions}
+                    />
+                </div>
+            )}
+            
             <div id="operator-body">
                 <LayoutArea layout={layout.current} sharedState={sharedState} />
             </div>

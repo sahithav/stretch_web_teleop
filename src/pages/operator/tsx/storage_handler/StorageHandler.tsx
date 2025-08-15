@@ -205,6 +205,43 @@ export abstract class StorageHandler {
     public abstract deleteProgram(programName: string): void;
 
     /**
+     * Gets the list of all saved positions
+     * @returns list of saved position names
+     */
+    public abstract getSavedPositionNames(): string[];
+
+    /**
+     * Gets the saved position associated with the given name
+     * @param positionName the name of the saved position
+     * @returns a saved position associated with the given name
+     */
+    public abstract getSavedPosition(positionName: string): {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    };
+
+    /**
+     * Save a position and its joint states
+     * @param positionName the name of the position
+     * @param position the position to save
+     */
+    public abstract savePosition(
+        positionName: string,
+        position: {
+            name: string;
+            jointStates: string;
+            timestamp: Date;
+        },
+    ): void;
+
+    /**
+     * Removes the saved position from storage
+     * @param positionName the name of the saved position
+     */
+    public abstract deletePosition(positionName: string): void;
+
+    /**
      * Gets the last saved state from the user's layout, or gets the default
      * layout if the user has no saved state.
      * @param mode the program mode (Demonstrate, Create Program, Run Program)

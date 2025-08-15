@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     CustomizableComponentProps,
     isSelected,
@@ -55,18 +55,22 @@ export const Library = (props: CustomizableComponentProps) => {
     // Load saved positions from session storage or use defaults
     const getInitialSavedPositions = (): SavedPosition[] => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        console.log("Library loading saved positions from session storage:", sessionPositions);
         if (sessionPositions) {
             try {
                 const parsed = JSON.parse(sessionPositions);
-                return parsed.map((pos: any) => ({
+                const result = parsed.map((pos: any) => ({
                     ...pos,
                     timestamp: new Date(pos.timestamp)
                 }));
+                console.log("Library parsed saved positions from session storage:", result);
+                return result;
             } catch (error) {
-                console.error("Error parsing saved positions:", error);
+                console.error("Error parsing saved positions from session storage:", error);
             }
         }
         // Default positions if no session data
+        console.log("Library using default saved positions");
         return [
             { name: "stow_gripper", jointStates: "[0.0, -0.497, 3.19579]", timestamp: new Date() },
             { name: "center_wrist", jointStates: "[0.0, 0.0, 0.0]", timestamp: new Date() },
@@ -78,6 +82,23 @@ export const Library = (props: CustomizableComponentProps) => {
     const [newPositionName, setNewPositionName] = useState("");
     const [newJointStates, setNewJointStates] = useState("");
     const [validationError, setValidationError] = useState<string>("");
+    
+    // Listen for saved positions updates from program loading
+    useEffect(() => {
+        const handleSavedPositionsUpdated = (event: CustomEvent) => {
+            const positions = event.detail.positions;
+            if (positions && Array.isArray(positions)) {
+                setSavedPositions(positions);
+                console.log("Library updated with saved positions from program:", positions);
+            }
+        };
+        
+        window.addEventListener('savedPositionsUpdated', handleSavedPositionsUpdated as EventListener);
+        
+        return () => {
+            window.removeEventListener('savedPositionsUpdated', handleSavedPositionsUpdated as EventListener);
+        };
+    }, []);
 
     /** Callback when component is clicked during customize mode */
     const onSelect = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -161,6 +182,7 @@ export const Library = (props: CustomizableComponentProps) => {
                 
                 // Save to session storage
                 sessionStorage.setItem('librarySavedPositions', JSON.stringify(updatedPositions));
+                console.log("Saved positions to session storage:", updatedPositions);
                 
                 // Add to program editor's autocomplete and syntax highlighting
                 props.sharedState.addSavedPosition?.(newPositionName.trim());

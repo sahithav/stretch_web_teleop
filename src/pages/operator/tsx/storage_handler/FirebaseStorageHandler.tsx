@@ -47,6 +47,11 @@ export class FirebaseStorageHandler extends StorageHandler {
     private markerIDs: string[];
     private markerInfo: ArucoMarkersInfo;
     private savedPrograms: { [name: string]: SavedProgram };
+    private savedPositions: { [name: string]: {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    } };
 
     constructor(
         onStorageHandlerReadyCallback: () => void,
@@ -71,6 +76,7 @@ export class FirebaseStorageHandler extends StorageHandler {
         this.markerIDs = [];
         this.markerInfo = {} as ArucoMarkersInfo;
         this.savedPrograms = {};
+        this.savedPositions = {};
         onAuthStateChanged(this.auth, (user) =>
             this.handleAuthStateChange(user),
         );
@@ -90,6 +96,7 @@ export class FirebaseStorageHandler extends StorageHandler {
                     this.recordings = userData.recordings;
                     this.textToSpeech = userData.text_to_speech;
                     this.savedPrograms = userData.saved_programs || {};
+                    this.savedPositions = userData.saved_positions || {};
 
                     this.onReadyCallback();
                 })
@@ -311,6 +318,49 @@ export class FirebaseStorageHandler extends StorageHandler {
 
         let updates: any = {};
         updates["/operators/" + this.uid + "/saved_programs"] = programs;
+        return update(ref(this.database), updates);
+    }
+
+    public getSavedPositionNames(): string[] {
+        if (!this.savedPositions) return [];
+        return Object.keys(this.savedPositions);
+    }
+
+    public getSavedPosition(positionName: string): {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    } {
+        let position = this.savedPositions![positionName];
+        if (!position) throw Error(`Could not load position ${positionName}`);
+        return JSON.parse(JSON.stringify(position));
+    }
+
+    public savePosition(positionName: string, position: {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    }): void {
+        this.savedPositions[positionName] = position;
+        this.writeSavedPositions(this.savedPositions);
+    }
+
+    public deletePosition(positionName: string): void {
+        let position = this.savedPositions![positionName];
+        if (!position) throw Error(`Could not delete position ${positionName}`);
+        delete this.savedPositions[positionName];
+        this.writeSavedPositions(this.savedPositions);
+    }
+
+    private async writeSavedPositions(positions: { [name: string]: {
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    } }) {
+        this.savedPositions = positions;
+
+        let updates: any = {};
+        updates["/operators/" + this.uid + "/saved_positions"] = positions;
         return update(ref(this.database), updates);
     }
 }

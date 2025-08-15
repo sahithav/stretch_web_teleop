@@ -52,18 +52,72 @@ export const ProgramSaveLoad: React.FC<ProgramSaveLoadProps> = ({
             console.error("Error loading saved program names:", error);
         }
     }, [storageHandler]);
+    
+    // Listen for trigger save program event
+    useEffect(() => {
+        const handleTriggerSave = () => {
+            setShowSaveModal(true);
+        };
+        
+        window.addEventListener('triggerSaveProgram', handleTriggerSave);
+        
+        return () => {
+            window.removeEventListener('triggerSaveProgram', handleTriggerSave);
+        };
+    }, []);
+    
+    // Listen for saved positions updates to refresh the list
+    useEffect(() => {
+        const handleSavedPositionsUpdated = () => {
+            // Refresh the saved program names when positions are updated
+            try {
+                const names = storageHandler.getSavedProgramNames();
+                setSavedProgramNames(names);
+            } catch (error) {
+                console.error("Error refreshing saved program names:", error);
+            }
+        };
+        
+        window.addEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        
+        return () => {
+            window.removeEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        };
+    }, [storageHandler]);
 
     // Handle saving a new program
     const handleSaveProgram = () => {
         if (!newProgramName.trim()) return;
 
         try {
-            const currentSavedPositions = getCurrentSavedPositions();
+            // Get saved positions from session storage
+            let currentSavedPositions: Array<{
+                name: string;
+                jointStates: string;
+                timestamp: Date;
+            }> = [];
+            
+            const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+            if (sessionPositions) {
+                try {
+                    const parsed = JSON.parse(sessionPositions);
+                    currentSavedPositions = parsed.map((pos: any) => ({
+                        ...pos,
+                        timestamp: new Date(pos.timestamp)
+                    }));
+                    console.log("Got saved positions from session storage:", currentSavedPositions);
+                } catch (error) {
+                    console.error("Error parsing saved positions from session storage:", error);
+                }
+            }
+            
+            console.log("Saving program with saved positions:", currentSavedPositions);
             
             // Extract saved position names used in the code
             const usedPositions = currentSavedPositions.filter(pos => 
                 code.includes(pos.name)
             ).map(pos => pos.name);
+            console.log("Used positions in code:", usedPositions);
 
             const program: SavedProgram = {
                 code: code,
@@ -72,6 +126,7 @@ export const ProgramSaveLoad: React.FC<ProgramSaveLoadProps> = ({
                 timestamp: new Date(),
                 description: programDescription.trim() || undefined
             };
+            console.log("Saving program:", program);
 
             storageHandler.saveProgram(newProgramName.trim(), program);
             
@@ -120,30 +175,6 @@ export const ProgramSaveLoad: React.FC<ProgramSaveLoadProps> = ({
             alignItems: "center",
             gap: isSmallScreen ? "8px" : "12px"
         }}>
-            {/* Save Program Button */}
-            <button
-                className="save-program-button"
-                onClick={() => setShowSaveModal(true)}
-                style={{
-                    background: "#28a745",
-                    color: "white",
-                    border: "none",
-                    borderRadius: 4,
-                    padding: isSmallScreen ? "6px 12px" : "8px 16px",
-                    fontSize: isSmallScreen ? "12px" : "14px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    transition: "background-color 0.2s ease"
-                }}
-                title="Save current program and saved positions"
-            >
-                <SaveIcon style={{ fontSize: isSmallScreen ? "14px" : "16px" }} />
-                Save Program
-            </button>
-
             {/* Load Program Dropdown */}
             {savedProgramNames.length > 0 && (
                 <div className="load-program-container" style={{ position: "relative" }}>

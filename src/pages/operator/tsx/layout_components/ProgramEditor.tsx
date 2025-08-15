@@ -690,6 +690,11 @@ const highlightContent = (text: string): string => {
                     console.error("Error parsing saved position:", pos.name, error);
                 }
             });
+            
+            // Trigger a custom event to notify Library component about the update
+            window.dispatchEvent(new CustomEvent('savedPositionsUpdated', {
+                detail: { positions: program.savedPositionData }
+            }));
         }
     };
 
