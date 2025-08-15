@@ -1046,7 +1046,7 @@ export const Operator = (props: {
                                     </span>
                                 </div>
                             )}
-                            {props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
+                            {!props.studyMode.isPracticeRound && props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                     <span style={{ marginRight: "6px" }}>Task:</span>
                                     <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
