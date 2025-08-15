@@ -148,7 +148,7 @@ const parseProgram = (code: string): Program => {
                 programLines.push({
                     lineNumber,
                     content: line,
-                    command: "ResetRobot",
+                    command: "Reset_Robot",
                     parameters: null,
                     isExecutable: true
                 });

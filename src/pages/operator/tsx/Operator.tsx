@@ -75,7 +75,7 @@ export const Operator = (props: {
     const [executionError, setExecutionError] = React.useState<{ type: 'syntax' | 'invalid_input' | 'unknown_pose'; message: string } | null>(null);
     const [errorLineNumber, setErrorLineNumber] = React.useState<number | null>(null);
     const [isTakeControlActive, setIsTakeControlActive] = React.useState<boolean>(false);
-    
+
     // Program mode state
     const [showPopup, setShowPopup] = React.useState<boolean>(false);
     const [programMode, setProgramMode] = React.useState<string>("Demonstrate");
@@ -359,7 +359,7 @@ export const Operator = (props: {
                 if (mode === "Demonstrate") {
                     initialLayouts[mode] = props.storageHandler.loadDefaultLayout("Basic Layout" as any);
                 } else if (mode === "Program Editor") {
-                    initialLayouts[mode] = props.storageHandler.loadDefaultLayout("Program Editor Layout" as any);
+                        initialLayouts[mode] = props.storageHandler.loadDefaultLayout("Program Editor Layout" as any);
                 } else if (mode === "Execution Monitor") {
                     initialLayouts[mode] = props.storageHandler.loadDefaultLayout("Execution Monitor Layout" as any);
                 }
@@ -791,7 +791,7 @@ export const Operator = (props: {
                 }}>
                     {/* Left side controls */}
                     <div style={{ display: "flex", alignItems: "center", flex: "0 0 auto", gap: window.innerWidth < 1200 ? 8 : 16 }}>
-                        {/* Program mode dropdown */}
+                {/* Program mode dropdown */}
                         <div style={{ 
                             display: "flex", 
                             alignItems: "center",
@@ -809,17 +809,17 @@ export const Operator = (props: {
                                 `}
                             </style>
                             <div className="header-dropdown">
-                                <Dropdown
-                                    onChange={(idx) => {
-                                        const newMode = programModes[idx];
-                                        setProgramMode(newMode);
-                                        switchToModeLayout(newMode);
-                                    }}
-                                    selectedIndex={programModes.indexOf(programMode)}
-                                    possibleOptions={programModes}
-                                    showActive
-                                    placement="bottom"
-                                />
+                <Dropdown
+                    onChange={(idx) => {
+                        const newMode = programModes[idx];
+                        setProgramMode(newMode);
+                        switchToModeLayout(newMode);
+                    }}
+                    selectedIndex={programModes.indexOf(programMode)}
+                    possibleOptions={programModes}
+                    showActive
+                    placement="bottom"
+                />
                             </div>
                         </div>
                         
@@ -982,16 +982,16 @@ export const Operator = (props: {
                                 height: window.innerWidth < 1200 ? "32px" : "40px" 
                             }}>
                                 <div className="header-dropdown">
-                                    <Dropdown
-                                        onChange={(idx) => setActionMode(actionModes[idx])}
-                                        selectedIndex={actionModes.indexOf(
-                                            layout.current.actionMode
-                                        )}
-                                        possibleOptions={actionModes}
-                                        showActive
-                                        placement="bottom"
-                                    />
-                                </div>
+                    <Dropdown
+                        onChange={(idx) => setActionMode(actionModes[idx])}
+                        selectedIndex={actionModes.indexOf(
+                            layout.current.actionMode
+                        )}
+                        possibleOptions={actionModes}
+                        showActive
+                        placement="bottom"
+                    />
+                </div>
                             </div>
                         )}
                     </div>
@@ -1006,14 +1006,14 @@ export const Operator = (props: {
                             gap: "2px",
                             marginRight: "20px"
                         }}>
-                            <AudioControl remoteStreams={remoteStreams} />
-                            <SpeedControl
-                                scale={velocityScale}
-                                onChange={(newScale: number) => {
-                                    setVelocityScale(newScale);
-                                    FunctionProvider.velocityScale = newScale;
-                                }}
-                            />
+                <AudioControl remoteStreams={remoteStreams} />
+                <SpeedControl
+                    scale={velocityScale}
+                    onChange={(newScale: number) => {
+                        setVelocityScale(newScale);
+                        FunctionProvider.velocityScale = newScale;
+                    }}
+                />
                         </div>
                     )}
                     
@@ -1024,10 +1024,10 @@ export const Operator = (props: {
                         flex: "0 0 auto",
                         gap: "8px"
                     }}>
-                        <CustomizeButton
-                            customizing={customizing}
-                            onClick={handleToggleCustomize}
-                        />
+                <CustomizeButton
+                    customizing={customizing}
+                    onClick={handleToggleCustomize}
+                />
                         {/* Home Robot Button */}
                         <button
                             onClick={async () => {
