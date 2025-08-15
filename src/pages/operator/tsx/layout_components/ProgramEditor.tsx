@@ -232,6 +232,42 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         return sessionCode || props.initialCode || "";
     };
 
+    // Function to clear session storage and reset to defaults
+    const clearSessionAndResetToDefaults = () => {
+        // Clear program editor code
+        sessionStorage.removeItem('programEditorCode');
+        
+        // Clear saved positions and reset to defaults
+        const defaultPositions = [
+            { 
+                name: "stow_gripper", 
+                jointStates: "[0.0, -0.497, 3.19579]", 
+                pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: -0.497, joint_wrist_yaw: 3.19579 },
+                timestamp: new Date() 
+            },
+            { 
+                name: "center_wrist", 
+                jointStates: "[0.0, 0.0, 0.0]", 
+                pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: 0.0, joint_wrist_yaw: 0.0 },
+                timestamp: new Date() 
+            },
+        ];
+        sessionStorage.setItem('librarySavedPositions', JSON.stringify(defaultPositions));
+        
+        // Reset state
+        setCode("");
+        setSavedPositions(DEFAULT_SAVED_POSITIONS);
+        setCustomPoses({
+            stow_gripper: { joint_wrist_roll: 0.0, joint_wrist_pitch: -0.497, joint_wrist_yaw: 3.19579 },
+            center_wrist: { joint_wrist_roll: 0.0, joint_wrist_pitch: 0.0, joint_wrist_yaw: 0.0 }
+        });
+        
+        // Trigger event to update Library component
+        window.dispatchEvent(new CustomEvent('savedPositionsUpdated', {
+            detail: { positions: defaultPositions }
+        }));
+    };
+
     // Load custom poses from session storage (from Library component)
     const getInitialCustomPoses = (): {[key: string]: RobotPose} => {
         const sessionPositions = sessionStorage.getItem('librarySavedPositions');
@@ -291,6 +327,57 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     React.useEffect(() => {
         (window as any).stopExecutionRef = stopExecutionRef;
     }, []);
+    
+    // Auto-clear session storage and reset to defaults only on fresh browser session
+    React.useEffect(() => {
+        // Check if this is a fresh browser session (not a page reload)
+        const sessionStartTime = sessionStorage.getItem('sessionStartTime');
+        const currentTime = Date.now();
+        
+        if (!sessionStartTime) {
+            // This is a fresh browser session (user closed browser and restarted)
+            console.log("Fresh browser session detected - clearing session storage and resetting to defaults");
+            
+            // Set session start time
+            sessionStorage.setItem('sessionStartTime', currentTime.toString());
+            
+            // Clear program editor code
+            sessionStorage.removeItem('programEditorCode');
+            
+            // Clear saved positions and reset to defaults
+            const defaultPositions = [
+                { 
+                    name: "stow_gripper", 
+                    jointStates: "[0.0, -0.497, 3.19579]", 
+                    pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: -0.497, joint_wrist_yaw: 3.19579 },
+                    timestamp: new Date() 
+                },
+                { 
+                    name: "center_wrist", 
+                    jointStates: "[0.0, 0.0, 0.0]", 
+                    pose: { joint_wrist_roll: 0.0, joint_wrist_pitch: 0.0, joint_wrist_yaw: 0.0 },
+                    timestamp: new Date() 
+                },
+            ];
+            sessionStorage.setItem('librarySavedPositions', JSON.stringify(defaultPositions));
+            
+            // Reset state
+            setCode("");
+            setSavedPositions(DEFAULT_SAVED_POSITIONS);
+            setCustomPoses({
+                stow_gripper: { joint_wrist_roll: 0.0, joint_wrist_pitch: -0.497, joint_wrist_yaw: 3.19579 },
+                center_wrist: { joint_wrist_roll: 0.0, joint_wrist_pitch: 0.0, joint_wrist_yaw: 0.0 }
+            });
+            
+            // Trigger event to update Library component
+            window.dispatchEvent(new CustomEvent('savedPositionsUpdated', {
+                detail: { positions: defaultPositions }
+            }));
+        } else {
+            // This is a page reload within the same browser session
+            console.log("Existing browser session detected - keeping session storage");
+        }
+    }, []); // Empty dependency array means this runs once on mount
     
     // Listen for updates from Library component
     React.useEffect(() => {

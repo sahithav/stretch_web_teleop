@@ -877,7 +877,7 @@ export const Operator = (props: {
                                             display: "flex",
                                             alignItems: "center",
                                             height: "40px",
-                                            minWidth: "120px"
+                                            minWidth: "180px"
                                         }}
                                         title="Load a saved program"
                                     >
@@ -915,15 +915,16 @@ export const Operator = (props: {
                                                         console.error("Error loading program:", error);
                                                     }
                                                 }}
-                                                style={{
-                                                    padding: "10px 16px",
-                                                    cursor: "pointer",
-                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none",
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                    fontSize: "14px"
-                                                }}
+                                                                                        style={{
+                                            padding: "10px 16px",
+                                            cursor: "pointer",
+                                            borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none",
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            fontSize: "14px",
+                                            minHeight: "40px"
+                                        }}
                                                 onMouseEnter={(e) => {
                                                     e.currentTarget.style.backgroundColor = "#f8f9fa";
                                                 }}
@@ -931,7 +932,14 @@ export const Operator = (props: {
                                                     e.currentTarget.style.backgroundColor = "white";
                                                 }}
                                             >
-                                                <span style={{ flex: 1 }}>{programName}</span>
+                                                <span style={{ 
+                                                    flex: 1, 
+                                                    wordWrap: "break-word", 
+                                                    wordBreak: "break-word",
+                                                    overflowWrap: "break-word",
+                                                    whiteSpace: "normal",
+                                                    marginRight: "8px"
+                                                }}>{programName}</span>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
