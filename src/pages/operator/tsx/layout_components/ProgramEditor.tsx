@@ -157,7 +157,7 @@ const parseProgram = (code: string): Program => {
                 programLines.push({
                     lineNumber,
                     content: line,
-                    command: "AdjustGripperWidth",
+                    command: "Adjust_Gripper_Width",
                     parameters: parameter,
                     isExecutable: true
                 });
@@ -185,7 +185,7 @@ const parseProgram = (code: string): Program => {
                 programLines.push({
                     lineNumber,
                     content: line,
-                    command: "TakeControl",
+                    command: "Take_Control",
                     parameters: null,
                     isExecutable: true
                 });
@@ -194,7 +194,7 @@ const parseProgram = (code: string): Program => {
                 programLines.push({
                     lineNumber,
                     content: line,
-                    command: "PauseAndConfirm",
+                    command: "Pause_And_Confirm",
                     parameters: parameter,
                     isExecutable: true
                 });
@@ -232,13 +232,17 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         return sessionCode || props.initialCode || "";
     };
 
-    // Load custom poses from session storage
+    // Load custom poses from session storage (from Library component)
     const getInitialCustomPoses = (): {[key: string]: RobotPose} => {
-        const sessionPoses = sessionStorage.getItem('programEditorCustomPoses');
-        if (sessionPoses) {
+        const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        if (sessionPositions) {
             try {
-                const parsed = JSON.parse(sessionPoses);
-                return parsed;
+                const parsed = JSON.parse(sessionPositions);
+                const customPoses: {[key: string]: RobotPose} = {};
+                parsed.forEach((pos: any) => {
+                    customPoses[pos.name] = pos.pose;
+                });
+                return customPoses;
             } catch (error) {
                 console.error("Error parsing custom poses:", error);
             }
@@ -246,12 +250,13 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
         return {};
     };
     
-    // Load saved positions from session storage
+    // Load saved positions from session storage (from Library component)
     const getInitialSavedPositions = (): string[] => {
-        const sessionPositions = sessionStorage.getItem('programEditorSavedPositions');
+        const sessionPositions = sessionStorage.getItem('librarySavedPositions');
         if (sessionPositions) {
             try {
-                return JSON.parse(sessionPositions);
+                const parsed = JSON.parse(sessionPositions);
+                return parsed.map((pos: any) => pos.name);
             } catch (error) {
                 console.error("Error parsing saved positions:", error);
             }
@@ -277,6 +282,32 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     // Make stopExecutionRef accessible globally 
     React.useEffect(() => {
         (window as any).stopExecutionRef = stopExecutionRef;
+    }, []);
+    
+    // Listen for updates from Library component
+    React.useEffect(() => {
+        const handleSavedPositionsUpdated = () => {
+            const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+            if (sessionPositions) {
+                try {
+                    const parsed = JSON.parse(sessionPositions);
+                    const newSavedPositions = parsed.map((pos: any) => pos.name);
+                    const newCustomPoses: {[key: string]: RobotPose} = {};
+                    parsed.forEach((pos: any) => {
+                        newCustomPoses[pos.name] = pos.pose;
+                    });
+                    setSavedPositions(newSavedPositions);
+                    setCustomPoses(newCustomPoses);
+                } catch (error) {
+                    console.error("Error parsing saved positions update:", error);
+                }
+            }
+        };
+        
+        window.addEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        return () => {
+            window.removeEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        };
     }, []);
     
     // Combine default and custom poses
