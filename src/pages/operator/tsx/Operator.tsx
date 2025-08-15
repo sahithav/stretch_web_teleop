@@ -153,7 +153,8 @@ export const Operator = (props: {
     };
 
     const trackSavedPositionAdded = () => {
-        if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
+        if (programMode === "Program Editor" && currentProgramSession.session_start) {
+            console.log('Practice/Study: Tracking saved position added');
             setCurrentProgramSession(prev => ({
                 ...prev,
                 saved_positions_added: prev.saved_positions_added + 1
@@ -163,7 +164,8 @@ export const Operator = (props: {
     
     // Function to track execution attempt start
     const trackExecutionAttemptStart = (savedPositionData?: any) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+            console.log('Practice/Study: Tracking execution attempt start');
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
@@ -187,7 +189,7 @@ export const Operator = (props: {
             const taskOrder = props.studyMode?.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -230,13 +232,14 @@ export const Operator = (props: {
             return;
         }
 
-        if (props.studyMode && !props.studyMode.isPracticeRound && currentExecutionAttempt.execution_start) {
+        if (props.studyMode && currentExecutionAttempt.execution_start) {
+            console.log('Practice/Study: Tracking execution attempt end');
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -271,13 +274,14 @@ export const Operator = (props: {
     // Function to track demonstration recording start
     const trackDemonstrationRecordingStart = () => {
 
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+            console.log('Practice/Study: Tracking demonstration recording start');
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -309,13 +313,14 @@ export const Operator = (props: {
     // Function to track demonstration recording end
     const trackDemonstrationRecordingEnd = (rosbagName: string) => {
 
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+            console.log('Practice/Study: Tracking demonstration recording end');
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -334,9 +339,9 @@ export const Operator = (props: {
         }
     };
     
-    // Show task description modal when study starts (Task 1) - but not during practice round
+    // Show task description modal when study starts (Task 1) - including practice round
     React.useEffect(() => {
-        if (props.studyMode && props.studyMode.currentTask === 1 && !props.studyMode.isPracticeRound) {
+        if (props.studyMode && props.studyMode.currentTask === 1) {
             setShowTaskDescription(true);
         }
     }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound]);
@@ -921,12 +926,13 @@ export const Operator = (props: {
             });
             
             // Initialize task data if not exists
-            if (studyData && taskOrder && !studyData.tasks[taskOrder[currentTask - 1]]) {
+            const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
+            if (studyData && taskOrder && !studyData.tasks[taskLetter]) {
                 setStudyData(prev => ({
                     ...prev,
                     tasks: {
                         ...prev.tasks,
-                        [taskOrder[currentTask - 1]]: {
+                        [taskLetter]: {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -1040,7 +1046,7 @@ export const Operator = (props: {
                                     </span>
                                 </div>
                             )}
-                            {!props.studyMode.isPracticeRound && props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
+                            {props.studyMode.taskOrder && props.studyMode.taskDefinitions && (
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                     <span style={{ marginRight: "6px" }}>Task:</span>
                                     <span style={{ fontWeight: "bold", color: "#0d4a5c" }}>
