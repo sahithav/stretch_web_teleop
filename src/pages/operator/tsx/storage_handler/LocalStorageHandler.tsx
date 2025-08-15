@@ -1,4 +1,4 @@
-import { StorageHandler } from "./StorageHandler";
+import { StorageHandler, SavedProgram } from "./StorageHandler";
 import { LayoutDefinition } from "../utils/component_definitions";
 import { ArucoMarkersInfo, RobotPose } from "shared/util";
 import ROSLIB from "roslib";
@@ -12,6 +12,7 @@ export class LocalStorageHandler extends StorageHandler {
     public static MAP_POSE_TYPES_KEY = "user_map_pose_types";
     public static POSE_RECORDING_NAMES_KEY = "user_pose_recording_names";
     public static TEXT_TO_SPEECH_KEY = "text_to_speech";
+    public static SAVED_PROGRAM_NAMES_KEY = "user_saved_program_names";
 
     constructor(onStorageHandlerReadyCallback: () => void) {
         super(onStorageHandlerReadyCallback);
@@ -206,6 +207,54 @@ export class LocalStorageHandler extends StorageHandler {
         localStorage.setItem(
             LocalStorageHandler.TEXT_TO_SPEECH_KEY,
             JSON.stringify(texts),
+        );
+    }
+
+    public getSavedProgramNames(): string[] {
+        const storedJson = localStorage.getItem(
+            LocalStorageHandler.SAVED_PROGRAM_NAMES_KEY,
+        );
+        if (!storedJson) return [];
+        return JSON.parse(storedJson);
+    }
+
+    public getSavedProgram(programName: string): SavedProgram {
+        const storedJson = localStorage.getItem("program_" + programName);
+        if (!storedJson)
+            throw Error(`Could not load program ${programName}`);
+        const program = JSON.parse(storedJson);
+        // Convert timestamp back to Date object
+        program.timestamp = new Date(program.timestamp);
+        program.savedPositionData = program.savedPositionData.map((pos: any) => ({
+            ...pos,
+            timestamp: new Date(pos.timestamp)
+        }));
+        return program;
+    }
+
+    public saveProgram(programName: string, program: SavedProgram): void {
+        const programNames = this.getSavedProgramNames();
+        if (!programNames.includes(programName))
+            programNames.push(programName);
+        localStorage.setItem(
+            LocalStorageHandler.SAVED_PROGRAM_NAMES_KEY,
+            JSON.stringify(programNames),
+        );
+        localStorage.setItem(
+            "program_" + programName,
+            JSON.stringify(program),
+        );
+    }
+
+    public deleteProgram(programName: string): void {
+        const programNames = this.getSavedProgramNames();
+        if (!programNames.includes(programName)) return;
+        localStorage.removeItem("program_" + programName);
+        const index = programNames.indexOf(programName);
+        programNames.splice(index, 1);
+        localStorage.setItem(
+            LocalStorageHandler.SAVED_PROGRAM_NAMES_KEY,
+            JSON.stringify(programNames),
         );
     }
 }

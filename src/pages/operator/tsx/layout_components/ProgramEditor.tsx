@@ -5,6 +5,8 @@ import {
     isSelected,
 } from "./CustomizableComponent";
 import { className, RobotPose } from "shared/util";
+import { SavedProgram } from "../storage_handler/StorageHandler";
+import { ProgramSaveLoad } from "./ProgramSaveLoad";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -595,6 +597,9 @@ const highlightContent = (text: string): string => {
             // Save to session storage
             sessionStorage.setItem('programEditorCode', newText);
             
+            // Dispatch event to notify main header
+            window.dispatchEvent(new CustomEvent('programCodeChanged'));
+            
             // Set cursor position after the inserted text
             const newCursorPos = cursorPos + text.length;
             setTimeout(() => {
@@ -642,6 +647,69 @@ const highlightContent = (text: string): string => {
         });
     };
 
+    // Function to load a saved program
+    const handleProgramLoad = (program: SavedProgram) => {
+        console.log("Loading program:", program);
+        
+        // Load the program code
+        setCode(program.code);
+        sessionStorage.setItem('programEditorCode', program.code);
+        
+        // Dispatch event to notify main header
+        window.dispatchEvent(new CustomEvent('programCodeChanged'));
+        
+        // Load the saved positions
+        if (program.savedPositionData && program.savedPositionData.length > 0) {
+            // Update saved positions in session storage
+            sessionStorage.setItem('librarySavedPositions', JSON.stringify(program.savedPositionData));
+            
+            // Update the saved positions state
+            setSavedPositions(program.savedPositionData.map(pos => pos.name));
+            
+            // Add custom poses for the saved positions
+            program.savedPositionData.forEach(pos => {
+                try {
+                    // Parse joint states to create RobotPose
+                    const cleanString = pos.jointStates.replace(/[\[\]]/g, '');
+                    const values = cleanString.split(',').map(v => parseFloat(v.trim()));
+                    const pose: RobotPose = {};
+                    
+                    // Map joint values to pose (simplified mapping)
+                    if (values.length >= 14) {
+                        pose.joint_lift = values[2];
+                        pose.wrist_extension = values[3];
+                        pose.joint_head_pan = values[8];
+                        pose.joint_head_tilt = values[9];
+                        pose.joint_wrist_pitch = values[10];
+                        pose.joint_wrist_roll = values[11];
+                        pose.joint_gripper_finger_left = values[13];
+                    }
+                    
+                    addCustomPose(pos.name, pose);
+                } catch (error) {
+                    console.error("Error parsing saved position:", pos.name, error);
+                }
+            });
+        }
+    };
+
+    // Function to get current saved positions from Library component
+    const getCurrentSavedPositions = () => {
+        const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        if (sessionPositions) {
+            try {
+                const parsed = JSON.parse(sessionPositions);
+                return parsed.map((pos: any) => ({
+                    ...pos,
+                    timestamp: new Date(pos.timestamp)
+                }));
+            } catch (error) {
+                console.error("Error parsing saved positions:", error);
+            }
+        }
+        return [];
+    };
+
     // Expose the functions to sharedState
     React.useEffect(() => {
         if ((props.sharedState as any).insertTextAtCursor === undefined) {
@@ -655,6 +723,20 @@ const highlightContent = (text: string): string => {
             (props.sharedState as any).addCustomPose = addCustomPose;
         }
     }, [props.sharedState]);
+    
+    // Listen for program load events from main header
+    React.useEffect(() => {
+        const handleProgramLoaded = (event: CustomEvent) => {
+            const program = event.detail.program;
+            handleProgramLoad(program);
+        };
+        
+        window.addEventListener('programLoaded', handleProgramLoaded as EventListener);
+        
+        return () => {
+            window.removeEventListener('programLoaded', handleProgramLoaded as EventListener);
+        };
+    }, []);
 
     // Update line numbers when code changes
     useEffect(() => {
@@ -767,6 +849,9 @@ const highlightContent = (text: string): string => {
             // Save to session storage for persistence across mode switches
             sessionStorage.setItem('programEditorCode', newCode);
             
+            // Dispatch event to notify main header
+            window.dispatchEvent(new CustomEvent('programCodeChanged'));
+            
             // Update suggestion based on current word
             const { word } = getCurrentWord();
             updateSuggestion(word);
@@ -789,8 +874,11 @@ const highlightContent = (text: string): string => {
                 const newCode = code.substring(0, start) + '    ' + code.substring(end);
                 setCode(newCode);
                 
-                // Save to session storage
-                sessionStorage.setItem('programEditorCode', newCode);
+                            // Save to session storage
+            sessionStorage.setItem('programEditorCode', newCode);
+            
+            // Dispatch event to notify main header
+            window.dispatchEvent(new CustomEvent('programCodeChanged'));
                 
                 // Set cursor position after the inserted tab
                 setTimeout(() => {
@@ -1010,10 +1098,15 @@ const highlightContent = (text: string): string => {
                     )}
                 </div>
                 <div className="program-editor-header-right" style={{
-                    fontSize: window.innerWidth < 1200 ? "12px" : "14px"
+                    fontSize: window.innerWidth < 1200 ? "12px" : "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px"
                 }}>
                     {!props.readOnly && (
                         <>
+
+                            
                             <button 
                                 style={{
                                     background: "#ff8c00",
@@ -1027,8 +1120,7 @@ const highlightContent = (text: string): string => {
                                     transition: "background-color 0.2s ease",
                                     letterSpacing: "0.5px",
                                     display: "flex",
-                                    alignItems: "center",
-                                    marginRight: "8px"
+                                    alignItems: "center"
                                 }}
                                 onClick={async () => {
                                     if ((window as any).remoteRobot) {
@@ -1049,23 +1141,23 @@ const highlightContent = (text: string): string => {
                                 className="run-program-button"
                                 onClick={handleRunProgram}
                                 type="button"
-                                                            style={{
-                                backgroundColor: isExecutingProgram ? "#dc3545" : undefined,
-                                fontSize: window.innerWidth < 1200 ? "12px" : "14px",
-                                padding: window.innerWidth < 1200 ? "6px 12px" : "8px 16px"
-                            }}
-                        >
-                            {isExecutingProgram ? (
-                                    <>
-                                        <CloseIcon style={{ marginRight: "4px" }} />
-                                        Stop
-                                    </>
-                                ) : (
-                                    <>
-                                        <PlayArrowIcon style={{ marginRight: "4px" }} />
-                                        Run
-                                    </>
-                                )}
+                                style={{
+                                    backgroundColor: isExecutingProgram ? "#dc3545" : undefined,
+                                    fontSize: window.innerWidth < 1200 ? "12px" : "14px",
+                                    padding: window.innerWidth < 1200 ? "6px 12px" : "8px 16px"
+                                }}
+                            >
+                                {isExecutingProgram ? (
+                                        <>
+                                            <CloseIcon style={{ marginRight: "4px" }} />
+                                            Stop
+                                        </>
+                                    ) : (
+                                        <>
+                                            <PlayArrowIcon style={{ marginRight: "4px" }} />
+                                            Run
+                                        </>
+                                    )}
                             </button>
                         </>
                     )}

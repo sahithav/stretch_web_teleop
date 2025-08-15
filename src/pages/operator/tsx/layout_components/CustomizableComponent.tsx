@@ -69,6 +69,8 @@ export type SharedState = {
     insertTextAtCursor?: (text: string) => void;
     /** Function to add new saved position to autocomplete and syntax highlighting */
     addSavedPosition?: (positionName: string) => void;
+    /** Storage handler for saving/loading programs */
+    storageHandler?: any;
 
 };
 

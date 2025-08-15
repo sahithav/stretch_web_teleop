@@ -6,6 +6,24 @@ import { LayoutDefinition } from "operator/tsx/utils/component_definitions";
 import { RobotPose } from "shared/util";
 import { ARUCO_MARKER_INFO } from "../utils/aruco_markers_dict";
 
+/** Interface for a saved program with its associated saved positions */
+export interface SavedProgram {
+    /** The program code content */
+    code: string;
+    /** Array of saved position names that are used in this program */
+    savedPositions: string[];
+    /** Array of saved position data (name and joint states) */
+    savedPositionData: Array<{
+        name: string;
+        jointStates: string;
+        timestamp: Date;
+    }>;
+    /** Timestamp when the program was saved */
+    timestamp: Date;
+    /** Description of the program (optional) */
+    description?: string;
+}
+
 /** Type for all the possible names of default layouts. */
 export type DefaultLayoutName = "Basic Layout" | "Program Editor Layout" | "Execution Monitor Layout";
 
@@ -156,6 +174,35 @@ export abstract class StorageHandler {
      * @param text the text to delete
      */
     public abstract deleteText(text: string): void;
+
+    /**
+     * Gets the list of all saved programs
+     * @returns list of program names
+     */
+    public abstract getSavedProgramNames(): string[];
+
+    /**
+     * Gets the program associated with the given name
+     * @param programName the name of the program
+     * @returns a program associated with the given name
+     */
+    public abstract getSavedProgram(programName: string): SavedProgram;
+
+    /**
+     * Save the program and its associated saved positions
+     * @param programName the name of the program
+     * @param program the program to save
+     */
+    public abstract saveProgram(
+        programName: string,
+        program: SavedProgram,
+    ): void;
+
+    /**
+     * Removes the program from storage
+     * @param programName the name of the program
+     */
+    public abstract deleteProgram(programName: string): void;
 
     /**
      * Gets the last saved state from the user's layout, or gets the default

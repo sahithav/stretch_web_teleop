@@ -170,6 +170,11 @@ export const Library = (props: CustomizableComponentProps) => {
                     (props.sharedState as any).addCustomPose(newPositionName.trim(), pose);
                 }
                 
+                // Trigger a custom event to notify other components about the update
+                window.dispatchEvent(new CustomEvent('savedPositionsUpdated', {
+                    detail: { positions: updatedPositions }
+                }));
+                
                 setNewPositionName("");
                 setNewJointStates("");
                 setValidationError("");
@@ -365,6 +370,11 @@ export const Library = (props: CustomizableComponentProps) => {
                         // Reset to empty positions
                         setSavedPositions([]);
                         sessionStorage.removeItem('librarySavedPositions');
+                        
+                        // Trigger a custom event to notify other components about the update
+                        window.dispatchEvent(new CustomEvent('savedPositionsUpdated', {
+                            detail: { positions: [] }
+                        }));
                     }}
                     style={{
                         minWidth: "auto",

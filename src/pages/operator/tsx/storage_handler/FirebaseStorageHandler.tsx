@@ -1,4 +1,4 @@
-import { StorageHandler } from "./StorageHandler";
+import { StorageHandler, SavedProgram } from "./StorageHandler";
 import { LayoutDefinition } from "../utils/component_definitions";
 
 import {
@@ -46,6 +46,7 @@ export class FirebaseStorageHandler extends StorageHandler {
     private markerNames: string[];
     private markerIDs: string[];
     private markerInfo: ArucoMarkersInfo;
+    private savedPrograms: { [name: string]: SavedProgram };
 
     constructor(
         onStorageHandlerReadyCallback: () => void,
@@ -69,6 +70,7 @@ export class FirebaseStorageHandler extends StorageHandler {
         this.markerNames = [];
         this.markerIDs = [];
         this.markerInfo = {} as ArucoMarkersInfo;
+        this.savedPrograms = {};
         onAuthStateChanged(this.auth, (user) =>
             this.handleAuthStateChange(user),
         );
@@ -87,6 +89,7 @@ export class FirebaseStorageHandler extends StorageHandler {
                     this.mapPoseTypes = userData.map_pose_types;
                     this.recordings = userData.recordings;
                     this.textToSpeech = userData.text_to_speech;
+                    this.savedPrograms = userData.saved_programs || {};
 
                     this.onReadyCallback();
                 })
@@ -278,5 +281,36 @@ export class FirebaseStorageHandler extends StorageHandler {
         const index = this.textToSpeech.indexOf(text);
         this.textToSpeech.splice(index, 1);
         this.writeTextToSpeech(this.textToSpeech);
+    }
+
+    public getSavedProgramNames(): string[] {
+        if (!this.savedPrograms) return [];
+        return Object.keys(this.savedPrograms);
+    }
+
+    public getSavedProgram(programName: string): SavedProgram {
+        let program = this.savedPrograms![programName];
+        if (!program) throw Error(`Could not load program ${programName}`);
+        return JSON.parse(JSON.stringify(program));
+    }
+
+    public saveProgram(programName: string, program: SavedProgram): void {
+        this.savedPrograms[programName] = program;
+        this.writeSavedPrograms(this.savedPrograms);
+    }
+
+    public deleteProgram(programName: string): void {
+        let program = this.savedPrograms![programName];
+        if (!program) throw Error(`Could not delete program ${programName}`);
+        delete this.savedPrograms[programName];
+        this.writeSavedPrograms(this.savedPrograms);
+    }
+
+    private async writeSavedPrograms(programs: { [name: string]: SavedProgram }) {
+        this.savedPrograms = programs;
+
+        let updates: any = {};
+        updates["/operators/" + this.uid + "/saved_programs"] = programs;
+        return update(ref(this.database), updates);
     }
 }

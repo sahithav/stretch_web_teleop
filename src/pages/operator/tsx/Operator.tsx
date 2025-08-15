@@ -44,6 +44,8 @@ import "operator/css/HomeRobotButton.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot, HomeTheRobotFunction } from "./layout_components/HomeTheRobot";
 import { RosbagRecorder } from "./layout_components/RosbagRecorder";
+import { ProgramSaveLoad } from "./layout_components/ProgramSaveLoad";
+import { SavedProgram } from "./storage_handler/StorageHandler";
 import HomeIcon from "@mui/icons-material/Home";
 import CheckIcon from "@mui/icons-material/Check";
 
@@ -78,9 +80,47 @@ export const Operator = (props: {
     const [showPopup, setShowPopup] = React.useState<boolean>(false);
     const [programMode, setProgramMode] = React.useState<string>("Demonstrate");
     
+    // Program save/load state
+    const [currentProgramCode, setCurrentProgramCode] = React.useState<string>("");
+    
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
         setCurrentExecutingLine(lineNumber);
+    };
+    
+    // Function to handle program load
+    const handleProgramLoad = (program: SavedProgram) => {
+        console.log("Loading program from main header:", program);
+        
+        // Update the program code in session storage
+        sessionStorage.setItem('programEditorCode', program.code);
+        
+        // Load the saved positions
+        if (program.savedPositionData && program.savedPositionData.length > 0) {
+            sessionStorage.setItem('librarySavedPositions', JSON.stringify(program.savedPositionData));
+        }
+        
+        // Trigger a custom event to notify the ProgramEditor component
+        window.dispatchEvent(new CustomEvent('programLoaded', {
+            detail: { program }
+        }));
+    };
+    
+    // Function to get current saved positions
+    const getCurrentSavedPositions = () => {
+        const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+        if (sessionPositions) {
+            try {
+                const parsed = JSON.parse(sessionPositions);
+                return parsed.map((pos: any) => ({
+                    ...pos,
+                    timestamp: new Date(pos.timestamp)
+                }));
+            } catch (error) {
+                console.error("Error parsing saved positions:", error);
+            }
+        }
+        return [];
     };
     
     // Effect to handle execution message timing for Program Editor mode
@@ -95,6 +135,38 @@ export const Operator = (props: {
             setShowExecutionMessage(false);
         }
     }, [programMode, isExecutingProgram]);
+    
+    // Effect to sync program code from session storage
+    React.useEffect(() => {
+        const updateProgramCode = () => {
+            const sessionCode = sessionStorage.getItem('programEditorCode');
+            if (sessionCode !== null) {
+                setCurrentProgramCode(sessionCode);
+            }
+        };
+        
+        // Update immediately
+        updateProgramCode();
+        
+        // Listen for storage changes
+        const handleStorageChange = () => {
+            updateProgramCode();
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        // Also listen for custom events from ProgramEditor
+        const handleCodeChange = () => {
+            updateProgramCode();
+        };
+        
+        window.addEventListener('programCodeChanged', handleCodeChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('programCodeChanged', handleCodeChange);
+        };
+    }, []);
     
     // Function to handle "Done teleoperating" button click
     const handleDoneTeleoperating = () => {
@@ -464,6 +536,7 @@ export const Operator = (props: {
         setErrorLineNumber: setErrorLineNumber,
         executionError: executionError,
         errorLineNumber: errorLineNumber,
+        storageHandler: props.storageHandler,
     };
     
 
@@ -707,6 +780,16 @@ export const Operator = (props: {
                         flex: "0 0 auto",
                         gap: "8px"
                     }}>
+                        {/* Program Save/Load - only show in Program Editor mode */}
+                        {programMode === "Program Editor" && (
+                            <ProgramSaveLoad
+                                code={currentProgramCode}
+                                storageHandler={props.storageHandler}
+                                onProgramLoad={handleProgramLoad}
+                                getCurrentSavedPositions={getCurrentSavedPositions}
+                            />
+                        )}
+                        
                         <CustomizeButton
                             customizing={customizing}
                             onClick={handleToggleCustomize}
