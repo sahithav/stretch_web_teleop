@@ -699,6 +699,8 @@ export const Operator = (props: {
 
     // Expose switchToModeLayout to window for use by other components
     (window as any).switchToModeLayout = switchToModeLayout;
+    // Expose setProgramMode to window for use by other components
+    (window as any).setProgramMode = setProgramMode;
 
     return (
         <div id="operator">

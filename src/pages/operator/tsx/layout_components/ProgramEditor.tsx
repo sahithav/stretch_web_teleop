@@ -507,9 +507,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                                     message: `Line ${line.lineNumber}: Unknown pose: ${poseName}`
                                 });
                             }
-                            if (props.sharedState.setErrorLineNumber) {
-                                props.sharedState.setErrorLineNumber(line.lineNumber);
-                            }
                             break;
                         }
                     }
@@ -606,12 +603,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                     }
                     else if (line.command === "Take_Control") {
                         console.log(`Taking control from robot`);
-                        
-                        // Start automatic human API rosbag recording
-                        if (props.sharedState && (props.sharedState as any).startHumanApiRecording) {
-                            (props.sharedState as any).startHumanApiRecording();
-                        }
-                        
                         if (buttonFunctionProvider) {
                             buttonFunctionProvider.setExecutionState(false);
                         }
@@ -620,14 +611,6 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             (window as any).resumeProgramExecution = resolve;
                         });
                         console.log(`Resuming program execution`);
-                        
-                        // If this is the last line in the program, don't end the program yet
-                        // The program should stay active until user clicks "Done teleoperating"
-                        if (line.lineNumber === program.lines.length) {
-                            console.log(`Take_Control is the last function - keeping program active`);
-                            // Don't continue to the next iteration, keep the program running
-                            return;
-                        }
                     }
                 } else {
                     console.log(`Skipping line ${line.lineNumber}: ${line.content}`);
@@ -1231,10 +1214,9 @@ const highlightContent = (text: string): string => {
                                     color: "#1e7e34"
                                 }}
                                 onClick={() => {
-                                    // Switch to Execution Monitor mode
-                                    const switchToModeLayout = (window as any).switchToModeLayout;
-                                    if (switchToModeLayout) {
-                                        switchToModeLayout("Execution Monitor");
+                                    // Only switch the program mode, keep the current layout
+                                    if ((window as any).setProgramMode) {
+                                        (window as any).setProgramMode("Execution Monitor");
                                     }
                                 }}
                                 title="Click to switch to Execution Monitor"
