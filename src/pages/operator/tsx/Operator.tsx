@@ -165,12 +165,13 @@ export const Operator = (props: {
     // Function to track execution attempt start
     const trackExecutionAttemptStart = (savedPositionData?: any) => {
         if (props.studyMode) {
-            console.log('Practice/Study: Tracking execution attempt start');
+            const startTime = new Date().toISOString();
+            console.log('Practice/Study: Tracking execution attempt start at:', startTime);
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
                 pause_and_confirm_resets: 0,
-                execution_start: new Date().toISOString()
+                execution_start: startTime
             });
         }
         
@@ -233,7 +234,8 @@ export const Operator = (props: {
         }
 
         if (props.studyMode && currentExecutionAttempt.execution_start) {
-            console.log('Practice/Study: Tracking execution attempt end');
+            const endTime = new Date().toISOString();
+            console.log('Practice/Study: Tracking execution attempt end at:', endTime);
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
@@ -256,10 +258,16 @@ export const Operator = (props: {
                     
                     const executionData = {
                         execution_start: currentExecutionAttempt.execution_start,
-                        execution_end: new Date().toISOString(),
+                        execution_end: endTime,
                         success: success,
                         pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
                     };
+                    
+                    console.log('Execution attempt timing:', {
+                        start: currentExecutionAttempt.execution_start,
+                        end: executionData.execution_end,
+                        duration_ms: new Date(executionData.execution_end).getTime() - new Date(currentExecutionAttempt.execution_start).getTime()
+                    });
                     
                     studyData.tasks[taskLetter].execution_attempts.push(executionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));

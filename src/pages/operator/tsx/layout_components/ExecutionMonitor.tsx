@@ -529,6 +529,11 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             
             console.log("ExecutionMonitor: Program execution complete!");
             
+            // Track successful execution attempt end
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(true);
+            }
+            
             // Set program finished state
             if (props.sharedState.setIsProgramFinished) {
                 props.sharedState.setIsProgramFinished(true);

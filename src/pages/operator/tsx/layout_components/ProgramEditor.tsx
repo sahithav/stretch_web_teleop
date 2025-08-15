@@ -552,6 +552,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             (window as any).resumeProgramExecution = resolve;
                         });
                         console.log(`Resuming program execution`);
+                        
+                        // The program should stay active until user clicks "Done teleoperating"
+                        if (line.lineNumber === program.lines.length) {
+                            console.log(`Take_Control is the last function - keeping program active`);
+                            return;
+                        }
                     }
                 } else {
                     console.log(`Skipping line ${line.lineNumber}: ${line.content}`);
@@ -559,6 +565,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             }
             
             console.log("Program execution complete!");
+            
+            // Track successful execution attempt end
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(true);
+            }
             
             // Set program finished state
             if (props.sharedState.setIsProgramFinished) {
