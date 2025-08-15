@@ -44,7 +44,7 @@ import "operator/css/HomeRobotButton.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot, HomeTheRobotFunction } from "./layout_components/HomeTheRobot";
 import { RosbagRecorder } from "./layout_components/RosbagRecorder";
-import { ProgramSaveLoad } from "./layout_components/ProgramSaveLoad";
+
 import { SavedProgram } from "./storage_handler/StorageHandler";
 import HomeIcon from "@mui/icons-material/Home";
 import CheckIcon from "@mui/icons-material/Check";
@@ -82,6 +82,9 @@ export const Operator = (props: {
     
     // Program save/load state
     const [currentProgramCode, setCurrentProgramCode] = React.useState<string>("");
+    const [showSaveModal, setShowSaveModal] = React.useState(false);
+    const [newProgramName, setNewProgramName] = React.useState("");
+    const [programDescription, setProgramDescription] = React.useState("");
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -125,6 +128,59 @@ export const Operator = (props: {
         }
         console.log("No saved positions found, returning empty array");
         return [];
+    };
+    
+    // Function to handle saving a program
+    const handleSaveProgram = () => {
+        if (!newProgramName.trim()) return;
+
+        try {
+            // Get saved positions from session storage
+            let currentSavedPositions: Array<{
+                name: string;
+                jointStates: string;
+                timestamp: Date;
+            }> = [];
+            
+            const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+            if (sessionPositions) {
+                try {
+                    const parsed = JSON.parse(sessionPositions);
+                    currentSavedPositions = parsed.map((pos: any) => ({
+                        ...pos,
+                        timestamp: new Date(pos.timestamp)
+                    }));
+                    console.log("Got saved positions from session storage:", currentSavedPositions);
+                } catch (error) {
+                    console.error("Error parsing saved positions from session storage:", error);
+                }
+            }
+
+            // Create the saved program object
+            const savedProgram: SavedProgram = {
+                code: currentProgramCode,
+                savedPositions: currentSavedPositions.map(pos => pos.name),
+                savedPositionData: currentSavedPositions,
+                timestamp: new Date(),
+                description: programDescription.trim() || undefined
+            };
+
+            // Save the program
+            props.storageHandler.saveProgram(newProgramName, savedProgram);
+            console.log("Program saved successfully:", newProgramName);
+
+            // Reset modal state
+            setNewProgramName("");
+            setProgramDescription("");
+            setShowSaveModal(false);
+            
+            // Force re-render to update the dropdown
+            setProgramMode(programMode);
+            
+        } catch (error) {
+            console.error("Error saving program:", error);
+            alert("Failed to save program. Please try again.");
+        }
     };
     
     // Effect to handle execution message timing for Program Editor mode
@@ -247,6 +303,24 @@ export const Operator = (props: {
         const interval = setInterval(checkForPauseAndConfirm, 100);
         return () => clearInterval(interval);
     }, [isExecutingProgram, showPopup]);
+    
+    // Effect to handle click outside dropdown
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const dropdown = document.getElementById('load-program-dropdown');
+            const button = event.target as Element;
+            
+            if (dropdown && !dropdown.contains(button) && !button.closest('.header-dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        };
+        
+        document.addEventListener('click', handleClickOutside);
+        
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
     const [buttonCollision, setButtonCollision] = React.useState<
         ButtonPadButton[]
     >([]);
@@ -756,8 +830,7 @@ export const Operator = (props: {
                                 <button
                                     className="save-program-button"
                                     onClick={() => {
-                                        // Trigger save modal from ProgramSaveLoad component
-                                        window.dispatchEvent(new CustomEvent('triggerSaveProgram'));
+                                        setShowSaveModal(true);
                                     }}
                                     style={{
                                         background: "#28a745",
@@ -782,26 +855,120 @@ export const Operator = (props: {
                                     Save
                                 </button>
                                 
-                                {/* Load Program Dropdown */}
-                                <div className="header-dropdown">
-                                    <Dropdown
-                                        onChange={(idx) => {
-                                            const savedProgramNames = props.storageHandler.getSavedProgramNames();
-                                            if (idx < savedProgramNames.length) {
-                                                const programName = savedProgramNames[idx];
-                                                try {
-                                                    const program = props.storageHandler.getSavedProgram(programName);
-                                                    handleProgramLoad(program);
-                                                } catch (error) {
-                                                    console.error("Error loading program:", error);
-                                                }
+                                {/* Load Program Dropdown with Delete Functionality */}
+                                <div className="header-dropdown" style={{ position: "relative" }}>
+                                    <button
+                                        onClick={() => {
+                                            const currentShow = document.getElementById('load-program-dropdown')?.style.display !== 'none';
+                                            const dropdown = document.getElementById('load-program-dropdown');
+                                            if (dropdown) {
+                                                dropdown.style.display = currentShow ? 'none' : 'block';
                                             }
                                         }}
-                                        selectedIndex={-1}
-                                        possibleOptions={["Load Program", ...props.storageHandler.getSavedProgramNames()]}
-                                        showActive
-                                        placement="bottom"
-                                    />
+                                        style={{
+                                            background: "white",
+                                            color: "#333",
+                                            border: "1px solid #ccc",
+                                            borderRadius: 4,
+                                            padding: "8px 16px",
+                                            fontSize: "14px",
+                                            fontWeight: "600",
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "4px",
+                                            height: "40px",
+                                            minWidth: "120px"
+                                        }}
+                                        title="Load a saved program"
+                                    >
+                                        Load Program
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M7 10l5 5 5-5z"/>
+                                        </svg>
+                                    </button>
+                                    
+                                    <div
+                                        id="load-program-dropdown"
+                                        style={{
+                                            position: "absolute",
+                                            top: "100%",
+                                            left: 0,
+                                            right: 0,
+                                            background: "white",
+                                            border: "1px solid #ccc",
+                                            borderRadius: 4,
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                            zIndex: 1000,
+                                            maxHeight: "200px",
+                                            overflowY: "auto",
+                                            marginTop: "4px",
+                                            display: "none"
+                                        }}
+                                    >
+                                        {props.storageHandler.getSavedProgramNames().map((programName, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => {
+                                                    try {
+                                                        const program = props.storageHandler.getSavedProgram(programName);
+                                                        handleProgramLoad(program);
+                                                        const dropdown = document.getElementById('load-program-dropdown');
+                                                        if (dropdown) dropdown.style.display = 'none';
+                                                    } catch (error) {
+                                                        console.error("Error loading program:", error);
+                                                    }
+                                                }}
+                                                style={{
+                                                    padding: "10px 16px",
+                                                    cursor: "pointer",
+                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none",
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center",
+                                                    fontSize: "14px"
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = "white";
+                                                }}
+                                            >
+                                                <span style={{ flex: 1 }}>{programName}</span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm(`Are you sure you want to delete the program "${programName}"?`)) {
+                                                            try {
+                                                                props.storageHandler.deleteProgram(programName);
+                                                                // Force re-render by updating state
+                                                                setProgramMode(programMode);
+                                                            } catch (error) {
+                                                                console.error("Error deleting program:", error);
+                                                                alert("Failed to delete program. Please try again.");
+                                                            }
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        background: "none",
+                                                        border: "none",
+                                                        color: "#dc3545",
+                                                        cursor: "pointer",
+                                                        padding: "2px",
+                                                        borderRadius: "2px",
+                                                        display: "flex",
+                                                        alignItems: "center"
+                                                    }}
+                                                    title="Delete program"
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </>
                         )}
@@ -1035,15 +1202,132 @@ export const Operator = (props: {
                     </div>
                 </div>
             )}
-            {/* Hidden ProgramSaveLoad component for modal functionality */}
-            {programMode === "Program Editor" && (
-                <div style={{ display: "none" }}>
-                    <ProgramSaveLoad
-                        code={currentProgramCode}
-                        storageHandler={props.storageHandler}
-                        onProgramLoad={handleProgramLoad}
-                        getCurrentSavedPositions={getCurrentSavedPositions}
-                    />
+            {/* Save Program Modal */}
+            {showSaveModal && programMode === "Program Editor" && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    background: "rgba(0,0,0,0.5)",
+                    zIndex: 1000,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                    <div style={{
+                        background: "white",
+                        borderRadius: 8,
+                        padding: "32px",
+                        minWidth: "400px",
+                        maxWidth: "500px",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+                    }}>
+                        <h3 style={{
+                            margin: "0 0 20px 0",
+                            fontSize: "20px",
+                            fontWeight: "600"
+                        }}>
+                            Save Program
+                        </h3>
+                        
+                        <div style={{ marginBottom: "16px" }}>
+                            <label style={{
+                                display: "block",
+                                marginBottom: "6px",
+                                fontWeight: "600",
+                                fontSize: "14px"
+                            }}>
+                                Program Name *
+                            </label>
+                            <input
+                                type="text"
+                                value={newProgramName}
+                                onChange={(e) => setNewProgramName(e.target.value)}
+                                placeholder="Enter program name"
+                                style={{
+                                    width: "100%",
+                                    padding: "8px 12px",
+                                    border: "1px solid #ccc",
+                                    borderRadius: 4,
+                                    fontSize: "14px"
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSaveProgram();
+                                    }
+                                }}
+                            />
+                        </div>
+                        
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={{
+                                display: "block",
+                                marginBottom: "6px",
+                                fontWeight: "600",
+                                fontSize: "14px"
+                            }}>
+                                Description (Optional)
+                            </label>
+                            <textarea
+                                value={programDescription}
+                                onChange={(e) => setProgramDescription(e.target.value)}
+                                placeholder="Enter program description"
+                                rows={3}
+                                style={{
+                                    width: "100%",
+                                    padding: "8px 12px",
+                                    border: "1px solid #ccc",
+                                    borderRadius: 4,
+                                    fontSize: "14px",
+                                    resize: "vertical"
+                                }}
+                            />
+                        </div>
+                        
+                        <div style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: "12px"
+                        }}>
+                            <button
+                                onClick={() => {
+                                    setShowSaveModal(false);
+                                    setNewProgramName("");
+                                    setProgramDescription("");
+                                }}
+                                style={{
+                                    background: "#6c757d",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "8px 16px",
+                                    fontSize: "14px",
+                                    fontWeight: "600",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveProgram}
+                                disabled={!newProgramName.trim()}
+                                style={{
+                                    background: newProgramName.trim() ? "#28a745" : "#6c757d",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "8px 16px",
+                                    fontSize: "14px",
+                                    fontWeight: "600",
+                                    cursor: newProgramName.trim() ? "pointer" : "not-allowed"
+                                }}
+                            >
+                                Save Program
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
             
