@@ -856,8 +856,9 @@ export const Operator = (props: {
                                 </button>
                                 
                                 {/* Load Program Dropdown with Delete Functionality */}
-                                <div className="header-dropdown" style={{ position: "relative" }}>
+                                <div className="dropdown" style={{ position: "relative" }}>
                                     <button
+                                        className="dropdown-button"
                                         onClick={() => {
                                             const currentShow = document.getElementById('load-program-dropdown')?.style.display !== 'none';
                                             const dropdown = document.getElementById('load-program-dropdown');
@@ -866,23 +867,23 @@ export const Operator = (props: {
                                             }
                                         }}
                                         style={{
-                                            background: "white",
-                                            color: "#333",
-                                            border: "1px solid #ccc",
-                                            borderRadius: 4,
-                                            padding: "8px 16px",
-                                            fontSize: "14px",
-                                            fontWeight: "600",
-                                            cursor: "pointer",
                                             display: "flex",
                                             alignItems: "center",
-                                            gap: "4px",
-                                            height: "40px",
+                                            justifyContent: "space-between",
+                                            paddingTop: "1rem",
+                                            paddingBottom: "1rem",
+                                            width: "100%",
+                                            position: "relative",
+                                            color: "black",
+                                            background: "white",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
                                             minWidth: "120px"
                                         }}
                                         title="Load a saved program"
                                     >
-                                        Load Program
+                                        <span>Load Program</span>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M7 10l5 5 5-5z"/>
                                         </svg>
@@ -890,25 +891,26 @@ export const Operator = (props: {
                                     
                                     <div
                                         id="load-program-dropdown"
+                                        className="dropdown-popup"
                                         style={{
                                             position: "absolute",
+                                            minWidth: "100%",
+                                            zIndex: 3,
+                                            boxShadow: "var(--shadow)",
+                                            borderRadius: "0 0 4px 4px",
                                             top: "100%",
-                                            left: 0,
-                                            right: 0,
+                                            bottom: "auto",
+                                            overflowY: "auto",
                                             background: "white",
                                             border: "1px solid #ccc",
-                                            borderRadius: 4,
-                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                                            zIndex: 1000,
-                                            maxHeight: "200px",
-                                            overflowY: "auto",
-                                            marginTop: "4px",
+                                            borderTop: "none",
                                             display: "none"
                                         }}
                                     >
                                         {props.storageHandler.getSavedProgramNames().map((programName, index) => (
                                             <div
                                                 key={index}
+                                                className="dropdown-option"
                                                 onClick={() => {
                                                     try {
                                                         const program = props.storageHandler.getSavedProgram(programName);
@@ -920,19 +922,18 @@ export const Operator = (props: {
                                                     }
                                                 }}
                                                 style={{
-                                                    padding: "10px 16px",
+                                                    paddingTop: "1rem",
+                                                    paddingBottom: "1rem",
                                                     cursor: "pointer",
-                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none",
+                                                    width: "100%",
                                                     display: "flex",
                                                     justifyContent: "space-between",
                                                     alignItems: "center",
-                                                    fontSize: "14px"
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.backgroundColor = "white";
+                                                    borderRadius: index === props.storageHandler.getSavedProgramNames().length - 1 ? "0 0 4px 4px" : "0",
+                                                    textAlign: "left",
+                                                    margin: "0",
+                                                    color: "black",
+                                                    borderBottom: index < props.storageHandler.getSavedProgramNames().length - 1 ? "1px solid #eee" : "none"
                                                 }}
                                             >
                                                 <span style={{ flex: 1 }}>{programName}</span>
@@ -942,8 +943,14 @@ export const Operator = (props: {
                                                         if (confirm(`Are you sure you want to delete the program "${programName}"?`)) {
                                                             try {
                                                                 props.storageHandler.deleteProgram(programName);
-                                                                // Force re-render by updating state
+                                                                // Force immediate re-render by updating state
                                                                 setProgramMode(programMode);
+                                                                // Also close dropdown if it's the last item
+                                                                const remainingPrograms = props.storageHandler.getSavedProgramNames();
+                                                                if (remainingPrograms.length === 0) {
+                                                                    const dropdown = document.getElementById('load-program-dropdown');
+                                                                    if (dropdown) dropdown.style.display = 'none';
+                                                                }
                                                             } catch (error) {
                                                                 console.error("Error deleting program:", error);
                                                                 alert("Failed to delete program. Please try again.");
@@ -958,7 +965,8 @@ export const Operator = (props: {
                                                         padding: "2px",
                                                         borderRadius: "2px",
                                                         display: "flex",
-                                                        alignItems: "center"
+                                                        alignItems: "center",
+                                                        filter: "none"
                                                     }}
                                                     title="Delete program"
                                                 >
