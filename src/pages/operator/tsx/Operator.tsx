@@ -85,6 +85,7 @@ export const Operator = (props: {
     const [showSaveModal, setShowSaveModal] = React.useState(false);
     const [newProgramName, setNewProgramName] = React.useState("");
     const [programDescription, setProgramDescription] = React.useState("");
+    const [programListRefresh, setProgramListRefresh] = React.useState<number>(0);
     
     // Function to update current executing line
     const updateCurrentExecutingLine = (lineNumber: number | undefined) => {
@@ -876,6 +877,7 @@ export const Operator = (props: {
                                             cursor: "pointer",
                                             display: "flex",
                                             alignItems: "center",
+                                            justifyContent: "center",
                                             height: "40px",
                                             minWidth: "180px"
                                         }}
@@ -902,7 +904,10 @@ export const Operator = (props: {
                                             display: "none"
                                         }}
                                     >
-                                        {props.storageHandler.getSavedProgramNames().map((programName, index) => (
+                                        {/* Force re-render when programs are deleted */}
+                                        {(() => {
+                                            const programNames = props.storageHandler.getSavedProgramNames();
+                                            return programNames.map((programName, index) => (
                                             <div
                                                 key={index}
                                                 onClick={() => {
@@ -947,7 +952,7 @@ export const Operator = (props: {
                                                             try {
                                                                 props.storageHandler.deleteProgram(programName);
                                                                 // Force immediate re-render by updating state
-                                                                setProgramMode(programMode);
+                                                                setProgramListRefresh(prev => prev + 1);
                                                                 // Also close dropdown if it's the last item
                                                                 const remainingPrograms = props.storageHandler.getSavedProgramNames();
                                                                 if (remainingPrograms.length === 0) {
@@ -978,7 +983,8 @@ export const Operator = (props: {
                                                     </svg>
                                                 </button>
                                             </div>
-                                        ))}
+                                        ));
+                                        })()}
                                     </div>
                                 </div>
                             </>
