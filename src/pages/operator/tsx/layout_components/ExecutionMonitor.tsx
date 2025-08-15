@@ -217,6 +217,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const [code, setCode] = useState<string>("");
     const [lineNumbers, setLineNumbers] = useState<string[]>([]);
     const [savedPositions, setSavedPositions] = useState<string[]>(DEFAULT_SAVED_POSITIONS);
+    const [customPoses, setCustomPoses] = useState<{[key: string]: RobotPose}>({});
     const [showDoneMessage, setShowDoneMessage] = useState(false);
     const prevIsExecutingRef = React.useRef(false);
     const stopExecutionRef = React.useRef<boolean>(false);
@@ -224,6 +225,9 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
     const { customizing, currentExecutingLine, isExecutingProgram, waitingForUserConfirmation, handleDoneTeleoperating, executionError, clearExecutionError, errorLineNumber } = props.sharedState;
     const selected = isSelected(props);
 
+    // Combine default and custom poses
+    const ALL_POSE_DEFINITIONS = { ...POSE_DEFINITIONS, ...customPoses };
+    
     // Create dynamic array that updates when savedPositions changes
     const allFunctions = React.useMemo(() => {
         return [...ROBOT_FUNCTIONS, ...HUMAN_FUNCTIONS, ...savedPositions];
@@ -237,17 +241,49 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         }
     }, []);
 
-    // Load saved positions from session storage
+    // Load saved positions and custom poses from session storage (from Library component)
     useEffect(() => {
-        const sessionPositions = sessionStorage.getItem('programEditorSavedPositions');
+        const sessionPositions = sessionStorage.getItem('librarySavedPositions');
         if (sessionPositions) {
             try {
                 const parsed = JSON.parse(sessionPositions);
-                setSavedPositions(parsed);
+                const positionNames = parsed.map((pos: any) => pos.name);
+                const newCustomPoses: {[key: string]: RobotPose} = {};
+                parsed.forEach((pos: any) => {
+                    newCustomPoses[pos.name] = pos.pose;
+                });
+                setSavedPositions(positionNames);
+                setCustomPoses(newCustomPoses);
             } catch (error) {
                 console.error("Error parsing saved positions:", error);
             }
         }
+    }, []);
+    
+    // Listen for updates from Library component
+    useEffect(() => {
+        const handleSavedPositionsUpdated = () => {
+            const sessionPositions = sessionStorage.getItem('librarySavedPositions');
+            if (sessionPositions) {
+                try {
+                    const parsed = JSON.parse(sessionPositions);
+                    const positionNames = parsed.map((pos: any) => pos.name);
+                    const newCustomPoses: {[key: string]: RobotPose} = {};
+                    parsed.forEach((pos: any) => {
+                        newCustomPoses[pos.name] = pos.pose;
+                    });
+                    setSavedPositions(positionNames);
+                    setCustomPoses(newCustomPoses);
+                } catch (error) {
+                    console.error("Error parsing saved positions update:", error);
+                }
+            }
+        };
+        
+        window.addEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        return () => {
+            window.removeEventListener('savedPositionsUpdated', handleSavedPositionsUpdated);
+        };
     }, []);
 
     // Update line numbers when code changes
@@ -478,7 +514,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     // Executes the command based on what function it is
                     if (line.command === "Move_Arm_to_Config") {
                         const poseName = line.parameters;
-                        const pose = POSE_DEFINITIONS[poseName as keyof typeof POSE_DEFINITIONS];
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
                         
                         if (pose) {
                             // Filter pose to only include joints for MoveEEToPose
@@ -500,7 +536,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                                 console.error("ExecutionMonitor: RemoteRobot not available");
                             }
                         } else {
-                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(POSE_DEFINITIONS).join(', ')}`);
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
                             // Stop execution and display error
                             if (props.sharedState.setExecutionError) {
                                 props.sharedState.setExecutionError({
@@ -513,7 +549,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     }
                     else if (line.command === "Adjust_Gripper_Width") {
                         const poseName = line.parameters;
-                        const pose = POSE_DEFINITIONS[poseName as keyof typeof POSE_DEFINITIONS];
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
                         
                         if (pose) {
                             // Filter pose to only include joints for AdjustGripperWidth
@@ -531,7 +567,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                                 console.error("ExecutionMonitor: RemoteRobot not available");
                             }
                         } else {
-                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(POSE_DEFINITIONS).join(', ')}`);
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
                             // Stop execution and display error
                             if (props.sharedState.setExecutionError) {
                                 props.sharedState.setExecutionError({
@@ -544,7 +580,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     }
                     else if (line.command === "Rotate_Wrist_to_Config") {
                         const poseName = line.parameters;
-                        const pose = POSE_DEFINITIONS[poseName as keyof typeof POSE_DEFINITIONS];
+                        const pose = ALL_POSE_DEFINITIONS[poseName as keyof typeof ALL_POSE_DEFINITIONS];
                         
                         if (pose) {
                             // Filter pose to only include joints for RotateEE
@@ -564,7 +600,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                                 console.error("ExecutionMonitor: RemoteRobot not available");
                             }
                         } else {
-                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(POSE_DEFINITIONS).join(', ')}`);
+                            console.error(`ExecutionMonitor: Unknown pose: ${poseName}. Available poses: ${Object.keys(ALL_POSE_DEFINITIONS).join(', ')}`);
                             // Stop execution and display error
                             if (props.sharedState.setExecutionError) {
                                 props.sharedState.setExecutionError({
