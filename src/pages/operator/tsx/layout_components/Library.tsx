@@ -46,11 +46,8 @@ export const Library = (props: CustomizableComponentProps) => {
         const taskOrder = props.sharedState.studyMode?.taskOrder;
         const isPracticeRound = props.sharedState.studyMode?.isPracticeRound;
         
-        console.log('Library: Current task from sharedState:', currentTask);
-        
         // In practice round, always show human API functions
         if (isPracticeRound) {
-            console.log('Library: Practice round - showing human API functions');
             return false;
         }
         
