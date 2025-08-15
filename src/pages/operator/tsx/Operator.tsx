@@ -339,9 +339,9 @@ export const Operator = (props: {
         }
     };
     
-    // Show task description modal when study starts (Task 1) - including practice round
+    // Show task description modal when study starts (Task 1) - but not during practice round
     React.useEffect(() => {
-        if (props.studyMode && props.studyMode.currentTask === 1) {
+        if (props.studyMode && props.studyMode.currentTask === 1 && !props.studyMode.isPracticeRound) {
             setShowTaskDescription(true);
         }
     }, [props.studyMode?.currentTask, props.studyMode?.isPracticeRound]);
