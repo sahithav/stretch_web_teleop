@@ -303,19 +303,19 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
 
     // Message when program finishes executing
     useEffect(() => {
-        if (prevIsExecutingRef.current && !isExecutingProgram && !executionError) {
+        if (prevIsExecutingRef.current && !isExecutingProgram && !executionError && !waitingForUserConfirmation) {
             setShowDoneMessage(true);
             const timer = setTimeout(() => {
                 setShowDoneMessage(false);
             }, 5000); 
             
             return () => clearTimeout(timer);
-        } else if (isExecutingProgram) {
-            // Program is executing, hide done message
+        } else if (isExecutingProgram || waitingForUserConfirmation) {
+            // Program is executing or paused, hide done message
             setShowDoneMessage(false);
         }
         prevIsExecutingRef.current = isExecutingProgram;
-    }, [isExecutingProgram, executionError]);
+    }, [isExecutingProgram, executionError, waitingForUserConfirmation]);
 
     // Syntax highlighting function 
     const highlightSyntax = (text: string): string => {
@@ -740,7 +740,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     )}
                 </div>
                                 <div className="execution-monitor-header-left">
-                    {showDoneMessage && (
+                    {showDoneMessage && !waitingForUserConfirmation && (
                         <div style={{
                             color: "#1e7e34",
                             fontWeight: "bold",
@@ -754,45 +754,47 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                     )}
                 </div>
                 <div className="execution-monitor-header-right" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <button 
-                        style={{
-                            background: "#ff8c00",
-                            color: "white",
-                            border: "none",
-                            borderRadius: 4,
-                            padding: "6px 16px",
-                            fontSize: "16px",
-                            fontWeight: "700",
-                            cursor: "pointer",
-                            transition: "background-color 0.2s ease",
-                            letterSpacing: "0.5px",
-                            display: "flex",
-                            alignItems: "center"
-                        }}
-                        onClick={async () => {
-                            if ((window as any).remoteRobot) {
-                                const retractedPose = { wrist_extension: 0.00211174 };
-                                (window as any).remoteRobot.setRobotPose(retractedPose);
-                                console.log(`Arm retraction command sent to robot!`);
-                                console.log(`Waiting for arm retraction...`);
-                                await new Promise(resolve => setTimeout(resolve, 2000));
-                                (window as any).remoteRobot.setRobotPose(HOME_POSE);
-                                console.log(`Home pose command sent to robot!`);
-                            }
-                        }}
-                        title="Reset robot to home position"
-                    >
-                        Reset Robot
-                    </button>
+                    {!waitingForUserConfirmation && (
+                        <button 
+                            style={{
+                                background: "#ff8c00",
+                                color: "white",
+                                border: "none",
+                                borderRadius: 4,
+                                padding: "6px 16px",
+                                fontSize: "16px",
+                                fontWeight: "700",
+                                cursor: "pointer",
+                                transition: "background-color 0.2s ease",
+                                letterSpacing: "0.5px",
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                            onClick={async () => {
+                                if ((window as any).remoteRobot) {
+                                    const retractedPose = { wrist_extension: 0.00211174 };
+                                    (window as any).remoteRobot.setRobotPose(retractedPose);
+                                    console.log(`Arm retraction command sent to robot!`);
+                                    console.log(`Waiting for arm retraction...`);
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+                                    (window as any).remoteRobot.setRobotPose(HOME_POSE);
+                                    console.log(`Home pose command sent to robot!`);
+                                }
+                            }}
+                            title="Reset robot to home position"
+                        >
+                            Reset Robot
+                        </button>
+                    )}
                     <button 
                         className="run-program-button"
                         onClick={handleButtonClick}
                         type="button"
                         style={{
-                            backgroundColor: isExecutingProgram ? "#dc3545" : undefined
+                            backgroundColor: (isExecutingProgram || waitingForUserConfirmation) ? "#dc3545" : undefined
                         }}
                     >
-                        {isExecutingProgram ? (
+                        {(isExecutingProgram || waitingForUserConfirmation) ? (
                             <>
                                 <CloseIcon style={{ marginRight: "4px" }} />
                                 Stop

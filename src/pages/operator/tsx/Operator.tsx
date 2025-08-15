@@ -697,8 +697,8 @@ export const Operator = (props: {
 
     return (
         <div id="operator">
-            {/* Persistent banner for control mode - only show in Execution Monitor mode when program is executing */}
-            {programMode === "Execution Monitor" && isExecutingProgram && (
+            {/* Persistent banner for control mode - show when program is executing or waiting for user confirmation */}
+            {(programMode === "Execution Monitor" || programMode === "Program Editor") && (isExecutingProgram || waitingForUserConfirmation) && (
                 <div
                     style={{
                         width: "100%",
@@ -715,7 +715,7 @@ export const Operator = (props: {
                         pointerEvents: props.isReconnecting ? "none" : "auto"
                     }}
                 >
-                    {isExecutingProgram ? "Robot in control" : "You are in control"}
+                    {waitingForUserConfirmation ? "You are in control" : "Robot in control"}
                 </div>
             )}
             
