@@ -9,9 +9,9 @@
 /coverage
 
 # production
-/build
-/log
-/install
+build
+log
+install
 
 # data 
 /rosbags

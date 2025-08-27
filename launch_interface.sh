@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 set -o pipefail
 
 while getopts m:t:f opt; do
