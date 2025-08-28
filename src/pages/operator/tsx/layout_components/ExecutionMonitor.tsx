@@ -300,7 +300,7 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
                 count: savedPositions.length,
                 positions: savedPositions.map(positionName => ({
                     name: positionName,
-                    jointStates: POSE_DEFINITIONS[positionName as keyof typeof POSE_DEFINITIONS] || null
+                    jointStates: ALL_POSE_DEFINITIONS[positionName as keyof typeof ALL_POSE_DEFINITIONS] || null
                 }))
             };
             (props.sharedState as any).trackExecutionAttemptStart(savedPositionData);
