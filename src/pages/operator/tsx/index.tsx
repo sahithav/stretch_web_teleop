@@ -332,10 +332,10 @@ function renderOperator(storageHandler: StorageHandler) {
         
         // Task definitions with their descriptions
         const taskDefinitions = {
-            'R': 'Pick up the pill bottle and place on the box',
-            'B': 'Pick up the pill bottle and place on the table', 
-            'O': 'Pour the substance in cup A into cup B',
-            'M': 'Pour the substance in cup A into cup B'
+            // 'R': 'Pick up the pill bottle and place on the box',
+            // 'B': 'Pick up the pill bottle and place on the table', 
+            'O': 'Pour the pasta in the bowl into the pan.',
+            'M': 'Pour the pasta in the bowl into the pan.'
         };
         
         // Function to generate random task order - only O and M for this branch
@@ -413,6 +413,19 @@ function renderOperator(storageHandler: StorageHandler) {
         // Handle proceeding to next task
         const handleProceedToNextTask = () => {
             if (isPracticeRound) {
+                // Track practice round end time
+                const userId = sessionStorage.getItem('studyUserId');
+                if (userId) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                    if (existingData) {
+                        const studyData = JSON.parse(existingData);
+                        if (studyData.tasks && studyData.tasks['practice_round']) {
+                            studyData.tasks['practice_round'].task_end_time = new Date().toISOString();
+                            sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                        }
+                    }
+                }
+
                 // End practice round and start actual study
                 setIsPracticeRound(false);
                 setCurrentTask(1);
@@ -429,9 +442,9 @@ function renderOperator(storageHandler: StorageHandler) {
                 }
                 
                 // Initialize task 1 data
-                const userId = sessionStorage.getItem('studyUserId');
-                if (userId) {
-                    const existingData = sessionStorage.getItem(`studyData_${userId}`);
+                const userId2 = sessionStorage.getItem('studyUserId');
+                if (userId2) {
+                    const existingData = sessionStorage.getItem(`studyData_${userId2}`);
                     if (existingData) {
                         const studyData = JSON.parse(existingData);
                         const taskLetter = taskOrder[0]; // First task
@@ -442,7 +455,7 @@ function renderOperator(storageHandler: StorageHandler) {
                             demonstration_recordings: [],
                             execution_attempts: []
                         };
-                        sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
+                        sessionStorage.setItem(`studyData_${userId2}`, JSON.stringify(studyData));
                     }
                 }
                 

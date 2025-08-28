@@ -326,6 +326,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
     // Execute the parsed program line by line
     const executeProgram = async (program: Program) => {
         console.log("Starting program execution...");
+
+        // Clear any previous execution errors when starting new execution
+        if (props.sharedState.clearExecutionError) {
+            props.sharedState.clearExecutionError();
+        }
+        if (props.sharedState.setErrorLineNumber) {
+            props.sharedState.setErrorLineNumber(null);
+        }
         
         // Track execution attempt start for study data
         if (props.sharedState && (props.sharedState as any).trackExecutionAttemptStart) {
@@ -547,6 +555,12 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
                             (window as any).resumeProgramExecution = resolve;
                         });
                         console.log(`Resuming program execution`);
+
+                        // The program should stay active until user clicks "Done teleoperating"
+                        if (line.lineNumber === program.lines.length) {
+                            console.log(`Take_Control is the last function - keeping program active`);
+                            return;
+                        }
                     }
                 } else {
                     console.log(`Skipping line ${line.lineNumber}: ${line.content}`);
@@ -554,6 +568,11 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             }
             
             console.log("Program execution complete!");
+
+            // Track successful execution attempt end
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(true);
+            }
             
             // Set program finished state
             if (props.sharedState.setIsProgramFinished) {
@@ -572,6 +591,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Reset current executing line
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+
+            // Clear execution errors when program completes successfully
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
         }
@@ -900,6 +927,14 @@ export const ProgramEditor = (props: ProgramEditorProps) => {
             // Reset current executing line
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+
+            // Clear execution errors when stopping
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
             // Track execution attempt end as failed when stopped

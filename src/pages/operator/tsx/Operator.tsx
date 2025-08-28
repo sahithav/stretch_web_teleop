@@ -155,7 +155,9 @@ export const Operator = (props: {
     };
 
     const trackSavedPositionAdded = () => {
-        if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
+        // if (programMode === "Program Editor" && currentProgramSession.session_start && !props.studyMode?.isPracticeRound) {
+        if (programMode === "Program Editor" && currentProgramSession.session_start) {
+            console.log('Practice/Study: Tracking saved position added');
             setCurrentProgramSession(prev => ({
                 ...prev,
                 saved_positions_added: prev.saved_positions_added + 1
@@ -165,12 +167,15 @@ export const Operator = (props: {
     
     // Function to track execution attempt start
     const trackExecutionAttemptStart = (savedPositionData?: any) => {
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        // if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+            const startTime = new Date().toISOString();
+            console.log('Practice/Study: Tracking execution attempt start at:', startTime);
             // Reset tracking flag and start time
             hasTrackedExecutionEndRef.current = false;
             setCurrentExecutionAttempt({
                 pause_and_confirm_resets: 0,
-                execution_start: new Date().toISOString(),
+                execution_start: startTime, //new Date().toISOString(),
                 saved_positions_data: savedPositionData || null
             });
         }
@@ -190,7 +195,8 @@ export const Operator = (props: {
             const taskOrder = props.studyMode?.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                // const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -209,6 +215,7 @@ export const Operator = (props: {
                         session_start: currentProgramSession.session_start,
                         session_end: new Date().toISOString(),
                         program_content: sessionStorage.getItem('programEditorCode') || "",
+                        // saved_positions_added: savedPositionData ? savedPositionData.count : currentProgramSession.saved_positions_added,
                         saved_positions_added: savedPositionData ? savedPositionData.count : currentProgramSession.saved_positions_added,
                         saved_positions_data: savedPositionData || null
                     };
@@ -228,18 +235,30 @@ export const Operator = (props: {
     
     // Function to track execution attempt end
     const trackExecutionAttemptEnd = (success: boolean) => {
+        console.log('=== trackExecutionAttemptEnd called ===');
+        console.log('Success parameter:', success);
+        console.log('hasTrackedExecutionEndRef.current:', hasTrackedExecutionEndRef.current);
+        console.log('Call stack:', new Error().stack);
+
         // Prevent duplicate tracking
         if (hasTrackedExecutionEndRef.current) {
+            console.log('Already tracked execution end, returning early');
             return;
         }
 
-        if (props.studyMode && !props.studyMode.isPracticeRound && currentExecutionAttempt.execution_start) {
+        // if (props.studyMode && !props.studyMode.isPracticeRound && currentExecutionAttempt.execution_start) {
+        if (props.studyMode && currentExecutionAttempt.execution_start) {
+            const endTime = new Date().toISOString();
+            console.log('Practice/Study: Tracking execution attempt end at:', endTime);
+
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                // const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
+
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -256,10 +275,16 @@ export const Operator = (props: {
                     
                     const executionData = {
                         execution_start: currentExecutionAttempt.execution_start,
-                        execution_end: new Date().toISOString(),
+                        execution_end: endTime, //new Date().toISOString(),
                         success: success,
                         pause_and_confirm_resets: currentExecutionAttempt.pause_and_confirm_resets
                     };
+
+                    console.log('Execution attempt timing:', {
+                        start: currentExecutionAttempt.execution_start,
+                        end: executionData.execution_end,
+                        duration_ms: new Date(executionData.execution_end).getTime() - new Date(currentExecutionAttempt.execution_start).getTime()
+                    });
                     
                     studyData.tasks[taskLetter].execution_attempts.push(executionData);
                     sessionStorage.setItem(`studyData_${userId}`, JSON.stringify(studyData));
@@ -274,13 +299,19 @@ export const Operator = (props: {
     // Function to track demonstration recording start
     const trackDemonstrationRecordingStart = () => {
 
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        // if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+
+            console.log('Practice/Study: Tracking demonstration recording start');
+
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                // const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
+
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -312,13 +343,18 @@ export const Operator = (props: {
     // Function to track demonstration recording end
     const trackDemonstrationRecordingEnd = (rosbagName: string) => {
 
-        if (props.studyMode && !props.studyMode.isPracticeRound) {
+        // if (props.studyMode && !props.studyMode.isPracticeRound) {
+        if (props.studyMode) {
+            console.log('Practice/Study: Tracking demonstration recording end');
+
             const userId = sessionStorage.getItem('studyUserId');
             const currentTask = props.studyMode.currentTask;
             const taskOrder = props.studyMode.taskOrder;
             
             if (userId && currentTask && taskOrder) {
-                const taskLetter = taskOrder[currentTask - 1];
+                // const taskLetter = taskOrder[currentTask - 1];
+                const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
+
                 const existingData = sessionStorage.getItem(`studyData_${userId}`);
                 if (existingData) {
                     const studyData = JSON.parse(existingData);
@@ -483,6 +519,9 @@ export const Operator = (props: {
     );
 
     const layout = React.useRef<LayoutDefinition>(props.layout);
+
+    // Add state to track current layout for re-rendering
+    const [currentLayout, setCurrentLayout] = React.useState<LayoutDefinition>(props.layout);
     
     // Mode-specific layouts
     const [modeLayouts, setModeLayouts] = React.useState<{ [mode: string]: LayoutDefinition }>({
@@ -512,6 +551,7 @@ export const Operator = (props: {
             setModeLayouts(initialLayouts);
             // Set current layout to the current mode
             layout.current = initialLayouts[programMode];
+            setCurrentLayout(layout.current);
         };
         
         initializeModeLayouts();
@@ -601,6 +641,7 @@ export const Operator = (props: {
     /** Rerenders the operator */
     function updateLayout() {
         console.log("update layout");
+        setCurrentLayout(layout.current);
         setButtonStateMapRerender(!buttonStateMapRerender);
         setTabletOrientationRerender(!tabletOrientationRerender);
     }
@@ -896,6 +937,9 @@ export const Operator = (props: {
                 }
             }
         }
+
+        // Update currentLayout state to trigger re-render
+        setCurrentLayout(layout.current);
         
         // Update program mode
         setProgramMode(newMode);
@@ -916,12 +960,14 @@ export const Operator = (props: {
             });
             
             // Initialize task data if not exists
-            if (studyData && taskOrder && !studyData.tasks[taskOrder[currentTask - 1]]) {
+            const taskLetter = props.studyMode.isPracticeRound ? 'practice_round' : taskOrder[currentTask - 1];
+            // if (studyData && taskOrder && !studyData.tasks[taskOrder[currentTask - 1]]) {
+            if (studyData && taskOrder && !studyData.tasks[taskLetter]) {
                 setStudyData(prev => ({
                     ...prev,
                     tasks: {
                         ...prev.tasks,
-                        [taskOrder[currentTask - 1]]: {
+                        [taskLetter]: {
                             task_start_time: new Date().toISOString(),
                             task_end_time: null,
                             program_editor_sessions: [],
@@ -1168,7 +1214,7 @@ export const Operator = (props: {
                                     <Dropdown
                                         onChange={(idx) => setActionMode(actionModes[idx])}
                                         selectedIndex={actionModes.indexOf(
-                                            layout.current.actionMode
+                                            currentLayout.actionMode
                                         )}
                                         possibleOptions={actionModes}
                                         showActive
@@ -1291,7 +1337,7 @@ export const Operator = (props: {
                         })}
                     >
                         <HomeTheRobot
-                            hideLabels={!layout.current.displayLabels}
+                            hideLabels={!currentLayout.displayLabels}
                         />
                     </div>
                 </div>
@@ -1785,7 +1831,7 @@ export const Operator = (props: {
             )}
             
             <div id="operator-body">
-                <LayoutArea layout={layout.current} sharedState={sharedState} />
+                <LayoutArea layout={currentLayout} sharedState={sharedState} />
             </div>
 
             <Sidebar

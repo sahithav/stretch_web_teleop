@@ -277,21 +277,21 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
         if (isProgramFinished && !executionError) {
             setShowDoneMessage(true);
             
-            // Track successful execution completion for study data
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-                (props.sharedState as any).trackExecutionAttemptEnd(true);
-            }
+            // // Track successful execution completion for study data
+            // if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+            //     (props.sharedState as any).trackExecutionAttemptEnd(true);
+            // }
             
             const timer = setTimeout(() => {
                 setShowDoneMessage(false);
             }, 5000); 
             
             return () => clearTimeout(timer);
-        } else if (isProgramFinished && executionError) {
-            // Track failed execution completion for study data
-            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
-                (props.sharedState as any).trackExecutionAttemptEnd(false);
-            }
+        // } else if (isProgramFinished && executionError) {
+        //     // Track failed execution completion for study data
+        //     if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+        //         (props.sharedState as any).trackExecutionAttemptEnd(false);
+        //     }
         } else if (isExecutingProgram) {
             // Program is executing, hide done message
             setShowDoneMessage(false);
@@ -531,6 +531,11 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             }
             
             console.log("ExecutionMonitor: Program execution complete!");
+
+            // Track successful execution attempt end
+            if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
+                (props.sharedState as any).trackExecutionAttemptEnd(true);
+            }
             
             // Set program finished state
             if (props.sharedState.setIsProgramFinished) {
@@ -580,6 +585,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
             }
+
+            // Clear execution errors when stopping
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
+            }
             
             // Track execution attempt end as failed when stopped
             if (props.sharedState && (props.sharedState as any).trackExecutionAttemptEnd) {
@@ -602,6 +615,14 @@ export const ExecutionMonitor = (props: ExecutionMonitorProps) => {
             // Reset current executing line at start
             if (props.sharedState.updateCurrentExecutingLine) {
                 props.sharedState.updateCurrentExecutingLine(undefined);
+            }
+
+            // Clear any previous execution errors when starting new execution
+            if (props.sharedState.clearExecutionError) {
+                props.sharedState.clearExecutionError();
+            }
+            if (props.sharedState.setErrorLineNumber) {
+                props.sharedState.setErrorLineNumber(null);
             }
             
             const programText = readProgramCode();
