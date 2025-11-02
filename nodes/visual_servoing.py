@@ -16,6 +16,7 @@ import numpy as np
 import rclpy
 import tf2_ros
 import yaml
+from ament_index_python import get_package_share_directory
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
@@ -40,26 +41,43 @@ class VisualServoingNode(Node):
     def __init__(self):
         super().__init__('visual_servoing_node')
         
-        # Get package path to find config files
-        package_path = Path(__file__).parent.parent
-        aruco_config_path = package_path / 'config' / 'aruco_marker_info.yaml'
-        
-        # Load ArUco marker info
-        with open(aruco_config_path) as f:
-            self.marker_info = yaml.load(f, Loader=yaml.SafeLoader)
-        
-        # Initialize ArUco detector
-        self.aruco_detector = ArucoDetector(
-            marker_info=self.marker_info,
-            show_debug_images=False,
-            use_apriltag_refinement=False,
-            brighten_images=True
-        )
-        
-        # Initialize fingertip transform
-        self.aruco_to_fingertips = ArucoToFingertips(
-            default_height_above_mounting_surface=af.suctioncup_height['cup_bottom']
-        )
+        try:
+            self.get_logger().info('Initializing visual servoing node')
+            
+            # Get package path to find config files using ROS2 standard method
+            package_share = get_package_share_directory("stretch_web_teleop")
+            aruco_config_path = Path(package_share) / 'config' / 'aruco_marker_info.yaml'
+            
+            self.get_logger().info(f'Package share directory: {package_share}')
+            self.get_logger().info(f'ArUco config path: {aruco_config_path}')
+            
+            if not aruco_config_path.exists():
+                self.get_logger().error(f'ArUco config file not found at {aruco_config_path}')
+                raise FileNotFoundError(f'ArUco config not found at {aruco_config_path}')
+            
+            with open(aruco_config_path) as f:
+                self.marker_info = yaml.load(f, Loader=yaml.SafeLoader)
+            
+            self.get_logger().info(f'Loaded ArUco marker info with {len(self.marker_info)} markers')
+            
+            # Initialize ArUco detector
+            self.aruco_detector = ArucoDetector(
+                marker_info=self.marker_info,
+                show_debug_images=False,
+                use_apriltag_refinement=False,
+                brighten_images=True
+            )
+            
+            # Initialize fingertip transform
+            self.aruco_to_fingertips = ArucoToFingertips(
+                default_height_above_mounting_surface=af.suctioncup_height['cup_bottom']
+            )
+            
+        except Exception as e:
+            self.get_logger().error(f'Error during initialization: {e}')
+            import traceback
+            self.get_logger().error(traceback.format_exc())
+            raise
         
         # ROS components
         self.cv_bridge = CvBridge()
@@ -123,7 +141,8 @@ class VisualServoingNode(Node):
             callback_group=self.service_callback_group
         )
         
-        self.get_logger().info('Visual Servoing node started')
+        self.get_logger().info('Visual Servoing node started successfully')
+        self.get_logger().info('Services created: /start_visual_servoing, /stop_visual_servoing')
         
     def gripper_rgb_callback(self, msg):
         """Callback for gripper RGB images"""
