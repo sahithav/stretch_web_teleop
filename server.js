@@ -152,6 +152,8 @@ io.on('connection', function (socket) {
 const { spawn } = require('child_process');
 let rosbagProcess = null;
 
+app.use(express.json());
+
 app.post('/start_rosbag', (req, res) => {
     if (rosbagProcess) {
         return res.status(400).json({ error: 'Rosbag recording already in progress.' });
@@ -196,8 +198,6 @@ app.post('/stop_rosbag', (req, res) => {
     }
 });
 
-
-app.use(express.json());
 app.post('/save_program', (req, res) => {
     try {
         const { filePath, fileName, content } = req.body;
