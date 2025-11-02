@@ -35,8 +35,6 @@ secure_server.listen(443);
 var path = require('path');
 app.use('/', express.static(path.join(__dirname, 'dist')));
 
-app.listen(process.env.port);
-
 io.on('connect_error', (err) => {
     console.log(`connect_error due to ${err.message}`);
 });
@@ -156,13 +154,14 @@ app.use(express.json());
 
 app.post('/start_rosbag', (req, res) => {
     if (rosbagProcess) {
+        console.log('[rosbag start] Already recording, rejecting request');
         return res.status(400).json({ error: 'Rosbag recording already in progress.' });
     }
 
-     
     const bagName = 'latest_' + Date.now();
     const outputDir = '/home/hello-robot/rosbags';
-    //const outputDir = '/rosbags';
+    console.log(`[rosbag start] Starting recording: bagName=${bagName}, outputDir=${outputDir}`);
+    
     rosbagProcess = spawn('ros2', [
         'bag', 'record',
         '-a',
@@ -174,6 +173,8 @@ app.post('/start_rosbag', (req, res) => {
         cwd: outputDir
     });
 
+    console.log(`[rosbag start] Spawned process with PID: ${rosbagProcess.pid}`);
+
     rosbagProcess.stdout.on('data', (data) => {
         console.log(`[rosbag stdout]: ${data}`);
     });
@@ -181,21 +182,35 @@ app.post('/start_rosbag', (req, res) => {
         console.error(`[rosbag stderr]: ${data}`);
     });
     rosbagProcess.on('exit', (code, signal) => {
-        console.log(`ros2 bag record exited with code ${code}, signal ${signal}`);
+        console.log(`[rosbag exit] ros2 bag record exited with code ${code}, signal ${signal}`);
         rosbagProcess = null; 
     });
+    
+    console.log(`[rosbag start] Sending success response`);
     res.json({ status: 'started', dir: outputDir, bagName: bagName });
 });
 
 app.post('/stop_rosbag', (req, res) => {
     if (!rosbagProcess) {
+        console.log('[rosbag stop] No recording in progress, rejecting request');
         return res.status(400).json({ error: 'No rosbag recording in progress.' });
     }
     try {
+        console.log(`[rosbag stop] Killing process with PID: ${rosbagProcess.pid}`);
         process.kill(-rosbagProcess.pid, 'SIGINT');
+        console.log('[rosbag stop] SIGINT sent successfully');
+        
+        // Wait a moment to see if process exits cleanly
+        setTimeout(() => {
+            if (rosbagProcess && !rosbagProcess.killed) {
+                console.log('[rosbag stop] Process still running, sending SIGTERM');
+                process.kill(-rosbagProcess.pid, 'SIGTERM');
+            }
+        }, 2000);
+        
         res.json({ status: 'stopped' });
     } catch (e) {
-        console.error('Error stopping rosbag process:', e);
+        console.error('[rosbag stop] Error stopping rosbag process:', e);
         return res.status(500).json({ error: 'Failed to stop rosbag process.' });
     }
 });
