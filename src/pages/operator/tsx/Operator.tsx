@@ -41,6 +41,7 @@ import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
 import "operator/css/Operator.css";
 import "operator/css/HomeRobotButton.css";
+import "operator/css/TestButton.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot, HomeTheRobotFunction } from "./layout_components/HomeTheRobot";
 import { RosbagRecorder } from "./layout_components/RosbagRecorder";
