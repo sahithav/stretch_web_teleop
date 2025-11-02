@@ -41,14 +41,12 @@ import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
 import "operator/css/Operator.css";
 import "operator/css/HomeRobotButton.css";
-import "operator/css/TestButton.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot, HomeTheRobotFunction } from "./layout_components/HomeTheRobot";
 import { RosbagRecorder } from "./layout_components/RosbagRecorder";
 
 import { SavedProgram } from "./storage_handler/StorageHandler";
 import HomeIcon from "@mui/icons-material/Home";
-import CheckIcon from "@mui/icons-material/Check";
 
 
 
@@ -1050,29 +1048,6 @@ export const Operator = (props: {
                     customizing={customizing}
                     onClick={handleToggleCustomize}
                 />
-                        {/* Test Button for Visual Servoing */}
-                        <button
-                            onClick={() => {
-                                if ((window as any).remoteRobot) {
-                                    console.log("Test button clicked - Starting Visual Servoing");
-                                    (window as any).remoteRobot.startVisualServoing();
-                                } else {
-                                    console.error("RemoteRobot not available");
-                                }
-                            }}
-                            id="test-button"
-                            className="btn-turquoise font-white"
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px"
-                            }}
-                            title="Start visual servoing"
-                        >
-                            <CheckIcon />
-                            <span>Test</span>
-                        </button>
-                        
                         {/* Home Robot Button */}
                         <button
                             onClick={async () => {

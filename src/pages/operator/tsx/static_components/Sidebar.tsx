@@ -507,6 +507,7 @@ const SidebarComponentProvider = (props: SidebarComponentProviderProps) => {
         { type: ComponentType.BatteryGuage },
         { type: ComponentType.ProgramEditor },
         { type: ComponentType.ExecutionMonitor },
+        { type: ComponentType.TaskPlanner },
         { type: ComponentType.Library },
     ];
 

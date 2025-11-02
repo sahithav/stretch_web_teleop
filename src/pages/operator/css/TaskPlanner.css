@@ -1,0 +1,124 @@
+.task-planner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--primary-background);
+}
+
+.task-planner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.task-planner-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.close-icon {
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.close-icon:hover {
+    color: var(--text-primary);
+}
+
+.task-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.task-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.task-item:hover {
+    border-color: var(--accent-color);
+    background-color: var(--hover-background);
+}
+
+.task-item.selected {
+    border-color: var(--accent-color);
+    background-color: var(--selected-background);
+}
+
+.task-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.task-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.task-code {
+    font-size: 0.85rem;
+    background-color: var(--code-background);
+    padding: 0.5rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.task-code pre {
+    margin: 0;
+    color: var(--code-text);
+}
+
+.task-planner-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.run-task-button {
+    width: 100%;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.run-task-button:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.run-task-button:disabled {
+    background-color: var(--disabled-background);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.run-task-button.executing {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+

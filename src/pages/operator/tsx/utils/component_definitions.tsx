@@ -28,7 +28,8 @@ export enum ComponentType {
     RosbagRecorder = "Rosbag Recorder",
     ProgramEditor = "Program Editor",
     Library = "Library",
-    ExecutionMonitor = "Execution Monitor"
+    ExecutionMonitor = "Execution Monitor",
+    TaskPlanner = "Task Planner"
 }
 
 /**
@@ -237,3 +238,5 @@ export type ProgramEditorDefinition = ComponentDefinition;
 export type LibraryDefinition = ComponentDefinition;
 
 export type ExecutionMonitorDefinition = ComponentDefinition;
+
+export type TaskPlannerDefinition = ComponentDefinition;

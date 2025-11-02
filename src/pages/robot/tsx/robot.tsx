@@ -81,8 +81,6 @@ export class Robot extends React.Component {
     private stretchToolParam: ROSLIB.Param;
     private textToSpeechTopic?: ROSLIB.Topic;
     private homeTheRobotService?: ROSLIB.Service;
-    private startVisualServoingService?: ROSLIB.Service;
-    private stopVisualServoingService?: ROSLIB.Service;
 
     constructor(props: {
         jointStateCallback: (
@@ -303,7 +301,6 @@ export class Robot extends React.Component {
         this.subscribeToMapTF();
         this.createTextToSpeechTopic();
         this.createHomeTheRobotService();
-        this.createVisualServoingServices();
 
         return Promise.resolve();
     }
@@ -633,19 +630,6 @@ export class Robot extends React.Component {
         });
     }
 
-    createVisualServoingServices() {
-        this.startVisualServoingService = new ROSLIB.Service({
-            ros: this.ros,
-            name: "/start_visual_servoing",
-            serviceType: "std_srvs/Trigger",
-        });
-        this.stopVisualServoingService = new ROSLIB.Service({
-            ros: this.ros,
-            name: "/stop_visual_servoing",
-            serviceType: "std_srvs/Trigger",
-        });
-    }
-
     createRealsenseDepthSensingService() {
         this.setRealsenseDepthSensingService = new ROSLIB.Service({
             ros: this.ros,
@@ -879,26 +863,6 @@ export class Robot extends React.Component {
         this.homeTheRobotService!.callService(request, () => {
             robotMode = "unknown"; // returns to whatever mode the robot was in before this service was called
             console.log("Homing complete");
-        });
-    }
-
-    /**
-     * Start visual servoing.
-     */
-    startVisualServoing() {
-        var request = new ROSLIB.ServiceRequest({});
-        this.startVisualServoingService!.callService(request, () => {
-            console.log("Visual servoing started");
-        });
-    }
-
-    /**
-     * Stop visual servoing.
-     */
-    stopVisualServoing() {
-        var request = new ROSLIB.ServiceRequest({});
-        this.stopVisualServoingService!.callService(request, () => {
-            console.log("Visual servoing stopped");
         });
     }
 

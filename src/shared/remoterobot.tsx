@@ -16,8 +16,6 @@ import {
     PlayTextToSpeech,
     StopTextToSpeech,
     HomeTheRobotCommand,
-    StartVisualServoingCommand,
-    StopVisualServoingCommand,
 } from "shared/commands";
 import {
     ValidJointStateDict,
@@ -277,26 +275,6 @@ export class RemoteRobot extends React.Component<{}, any> {
     homeTheRobot() {
         let cmd: HomeTheRobotCommand = {
             type: "homeTheRobot",
-        };
-        this.robotChannel(cmd);
-    }
-
-    /**
-     * Start visual servoing.
-     */
-    startVisualServoing() {
-        let cmd: StartVisualServoingCommand = {
-            type: "startVisualServoing",
-        };
-        this.robotChannel(cmd);
-    }
-
-    /**
-     * Stop visual servoing.
-     */
-    stopVisualServoing() {
-        let cmd: StopVisualServoingCommand = {
-            type: "stopVisualServoing",
         };
         this.robotChannel(cmd);
     }

@@ -19,6 +19,7 @@ import { RosbagRecorder } from "./RosbagRecorder";
 import { ProgramEditor } from "./ProgramEditor";
 import { Library } from "./Library";
 import { ExecutionMonitor } from "./ExecutionMonitor";
+import { TaskPlanner } from "./TaskPlanner";
 
 /** State required for all elements */
 export type SharedState = {
@@ -132,6 +133,8 @@ export const CustomizableComponent = (props: CustomizableComponentProps) => {
             return <Library {...props} />;
         case ComponentType.ExecutionMonitor:
             return <ExecutionMonitor {...props} />;
+        case ComponentType.TaskPlanner:
+            return <TaskPlanner {...props} />;
         default:
             throw Error(
                 `CustomizableComponent cannot render component of unknown type: ${props.definition.type}\nYou may need to add a case for this component in the switch statement in CustomizableComponent.`
