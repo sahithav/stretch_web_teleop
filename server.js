@@ -160,16 +160,18 @@ app.post('/start_rosbag', (req, res) => {
     }
 
      
-    const outputDir = '/home/hello-robot/rosbags/latest_' + Date.now();
-    //const outputDir = '/rosbags/latest_' + Date.now();
+    const bagName = 'latest_' + Date.now();
+    const outputDir = '/home/hello-robot/rosbags';
+    //const outputDir = '/rosbags';
     rosbagProcess = spawn('ros2', [
         'bag', 'record',
         '-a',
         '-s', 'mcap',
-        '-o', outputDir
+        '-o', bagName
     ], {
         detached: true,
-        stdio: ['ignore', 'pipe', 'pipe']
+        stdio: ['ignore', 'pipe', 'pipe'],
+        cwd: outputDir
     });
 
     rosbagProcess.stdout.on('data', (data) => {
@@ -182,7 +184,7 @@ app.post('/start_rosbag', (req, res) => {
         console.log(`ros2 bag record exited with code ${code}, signal ${signal}`);
         rosbagProcess = null; 
     });
-    res.json({ status: 'started', dir: outputDir });
+    res.json({ status: 'started', dir: outputDir, bagName: bagName });
 });
 
 app.post('/stop_rosbag', (req, res) => {
