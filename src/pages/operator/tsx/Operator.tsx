@@ -759,7 +759,7 @@ export const Operator = (props: {
                     <RosbagRecorder 
                         path=""
                         definition={{ type: ComponentType.RosbagRecorder }}
-                        sharedState={sharedState}
+                        sharedState={{} as any}
                         hideLabels={!layout.current.displayLabels} 
                     />
                 </div>
