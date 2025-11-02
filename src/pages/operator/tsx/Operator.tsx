@@ -1054,9 +1054,8 @@ export const Operator = (props: {
                         <button
                             onClick={() => {
                                 if ((window as any).remoteRobot) {
-                                    console.log("Test button clicked - Visual Servoing command");
-                                    // TODO: Add your visual servoing command here
-                                    // Example: (window as any).remoteRobot.sendVisualServoingCommand();
+                                    console.log("Test button clicked - Starting Visual Servoing");
+                                    (window as any).remoteRobot.startVisualServoing();
                                 } else {
                                     console.error("RemoteRobot not available");
                                 }
@@ -1068,7 +1067,7 @@ export const Operator = (props: {
                                 alignItems: "center",
                                 gap: "4px"
                             }}
-                            title="Test button for visual servoing"
+                            title="Start visual servoing"
                         >
                             <CheckIcon />
                             <span>Test</span>

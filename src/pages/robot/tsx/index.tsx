@@ -356,6 +356,12 @@ function handleMessage(message: WebRTCMessage) {
         case "homeTheRobot":
             robot.homeTheRobot();
             break;
+        case "startVisualServoing":
+            robot.startVisualServoing();
+            break;
+        case "stopVisualServoing":
+            robot.stopVisualServoing();
+            break;
     }
 }
 

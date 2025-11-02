@@ -556,6 +556,27 @@ def generate_launch_description():
     )
     ld.add_action(text_to_speech_node)
 
+    # Visual Servoing Node
+    if (
+        stretch_tool == "eoa_wrist_dw3_tool_sg3"
+        or stretch_tool == "tool_stretch_dex_wrist"
+    ):
+        visual_servoing_node = Node(
+            package="stretch_web_teleop",
+            executable="visual_servoing.py",
+            output="screen",
+            parameters=[
+                PathJoinSubstitution(
+                    [
+                        teleop_interface_package,
+                        "config",
+                        "visual_servoing.yaml",
+                    ]
+                )
+            ],
+        )
+        ld.add_action(visual_servoing_node)
+
     if stretch_tool == "eoa_wrist_dw3_tool_tablet_12in":
         detect_body_landmarks_node = Node(
             package="stretch_show_tablet",

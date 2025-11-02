@@ -1,0 +1,17 @@
+# Visual Servoing Configuration
+# This file can be used to override default visual servoing parameters
+
+visual_servoing_node:
+  ros__parameters:
+    # Path to the stretch_visual_servoing repository
+    visual_servoing_repo_path: "~/stretch_visual_servoing"
+    
+    # Use YOLOv8 instead of ArUco detection (requires YOLOv8 setup)
+    use_yolo: false
+    
+    # Use remote computer for YOLOv8 processing
+    use_remote_computer: false
+    
+    # Camera exposure setting: 'low', 'medium', 'auto', or integer value
+    exposure: "low"
+

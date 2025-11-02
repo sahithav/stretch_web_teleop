@@ -24,7 +24,9 @@ export type cmd =
     | StopTextToSpeech
     | ShowTabletCommand
     | StopShowTabletCommand
-    | HomeTheRobotCommand;
+    | HomeTheRobotCommand
+    | StartVisualServoingCommand
+    | StopVisualServoingCommand;
 
 export interface VelocityCommand {
     stop: () => void;
@@ -142,4 +144,12 @@ export interface StopTextToSpeech {
 
 export interface HomeTheRobotCommand {
     type: "homeTheRobot";
+}
+
+export interface StartVisualServoingCommand {
+    type: "startVisualServoing";
+}
+
+export interface StopVisualServoingCommand {
+    type: "stopVisualServoing";
 }

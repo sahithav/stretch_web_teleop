@@ -43,6 +43,7 @@ install(PROGRAMS
   nodes/navigation_camera.py
   nodes/text_to_speech.py
   nodes/text_to_speech_ui.py
+  nodes/visual_servoing.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
