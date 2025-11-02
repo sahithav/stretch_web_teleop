@@ -1049,6 +1049,30 @@ export const Operator = (props: {
                     customizing={customizing}
                     onClick={handleToggleCustomize}
                 />
+                        {/* Test Button for Visual Servoing */}
+                        <button
+                            onClick={() => {
+                                if ((window as any).remoteRobot) {
+                                    console.log("Test button clicked - Visual Servoing command");
+                                    // TODO: Add your visual servoing command here
+                                    // Example: (window as any).remoteRobot.sendVisualServoingCommand();
+                                } else {
+                                    console.error("RemoteRobot not available");
+                                }
+                            }}
+                            id="test-button"
+                            className="btn-turquoise font-white"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px"
+                            }}
+                            title="Test button for visual servoing"
+                        >
+                            <CheckIcon />
+                            <span>Test</span>
+                        </button>
+                        
                         {/* Home Robot Button */}
                         <button
                             onClick={async () => {
