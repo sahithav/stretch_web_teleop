@@ -5,6 +5,15 @@
     background-color: var(--primary-background);
 }
 
+.task-planner.customizing {
+    cursor: pointer;
+}
+
+.task-planner.selected {
+    border: 2px solid var(--selected-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
 .task-planner-header {
     display: flex;
     justify-content: space-between;

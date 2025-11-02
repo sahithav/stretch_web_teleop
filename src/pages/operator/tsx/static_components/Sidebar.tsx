@@ -97,6 +97,7 @@ function componentDescription(definition: ComponentDefinition): string {
         case ComponentType.Map:
         case ComponentType.ProgramEditor:
         case ComponentType.ExecutionMonitor:
+        case ComponentType.TaskPlanner:
         case ComponentType.Library:
             return definition.type;
         default:

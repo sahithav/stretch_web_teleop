@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
     CustomizableComponentProps,
+    isSelected,
 } from "./CustomizableComponent";
 import { className } from "shared/util";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -39,8 +40,19 @@ Move_Arm_to_Config(\"arm_in\")`
  * Displays hardcoded tasks that can be executed
  */
 export const TaskPlanner = (props: TaskPlannerProps) => {
+    const { customizing } = props.sharedState;
+    const selected = isSelected(props);
     const [selectedTask, setSelectedTask] = useState<string | null>(null);
     const [isExecuting, setIsExecuting] = useState(false);
+
+    /** Callback when component is clicked during customize mode */
+    const onSelect = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        props.sharedState.onSelect(props.definition, props.path);
+    };
+
+    // In customizing state add onClick callback
+    const selectProp = customizing ? { onClick: onSelect } : {};
 
     const handleTaskSelect = (taskId: string) => {
         setSelectedTask(taskId);
@@ -94,7 +106,7 @@ export const TaskPlanner = (props: TaskPlannerProps) => {
     };
 
     return (
-        <div className={className("task-planner", props.definition.type)}>
+        <div className={className("task-planner", { customizing, selected })} {...selectProp}>
             <div className="task-planner-header">
                 <h3>Task Planner</h3>
                 <CloseIcon 
